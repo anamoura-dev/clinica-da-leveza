@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useEffect } from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, {
   Easing,
   FadeIn,
@@ -15,81 +15,45 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { Cores, Espaco, Fontes, Raio } from '@/constants/theme';
+import { BalaoEspinhoso } from '@/components/balao-espinhoso';
+import { Cores, Fontes } from '@/constants/theme';
 
-// Linha do tempo da "paulada" (em ms)
-const PREPARO = 350; // o pau pega impulso
-const GOLPE = 260; // o pau vem na direção de quem está olhando
-const IMPACTO = PREPARO + GOLPE; // momento da pancada
-const FRASE = IMPACTO + 450; // quando as palavras começam a entrar
+// Linha do tempo da abertura (ms) — tudo acontece em ~2,5 s
+const PREPARO = 300; // o pau pega impulso
+const GOLPE = 220; // o pau vem na direção de quem está olhando
+const IMPACTO = PREPARO + GOLPE; // 520: pancada
+const BOLINHAS = 800; // bolinhas do pensamento
+const BALAO = 1040; // balão principal
+const FRASE = 1250; // palavras começam
+const DURACAO_FRASE = 1000; // tempo total para todas as palavras entrarem
+const DICA = 2500; // "arraste para o lado"
 
-/** Uma forma colorida que flutua devagar no fundo do cartão. */
-function Bolha({
-  cor,
-  tamanho,
-  topo,
-  esquerda,
-  dx,
-  dy,
-  duracao,
-  parado,
-}: {
-  cor: string;
-  tamanho: number;
-  topo: number;
-  esquerda: number;
-  dx: number;
-  dy: number;
-  duracao: number;
-  parado: boolean;
-}) {
-  const t = useSharedValue(0);
+const MADEIRA = '#C48A55';
+const MADEIRA_ESCURA = '#8B5A2B';
 
-  useEffect(() => {
-    if (parado) return;
-    t.value = withRepeat(
-      withTiming(1, { duration: duracao, easing: Easing.inOut(Easing.sin) }),
-      -1,
-      true,
-    );
-  }, [t, duracao, parado]);
-
-  const estilo = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: t.value * dx },
-      { translateY: t.value * dy },
-      { scale: 1 + t.value * 0.15 },
-    ],
-  }));
-
-  return (
-    <Animated.View
-      pointerEvents="none"
-      style={[
-        estilos.bolha,
-        { backgroundColor: cor, width: tamanho, height: tamanho, borderRadius: tamanho / 2, top: topo, left: esquerda },
-        estilo,
-      ]}
-    />
-  );
+/** Tamanho da fonte conforme o comprimento da frase, para caber no balão. */
+function tamanhoFonte(texto: string, larguraBalao: number) {
+  const base = larguraBalao / 13;
+  const reducao = Math.max(0, texto.length - 50) / 8;
+  return Math.max(17, Math.min(30, base - reducao));
 }
 
-/** O pau de madeira. Gira a partir do cabo (embaixo) e cresce em direção à tela. */
+/** O pau de madeira: gira a partir do cabo e cresce em direção à tela. */
 function Pau() {
-  const giro = useSharedValue(-35);
-  const escala = useSharedValue(0.55);
+  const giro = useSharedValue(-30);
+  const escala = useSharedValue(0.6);
   const opacidade = useSharedValue(0);
 
   useEffect(() => {
     opacidade.value = withSequence(
-      withTiming(1, { duration: 120 }),
-      withDelay(IMPACTO - 60, withTiming(0, { duration: 140 })),
+      withTiming(1, { duration: 100 }),
+      withDelay(IMPACTO - 60, withTiming(0, { duration: 120 })),
     );
     giro.value = withSequence(
-      withTiming(-110, { duration: PREPARO, easing: Easing.out(Easing.quad) }),
-      withTiming(20, { duration: GOLPE, easing: Easing.in(Easing.cubic) }),
+      withTiming(-115, { duration: PREPARO, easing: Easing.out(Easing.quad) }),
+      withTiming(15, { duration: GOLPE, easing: Easing.in(Easing.cubic) }),
     );
-    escala.value = withDelay(PREPARO, withTiming(2.6, { duration: GOLPE, easing: Easing.in(Easing.cubic) }));
+    escala.value = withDelay(PREPARO, withTiming(3.2, { duration: GOLPE, easing: Easing.in(Easing.cubic) }));
   }, [giro, escala, opacidade]);
 
   const estilo = useAnimatedStyle(() => ({
@@ -98,45 +62,44 @@ function Pau() {
   }));
 
   return (
-    <View pointerEvents="none" style={estilos.pauArea}>
-      {/* O eixo de rotação é o centro deste bloco, que coincide com a ponta do cabo. */}
+    <View pointerEvents="none" style={[StyleSheet.absoluteFill, estilos.centro]}>
       <Animated.View style={[estilos.pauEixo, estilo]}>
         <View style={estilos.pauCorpo}>
-          <View style={[estilos.pauVeio, { top: 22, left: 8 }]} />
-          <View style={[estilos.pauVeio, { top: 58, left: 16, width: 3 }]} />
-          <View style={[estilos.pauNo, { top: 84, left: 6 }]} />
+          <View style={[estilos.pauVeio, { top: 26, left: 10 }]} />
+          <View style={[estilos.pauVeio, { top: 74, left: 22, width: 3 }]} />
+          <View style={[estilos.pauNo, { top: 112, left: 8 }]} />
         </View>
         <View style={estilos.pauCabo} />
-        <View style={{ height: 150 }} />
+        {/* espaço igual ao comprimento do pau: o centro deste bloco é a ponta do cabo */}
+        <View style={{ height: 200 }} />
       </Animated.View>
     </View>
   );
 }
 
-/** Clarão + "PÁ!" no momento da pancada. */
-function Impacto({ parado }: { parado: boolean }) {
+/** Clarão na tela inteira + "PÁ!" no momento da pancada. */
+function Impacto() {
   const clarao = useSharedValue(0);
   const estouro = useSharedValue(0);
   const opacidadeEstouro = useSharedValue(0);
 
   useEffect(() => {
-    if (parado) return;
     clarao.value = withDelay(
       IMPACTO,
-      withSequence(withTiming(0.75, { duration: 60 }), withTiming(0, { duration: 320 })),
+      withSequence(withTiming(0.8, { duration: 50 }), withTiming(0, { duration: 300 })),
     );
     estouro.value = withDelay(
       IMPACTO,
       withSequence(
-        withTiming(1.35, { duration: 140, easing: Easing.out(Easing.back(3)) }),
-        withTiming(1, { duration: 120 }),
+        withTiming(1.4, { duration: 130, easing: Easing.out(Easing.back(3)) }),
+        withTiming(1, { duration: 110 }),
       ),
     );
     opacidadeEstouro.value = withDelay(
       IMPACTO,
-      withSequence(withTiming(1, { duration: 40 }), withDelay(380, withTiming(0, { duration: 220 }))),
+      withSequence(withTiming(1, { duration: 30 }), withDelay(260, withTiming(0, { duration: 180 }))),
     );
-  }, [clarao, estouro, opacidadeEstouro, parado]);
+  }, [clarao, estouro, opacidadeEstouro]);
 
   const estiloClarao = useAnimatedStyle(() => ({ opacity: clarao.value }));
   const estiloEstouro = useAnimatedStyle(() => ({
@@ -146,32 +109,124 @@ function Impacto({ parado }: { parado: boolean }) {
 
   return (
     <>
-      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, estilos.clarao, estiloClarao]} />
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, estilos.centro]}>
         <Animated.View style={[estilos.estouro, estiloEstouro]}>
           <Text style={estilos.estouroTexto}>PÁ!</Text>
         </Animated.View>
       </View>
+      <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, estilos.clarao, estiloClarao]} />
     </>
   );
 }
 
-/** Uma "cena" completa: pancada, tremida e depois a frase. Remonta a cada nova paulada. */
-function Cena({ texto, parado, onOutra }: { texto: string; parado: boolean; onOutra?: () => void }) {
+/** Algo que "estoura" na tela no tempo certo e depois fica balançando de leve. */
+function Estouro({
+  atraso,
+  parado,
+  balanco = 1.5,
+  children,
+}: {
+  atraso: number;
+  parado: boolean;
+  balanco?: number;
+  children: React.ReactNode;
+}) {
+  const escala = useSharedValue(parado ? 1 : 0);
+  const giro = useSharedValue(0);
+
+  useEffect(() => {
+    if (parado) return;
+    escala.value = withDelay(
+      atraso,
+      withSequence(
+        withTiming(1.12, { duration: 220, easing: Easing.out(Easing.back(2)) }),
+        withTiming(1, { duration: 140 }),
+      ),
+    );
+    giro.value = withDelay(
+      atraso + 360,
+      withRepeat(
+        withSequence(
+          withTiming(balanco, { duration: 1300, easing: Easing.inOut(Easing.sin) }),
+          withTiming(-balanco, { duration: 1300, easing: Easing.inOut(Easing.sin) }),
+        ),
+        -1,
+        true,
+      ),
+    );
+  }, [escala, giro, atraso, parado, balanco]);
+
+  const estilo = useAnimatedStyle(() => ({
+    opacity: escala.value > 0.01 ? 1 : 0,
+    transform: [{ scale: escala.value }, { rotate: `${giro.value}deg` }],
+  }));
+
+  return <Animated.View style={estilo}>{children}</Animated.View>;
+}
+
+/** Setinha animada: "arraste para o lado". */
+function DicaArrastar({ parado, onPress }: { parado: boolean; onPress?: () => void }) {
+  const x = useSharedValue(0);
+
+  useEffect(() => {
+    if (parado) return;
+    x.value = withDelay(
+      DICA,
+      withRepeat(
+        withSequence(
+          withTiming(10, { duration: 450, easing: Easing.out(Easing.quad) }),
+          withTiming(0, { duration: 450, easing: Easing.in(Easing.quad) }),
+        ),
+        -1,
+      ),
+    );
+  }, [x, parado]);
+
+  const estiloSeta = useAnimatedStyle(() => ({ transform: [{ translateX: x.value }] }));
+
+  return (
+    <Animated.View entering={parado ? undefined : FadeIn.delay(DICA).duration(400)} style={estilos.dica}>
+      <Pressable onPress={onPress} hitSlop={16} style={estilos.dicaBotao}>
+        <Text style={estilos.dicaTexto}>arraste para o lado</Text>
+        <Animated.View style={estiloSeta}>
+          <Ionicons name="arrow-forward" size={18} color={Cores.pessegoClaro} />
+        </Animated.View>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+/** A cena inteira. Remonta (e recomeça) a cada nova paulada. */
+function Cena({
+  texto,
+  parado,
+  onOutra,
+  onAvancar,
+}: {
+  texto: string;
+  parado: boolean;
+  onOutra?: () => void;
+  onAvancar?: () => void;
+}) {
+  const { width } = useWindowDimensions();
   const tremida = useSharedValue(0);
+
+  const larguraBalao = Math.min(width - 24, 440);
+  const alturaBalao = larguraBalao * 0.86;
+  const fonte = tamanhoFonte(texto, larguraBalao);
   const palavras = texto.split(/\s+/).filter(Boolean);
-  const inicioFrase = parado ? 0 : FRASE;
+  const passo = Math.min(110, DURACAO_FRASE / Math.max(1, palavras.length));
 
   useEffect(() => {
     if (parado) return;
     tremida.value = withDelay(
       IMPACTO,
       withSequence(
-        withTiming(-14, { duration: 45 }),
-        withTiming(12, { duration: 45 }),
-        withTiming(-8, { duration: 45 }),
-        withTiming(6, { duration: 45 }),
-        withTiming(0, { duration: 60 }),
+        withTiming(-16, { duration: 40 }),
+        withTiming(14, { duration: 40 }),
+        withTiming(-9, { duration: 40 }),
+        withTiming(6, { duration: 40 }),
+        withTiming(0, { duration: 50 }),
       ),
     );
     const vibrar = setTimeout(() => {
@@ -181,153 +236,93 @@ function Cena({ texto, parado, onOutra }: { texto: string; parado: boolean; onOu
   }, [tremida, parado]);
 
   const estiloTremida = useAnimatedStyle(() => ({
-    transform: [{ translateX: tremida.value }, { rotate: `${tremida.value * 0.15}deg` }],
+    transform: [{ translateX: tremida.value }, { rotate: `${tremida.value * 0.12}deg` }],
   }));
 
   return (
-    <Animated.View style={[estilos.cartao, estiloTremida]}>
-      <View pointerEvents="none" style={estilos.fundo}>
-        <Bolha cor={Cores.lavanda} tamanho={220} topo={-90} esquerda={-70} dx={40} dy={30} duracao={7000} parado={parado} />
-        <Bolha cor={Cores.pessego} tamanho={160} topo={140} esquerda={200} dx={-50} dy={-25} duracao={9000} parado={parado} />
-        <Bolha cor={Cores.salvia} tamanho={120} topo={-30} esquerda={230} dx={-30} dy={45} duracao={8000} parado={parado} />
-        <Impacto parado={parado} />
-      </View>
+    <View style={estilos.tela}>
+      <Animated.View style={[estilos.palco, estiloTremida]}>
+        <Animated.View entering={parado ? undefined : FadeIn.delay(BALAO)} style={estilos.rotulo}>
+          <Ionicons name="sparkles" size={14} color={Cores.pessegoClaro} />
+          <Text style={estilos.rotuloTexto}>#Paulada</Text>
+        </Animated.View>
 
-      <Animated.View entering={parado ? undefined : FadeIn.delay(inicioFrase)} style={estilos.rotulo}>
-        <Ionicons name="sparkles" size={14} color={Cores.pessegoClaro} />
-        <Text style={estilos.rotuloTexto}>#Paulada</Text>
+        {/* Balão de pensamento pontudo com a frase dentro. Tocar sorteia outra. */}
+        <Pressable onPress={onOutra} disabled={!onOutra} accessibilityLabel={texto} accessibilityHint="Toque para outra paulada">
+          <Estouro atraso={BALAO} parado={parado}>
+            <View style={{ width: larguraBalao, height: alturaBalao }}>
+              <BalaoEspinhoso largura={larguraBalao} altura={alturaBalao} contorno={Cores.texto} />
+              <View style={[StyleSheet.absoluteFill, estilos.centro, { paddingHorizontal: larguraBalao * 0.17 }]}>
+                <View style={estilos.frase}>
+                  {palavras.map((palavra, i) => (
+                    <Animated.Text
+                      key={`${palavra}-${i}`}
+                      entering={parado ? undefined : FadeInDown.delay(FRASE + i * passo).duration(350)}
+                      style={[estilos.palavra, { fontSize: fonte, lineHeight: fonte * 1.28 }]}>
+                      {palavra}
+                    </Animated.Text>
+                  ))}
+                </View>
+              </View>
+            </View>
+          </Estouro>
+        </Pressable>
+
+        {/* Bolinhas do pensamento, descendo até quem está "pensando" */}
+        <View style={estilos.bolinhas}>
+          <Estouro atraso={BOLINHAS + 160} parado={parado} balanco={4}>
+            <BalaoEspinhoso largura={64} altura={54} pontas={11} profundidade={0.22} espessura={2.5} contorno={Cores.texto} />
+          </Estouro>
+          <View style={{ marginLeft: -30, marginTop: 44 }}>
+            <Estouro atraso={BOLINHAS + 80} parado={parado} balanco={5}>
+              <BalaoEspinhoso largura={42} altura={36} pontas={9} profundidade={0.24} espessura={2.5} contorno={Cores.texto} />
+            </Estouro>
+          </View>
+          <View style={{ marginLeft: -20, marginTop: 78 }}>
+            <Estouro atraso={BOLINHAS} parado={parado} balanco={6}>
+              <BalaoEspinhoso largura={26} altura={22} pontas={7} profundidade={0.25} espessura={2} contorno={Cores.texto} />
+            </Estouro>
+          </View>
+        </View>
       </Animated.View>
 
-      <View style={estilos.frase} accessible accessibilityLabel={texto}>
-        {palavras.map((palavra, i) => (
-          <Animated.Text
-            key={`${palavra}-${i}`}
-            entering={parado ? undefined : FadeInDown.delay(inicioFrase + 100 + i * 90).duration(450)}
-            style={estilos.palavra}>
-            {palavra}
-          </Animated.Text>
-        ))}
-      </View>
-
-      {onOutra && (
-        <Animated.View entering={parado ? undefined : FadeIn.delay(inicioFrase + 200 + palavras.length * 90)}>
-          <Pressable
-            onPress={onOutra}
-            accessibilityLabel="Outra paulada"
-            style={({ pressed }) => [estilos.botao, pressed && { opacity: 0.7 }]}>
-            <Ionicons name="refresh" size={16} color="#FFFFFF" />
-            <Text style={estilos.botaoTexto}>Outra paulada</Text>
-          </Pressable>
-        </Animated.View>
-      )}
-
       {!parado && <Pau />}
-    </Animated.View>
+      {!parado && <Impacto />}
+
+      <DicaArrastar parado={parado} onPress={onAvancar} />
+    </View>
   );
 }
 
-export function PauladaAnimada({ texto, onOutra }: { texto: string; onOutra?: () => void }) {
+/** Abertura do app: pancada + balão com a paulada. Ocupa a tela toda. */
+export function PauladaAnimada({
+  texto,
+  onOutra,
+  onAvancar,
+}: {
+  texto: string;
+  onOutra?: () => void;
+  onAvancar?: () => void;
+}) {
   const parado = useReducedMotion();
-  // A key faz a cena inteira (pancada + frase) recomeçar a cada nova paulada.
-  return <Cena key={texto} texto={texto} parado={parado} onOutra={onOutra} />;
+  return <Cena key={texto} texto={texto} parado={parado} onOutra={onOutra} onAvancar={onAvancar} />;
 }
 
-const MADEIRA = '#C48A55';
-const MADEIRA_ESCURA = '#8B5A2B';
-
 const estilos = StyleSheet.create({
-  cartao: {
-    borderRadius: Raio.lg,
-    padding: Espaco.lg + 4,
-    minHeight: 280,
-    justifyContent: 'center',
-    gap: Espaco.md,
-    // sem overflow hidden: o pau pode "sair" do cartão em direção a quem olha
-    zIndex: 10,
-    elevation: 10,
-  },
-  fundo: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    borderRadius: Raio.lg,
-    overflow: 'hidden',
+  tela: {
+    flex: 1,
     backgroundColor: Cores.lavandaEscura,
+    overflow: 'hidden',
+  },
+  palco: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
   },
   centro: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  bolha: {
-    position: 'absolute',
-    opacity: 0.45,
-  },
-  pauArea: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pauEixo: {
-    alignItems: 'center',
-    // corpo (120) + cabo (30) + espaço (150) = 300, então o centro fica na ponta do cabo
-    height: 300,
-  },
-  pauCorpo: {
-    width: 34,
-    height: 120,
-    backgroundColor: MADEIRA,
-    borderTopLeftRadius: 17,
-    borderTopRightRadius: 17,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    borderWidth: 2,
-    borderColor: MADEIRA_ESCURA,
-  },
-  pauCabo: {
-    width: 20,
-    height: 30,
-    backgroundColor: MADEIRA_ESCURA,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-  },
-  pauVeio: {
-    position: 'absolute',
-    width: 2,
-    height: 40,
-    borderRadius: 1,
-    backgroundColor: MADEIRA_ESCURA,
-    opacity: 0.5,
-  },
-  pauNo: {
-    position: 'absolute',
-    width: 8,
-    height: 6,
-    borderRadius: 4,
-    backgroundColor: MADEIRA_ESCURA,
-    opacity: 0.7,
-  },
-  clarao: {
-    backgroundColor: '#FFFFFF',
-  },
-  estouro: {
-    backgroundColor: Cores.pessego,
-    paddingHorizontal: 22,
-    paddingVertical: 10,
-    borderRadius: Raio.md,
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
-  },
-  estouroTexto: {
-    fontFamily: Fontes.extra,
-    fontSize: 40,
-    color: '#FFFFFF',
-    letterSpacing: 1,
   },
   rotulo: {
     flexDirection: 'row',
@@ -336,36 +331,102 @@ const estilos = StyleSheet.create({
   },
   rotuloTexto: {
     fontFamily: Fontes.extra,
-    fontSize: 12,
-    letterSpacing: 1.5,
+    fontSize: 13,
+    letterSpacing: 2,
     textTransform: 'uppercase',
     color: Cores.pessegoClaro,
   },
   frase: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    columnGap: 7,
+    justifyContent: 'center',
+    columnGap: 6,
   },
   palavra: {
+    userSelect: 'none',
     fontFamily: Fontes.extra,
-    fontSize: 28,
-    lineHeight: 37,
-    color: '#FFFFFF',
+    color: Cores.texto,
+    textAlign: 'center',
   },
-  botao: {
+  bolinhas: {
+    flexDirection: 'row',
+    alignSelf: 'flex-start',
+    marginLeft: '16%',
+    marginTop: -14,
+  },
+  pauEixo: {
+    alignItems: 'center',
+    // corpo (160) + cabo (40) + espaço (200) = 400: o centro fica na ponta do cabo
+    height: 400,
+  },
+  pauCorpo: {
+    width: 44,
+    height: 160,
+    backgroundColor: MADEIRA,
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    borderWidth: 2.5,
+    borderColor: MADEIRA_ESCURA,
+  },
+  pauCabo: {
+    width: 26,
+    height: 40,
+    backgroundColor: MADEIRA_ESCURA,
+    borderBottomLeftRadius: 13,
+    borderBottomRightRadius: 13,
+  },
+  pauVeio: {
+    position: 'absolute',
+    width: 2,
+    height: 50,
+    borderRadius: 1,
+    backgroundColor: MADEIRA_ESCURA,
+    opacity: 0.5,
+  },
+  pauNo: {
+    position: 'absolute',
+    width: 10,
+    height: 7,
+    borderRadius: 5,
+    backgroundColor: MADEIRA_ESCURA,
+    opacity: 0.7,
+  },
+  clarao: {
+    backgroundColor: '#FFFFFF',
+  },
+  estouro: {
+    backgroundColor: Cores.pessego,
+    paddingHorizontal: 26,
+    paddingVertical: 12,
+    borderRadius: 20,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+  },
+  estouroTexto: {
+    fontFamily: Fontes.extra,
+    fontSize: 48,
+    color: '#FFFFFF',
+    letterSpacing: 1,
+  },
+  dica: {
+    position: 'absolute',
+    bottom: 48,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  dicaBotao: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    gap: 8,
     paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: Raio.pilula,
-    marginTop: Espaco.xs,
+    paddingHorizontal: 16,
   },
-  botaoTexto: {
+  dicaTexto: {
     fontFamily: Fontes.negrito,
-    fontSize: 14,
-    color: '#FFFFFF',
+    fontSize: 15,
+    color: Cores.pessegoClaro,
   },
 });

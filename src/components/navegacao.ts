@@ -11,3 +11,11 @@ export function opcoesDaPilha(corDestaque: string) {
     contentStyle: { backgroundColor: Cores.fundo },
   } as const;
 }
+
+/** Estilo da barra de abas (usado no layout e na Home, que a esconde na abertura). */
+export const estiloBarraAbas = {
+  backgroundColor: Cores.superficie,
+  borderTopColor: Cores.borda,
+} as const;
+
+export const barraAbasEscondida = { display: 'none' } as const;

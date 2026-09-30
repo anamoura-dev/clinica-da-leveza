@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { ColorValue } from 'react-native';
 
+import { barraAbasEscondida, estiloBarraAbas } from '@/components/navegacao';
 import { Cores, Destaques, Fontes } from '@/constants/theme';
 
 type NomeIcone = keyof typeof Ionicons.glyphMap;
@@ -19,16 +20,15 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarInactiveTintColor: Cores.textoClaro,
         tabBarLabelStyle: { fontFamily: Fontes.negrito, fontSize: 11 },
-        tabBarStyle: {
-          backgroundColor: Cores.superficie,
-          borderTopColor: Cores.borda,
-        },
+        tabBarStyle: estiloBarraAbas,
         sceneStyle: { backgroundColor: Cores.fundo },
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
+          // A Home abre com a paulada em tela cheia; a barra aparece ao arrastar.
+          tabBarStyle: barraAbasEscondida,
           tabBarActiveTintColor: Destaques.hoje.escura,
           tabBarIcon: icone('home', 'home-outline'),
         }}

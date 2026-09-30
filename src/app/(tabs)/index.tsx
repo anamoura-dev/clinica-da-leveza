@@ -1,10 +1,23 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Href, Link } from 'expo-router';
-import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Href, Link, useNavigation } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { barraAbasEscondida, estiloBarraAbas } from '@/components/navegacao';
 import { PauladaAnimada } from '@/components/paulada-animada';
-import { Carregando, Cartao, Erro, Rotulo, Tela } from '@/components/ui';
+import { Cartao, Rotulo } from '@/components/ui';
 import { Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 import { supabase } from '../../../lib/supabase';
@@ -36,60 +49,146 @@ const CAMINHOS: { emoji: string; texto: string; href: Href }[] = [
 ];
 
 export default function Home() {
+  const { width } = useWindowDimensions();
+  const navigation = useNavigation();
+  const paginas = useRef<ScrollView>(null);
+  const [pagina, setPagina] = useState(0);
+  const [altura, setAltura] = useState(0);
+
   const { dados, carregando, erro, tentarDeNovo } = useDados(buscarPauladas);
   const [escolhida, setEscolhida] = useState<string | null>(null);
   const pauladas = dados?.textos ?? [];
   const atual = escolhida ?? dados?.inicial ?? null;
 
-  if (carregando) return <Carregando />;
-  if (erro) return <Erro mensagem={erro} onTentar={tentarDeNovo} />;
+  // Na abertura (página 1) só aparece a paulada: a barra de abas fica escondida.
+  useEffect(() => {
+    navigation.setOptions({ tabBarStyle: pagina === 0 ? barraAbasEscondida : estiloBarraAbas });
+  }, [navigation, pagina]);
+
+  function aoTerminarRolagem(e: NativeSyntheticEvent<NativeScrollEvent>) {
+    setPagina(Math.round(e.nativeEvent.contentOffset.x / width));
+  }
+
+  function irPara(n: number) {
+    paginas.current?.scrollTo({ x: n * width, animated: true });
+    setPagina(n);
+  }
 
   return (
-    <Tela>
-      <ScrollView contentContainerStyle={estilos.conteudo}>
-        <Rotulo cor={Cores.lavandaEscura}>Clínica da Leveza</Rotulo>
-
-        {atual && (
-          <View style={estilos.destaque}>
+    <View style={estilos.raiz} onLayout={(e) => setAltura(e.nativeEvent.layout.height)}>
+      <StatusBar style={pagina === 0 ? 'light' : 'dark'} />
+      <ScrollView
+        ref={paginas}
+        horizontal
+        pagingEnabled
+        bounces={false}
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={aoTerminarRolagem}>
+        {/* Página 1: a paulada */}
+        <View style={{ width, height: altura }}>
+          {carregando ? (
+            <View style={[estilos.abertura, estilos.centro]}>
+              <ActivityIndicator size="large" color={Cores.pessegoClaro} />
+            </View>
+          ) : erro || !atual ? (
+            <View style={[estilos.abertura, estilos.centro, { gap: Espaco.md }]}>
+              <Text style={estilos.erroTexto}>{erro ?? 'Algo deu errado.'}</Text>
+              <Pressable onPress={tentarDeNovo} style={estilos.erroBotao}>
+                <Text style={estilos.erroBotaoTexto}>Tentar de novo</Text>
+              </Pressable>
+              <Pressable onPress={() => irPara(1)} hitSlop={12}>
+                <Text style={estilos.erroTexto}>Seguir →</Text>
+              </Pressable>
+            </View>
+          ) : (
             <PauladaAnimada
               texto={atual}
               onOutra={pauladas.length > 1 ? () => setEscolhida(sortear(pauladas, atual)) : undefined}
+              onAvancar={() => irPara(1)}
             />
-          </View>
-        )}
-
-        <Text style={estilos.pergunta}>O que trouxe você até aqui?</Text>
-
-        <View style={estilos.caminhos}>
-          {CAMINHOS.map((c) => (
-            <Link key={c.texto} href={c.href} asChild>
-              <Cartao style={estilos.caminho}>
-                <Text style={estilos.emoji}>{c.emoji}</Text>
-                <Text style={estilos.caminhoTexto}>{c.texto}</Text>
-                <Ionicons name="chevron-forward" size={18} color={Cores.textoClaro} />
-              </Cartao>
-            </Link>
-          ))}
+          )}
         </View>
+
+        {/* Página 2: por onde começar */}
+        <SafeAreaView style={[estilos.menu, { width, height: altura }]} edges={['top']}>
+          <ScrollView contentContainerStyle={estilos.conteudo}>
+            <View style={estilos.topo}>
+              <Rotulo cor={Cores.lavandaEscura}>Clínica da Leveza</Rotulo>
+              <Pressable onPress={() => irPara(0)} hitSlop={12} accessibilityLabel="Ver a paulada">
+                <Ionicons name="sparkles-outline" size={20} color={Cores.lavanda} />
+              </Pressable>
+            </View>
+
+            <Text style={estilos.pergunta}>O que trouxe você até aqui?</Text>
+
+            <View style={estilos.caminhos}>
+              {CAMINHOS.map((c) => (
+                <Link key={c.texto} href={c.href} asChild>
+                  <Cartao style={estilos.caminho}>
+                    <Text style={estilos.emoji}>{c.emoji}</Text>
+                    <Text style={estilos.caminhoTexto}>{c.texto}</Text>
+                    <Ionicons name="chevron-forward" size={18} color={Cores.textoClaro} />
+                  </Cartao>
+                </Link>
+              ))}
+            </View>
+          </ScrollView>
+        </SafeAreaView>
       </ScrollView>
-    </Tela>
+    </View>
   );
 }
 
 const estilos = StyleSheet.create({
+  raiz: {
+    flex: 1,
+    backgroundColor: Cores.lavandaEscura,
+  },
+  abertura: {
+    flex: 1,
+    backgroundColor: Cores.lavandaEscura,
+  },
+  centro: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Espaco.lg,
+  },
+  erroTexto: {
+    fontFamily: Fontes.media,
+    fontSize: 15,
+    color: Cores.pessegoClaro,
+    textAlign: 'center',
+  },
+  erroBotao: {
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: Raio.pilula,
+  },
+  erroBotaoTexto: {
+    fontFamily: Fontes.negrito,
+    fontSize: 15,
+    color: '#FFFFFF',
+  },
+  menu: {
+    flex: 1,
+    backgroundColor: Cores.fundo,
+  },
   conteudo: {
     padding: Espaco.lg,
-    paddingTop: Espaco.lg,
   },
-  destaque: {
-    marginTop: Espaco.md,
+  topo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   pergunta: {
-    fontFamily: Fontes.media,
-    fontSize: 16,
-    color: Cores.textoSuave,
-    marginTop: Espaco.lg,
-    marginBottom: Espaco.md,
+    fontFamily: Fontes.extra,
+    fontSize: 28,
+    lineHeight: 36,
+    color: Cores.texto,
+    marginTop: Espaco.md,
+    marginBottom: Espaco.lg,
   },
   caminhos: {
     gap: Espaco.sm + 4,
