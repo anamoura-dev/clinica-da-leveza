@@ -22,8 +22,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { EmBreve } from '@/components/ui';
 import { Cores, Espaco, Fontes, Raio, Sombra } from '@/constants/theme';
 import { supabase } from '../../lib/supabase';
+
+// A Lupa só liga depois que a função "lupa" estiver publicada no Supabase
+// (e, no futuro, para quem tiver assinatura). Troque para true para ativar.
+const LUPA_ATIVA = false;
 
 type Mensagem = { id: string; role: 'user' | 'assistant'; content: string };
 
@@ -77,7 +82,23 @@ function Ponto({ atraso }: { atraso: number }) {
   return <Animated.View style={[estilos.ponto, estilo]} />;
 }
 
-export default function LupaIA() {
+export default function Conversar() {
+  if (!LUPA_ATIVA) {
+    return (
+      <>
+        <Stack.Screen options={{ title: 'Lupa IA' }} />
+        <EmBreve
+          icone="search-outline"
+          titulo="A Lupa vem aí"
+          texto="Em breve você vai poder conversar com a Lupa, nossa assistente, para investigar situações e organizar possibilidades."
+        />
+      </>
+    );
+  }
+  return <LupaIA />;
+}
+
+function LupaIA() {
   const insets = useSafeAreaInsets();
   const rolagem = useRef<ScrollView>(null);
   const [mensagens, setMensagens] = useState<Mensagem[]>([BOAS_VINDAS]);
