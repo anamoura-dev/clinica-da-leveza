@@ -1,6 +1,10 @@
-import { useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { Carregando, Erro } from '@/components/ui';
+import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
 type Entrada = {
@@ -10,9 +14,52 @@ type Entrada = {
   quando_investigar_mais: string;
 };
 
+type Situacao = {
+  rotulo: string;
+  emoji: string | null;
+};
+
+const SECOES: {
+  campo: keyof Entrada;
+  titulo: string;
+  icone: keyof typeof Ionicons.glyphMap;
+  corFundo: string;
+  corIcone: string;
+}[] = [
+  {
+    campo: 'o_que_pode_estar_acontecendo',
+    titulo: 'O que pode estar acontecendo',
+    icone: 'bulb-outline',
+    corFundo: Cores.lavandaClara,
+    corIcone: Cores.lavandaEscura,
+  },
+  {
+    campo: 'o_que_evitar',
+    titulo: 'O que evitar',
+    icone: 'hand-left-outline',
+    corFundo: Cores.pessegoClaro,
+    corIcone: Cores.pessegoEscuro,
+  },
+  {
+    campo: 'o_que_fazer_hoje',
+    titulo: 'O que você pode fazer hoje',
+    icone: 'heart-outline',
+    corFundo: Cores.salviaClara,
+    corIcone: Cores.salviaEscura,
+  },
+  {
+    campo: 'quando_investigar_mais',
+    titulo: 'Quando investigar mais',
+    icone: 'search-outline',
+    corFundo: Cores.lavandaClara,
+    corIcone: Cores.lavandaEscura,
+  },
+];
+
 export default function ResultadoManuaLeve() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [entrada, setEntrada] = useState<Entrada | null>(null);
+  const [situacao, setSituacao] = useState<Situacao | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -24,85 +71,105 @@ export default function ResultadoManuaLeve() {
     setCarregando(true);
     setErro(null);
 
-    const { data, error } = await supabase
-      .from('manualeve_entradas')
-      .select('o_que_pode_estar_acontecendo, o_que_evitar, o_que_fazer_hoje, quando_investigar_mais')
-      .eq('situacao_id', id)
-      .limit(1)
-      .maybeSingle();
+    const [entradaRes, situacaoRes] = await Promise.all([
+      supabase
+        .from('manualeve_entradas')
+        .select('o_que_pode_estar_acontecendo, o_que_evitar, o_que_fazer_hoje, quando_investigar_mais')
+        .eq('situacao_id', id)
+        .limit(1)
+        .maybeSingle(),
+      supabase.from('manualeve_situacoes').select('rotulo, emoji').eq('id', id).maybeSingle(),
+    ]);
 
-    if (error) {
-      setErro(error.message);
-    } else if (!data) {
+    if (entradaRes.error) {
+      setErro(entradaRes.error.message);
+    } else if (!entradaRes.data) {
       setErro('Ainda não há conteúdo para essa situação.');
     } else {
-      setEntrada(data);
+      setEntrada(entradaRes.data);
     }
+    setSituacao(situacaoRes.data ?? null);
 
     setCarregando(false);
   }
 
-  if (carregando) {
-    return (
-      <View style={styles.centro}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (erro || !entrada) {
-    return (
-      <View style={styles.centro}>
-        <Text style={styles.erro}>{erro}</Text>
-      </View>
-    );
-  }
-
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.conteudo}>
-      <Text style={styles.secaoTitulo}>O que pode estar acontecendo</Text>
-      <Text style={styles.texto}>{entrada.o_que_pode_estar_acontecendo}</Text>
+    <>
+      <Stack.Screen options={{ title: '' }} />
+      {carregando ? (
+        <Carregando cor={Destaques.manualeve.cor} />
+      ) : erro || !entrada ? (
+        <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={buscarEntrada} />
+      ) : (
+        <ScrollView contentContainerStyle={estilos.conteudo}>
+          {situacao && (
+            <View style={estilos.topo}>
+              <Text style={estilos.emoji}>{situacao.emoji ?? '🌿'}</Text>
+              <Text style={estilos.contexto}>Meu filho não quer...</Text>
+              <Text style={estilos.titulo}>{situacao.rotulo}</Text>
+            </View>
+          )}
 
-      <Text style={styles.secaoTitulo}>O que evitar</Text>
-      <Text style={styles.texto}>{entrada.o_que_evitar}</Text>
-
-      <Text style={styles.secaoTitulo}>O que você pode fazer hoje</Text>
-      <Text style={styles.texto}>{entrada.o_que_fazer_hoje}</Text>
-
-      <Text style={styles.secaoTitulo}>Quando investigar mais</Text>
-      <Text style={styles.texto}>{entrada.quando_investigar_mais}</Text>
-    </ScrollView>
+          {SECOES.map((s) =>
+            entrada[s.campo] ? (
+              <View key={s.campo} style={[estilos.secao, { backgroundColor: s.corFundo }]}>
+                <View style={estilos.secaoCabecalho}>
+                  <Ionicons name={s.icone} size={20} color={s.corIcone} />
+                  <Text style={[estilos.secaoTitulo, { color: s.corIcone }]}>{s.titulo}</Text>
+                </View>
+                <Text style={estilos.texto}>{entrada[s.campo]}</Text>
+              </View>
+            ) : null,
+          )}
+        </ScrollView>
+      )}
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+const estilos = StyleSheet.create({
   conteudo: {
-    padding: 20,
+    padding: Espaco.lg,
+    paddingTop: Espaco.sm,
+    gap: Espaco.md,
   },
-  centro: {
-    flex: 1,
+  topo: {
     alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: Espaco.sm,
+  },
+  emoji: {
+    fontSize: 44,
+    marginBottom: Espaco.sm,
+  },
+  contexto: {
+    fontFamily: Fontes.media,
+    fontSize: 14,
+    color: Cores.textoSuave,
+  },
+  titulo: {
+    fontFamily: Fontes.extra,
+    fontSize: 24,
+    color: Cores.texto,
+    textAlign: 'center',
+  },
+  secao: {
+    borderRadius: Raio.md,
+    padding: Espaco.md + 4,
+    gap: Espaco.sm,
+  },
+  secaoCabecalho: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Espaco.sm,
   },
   secaoTitulo: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#999',
-    marginTop: 20,
-    marginBottom: 6,
-    textTransform: 'uppercase',
+    fontFamily: Fontes.extra,
+    fontSize: 15,
   },
   texto: {
+    fontFamily: Fontes.regular,
     fontSize: 16,
-    lineHeight: 24,
-  },
-  erro: {
-    color: 'red',
-    textAlign: 'center',
-    paddingHorizontal: 24,
+    lineHeight: 25,
+    color: Cores.texto,
   },
 });

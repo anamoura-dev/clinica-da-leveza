@@ -1,6 +1,9 @@
-import { Link, useLocalSearchParams } from 'expo-router';
+import { Link, Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text } from 'react-native';
+
+import { Carregando, Cartao, Erro, Rotulo, Vazio } from '@/components/ui';
+import { Cores, Destaques, Espaco, Fontes } from '@/constants/theme';
 import { supabase } from '../../../../../lib/supabase';
 
 type Cenario = {
@@ -9,9 +12,12 @@ type Cenario = {
   ordem: number;
 };
 
+const cor = Destaques.fases;
+
 export default function ListaCenarios() {
   const { faseId } = useLocalSearchParams<{ faseId: string }>();
   const [cenarios, setCenarios] = useState<Cenario[]>([]);
+  const [tituloFase, setTituloFase] = useState('');
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -23,88 +29,67 @@ export default function ListaCenarios() {
     setCarregando(true);
     setErro(null);
 
-    const { data, error } = await supabase
-      .from('cenarios')
-      .select('id, texto, ordem')
-      .eq('fase_id', faseId)
-      .order('ordem', { ascending: true });
+    const [cenariosRes, faseRes] = await Promise.all([
+      supabase
+        .from('cenarios')
+        .select('id, texto, ordem')
+        .eq('fase_id', faseId)
+        .order('ordem', { ascending: true }),
+      supabase.from('fases').select('titulo').eq('id', faseId).maybeSingle(),
+    ]);
 
-    if (error) {
-      setErro(error.message);
+    if (cenariosRes.error) {
+      setErro(cenariosRes.error.message);
     } else {
-      setCenarios(data || []);
+      setCenarios(cenariosRes.data || []);
     }
+    setTituloFase(faseRes.data?.titulo ?? '');
 
     setCarregando(false);
   }
 
-  if (carregando) {
-    return (
-      <View style={styles.centro}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (erro) {
-    return (
-      <View style={styles.centro}>
-        <Text style={styles.erro}>Erro: {erro}</Text>
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={cenarios}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.lista}
-        renderItem={({ item, index }) => (
-          <Link href={`/fases/${faseId}/${item.id}`} asChild>
-            <Pressable style={styles.card}>
-              <Text style={styles.cardNumero}>Cenário {index + 1}</Text>
-              <Text style={styles.cardTexto}>{item.texto}</Text>
-            </Pressable>
-          </Link>
-        )}
-      />
-    </View>
+    <>
+      <Stack.Screen options={{ title: tituloFase }} />
+      {carregando ? (
+        <Carregando cor={cor.cor} />
+      ) : erro ? (
+        <Erro mensagem={erro} onTentar={buscarCenarios} />
+      ) : (
+        <FlatList
+          data={cenarios}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={estilos.lista}
+          ListEmptyComponent={<Vazio mensagem="Essa fase ainda não tem cenários." />}
+          renderItem={({ item, index }) => (
+            <Link href={`/fases/${faseId}/${item.id}`} asChild>
+              <Cartao style={estilos.cartao}>
+                <Rotulo cor={cor.escura}>Cenário {index + 1}</Rotulo>
+                <Text style={estilos.texto} numberOfLines={3}>
+                  {item.texto}
+                </Text>
+              </Cartao>
+            </Link>
+          )}
+        />
+      )}
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 24,
-    paddingHorizontal: 16,
-  },
-  centro: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+const estilos = StyleSheet.create({
   lista: {
-    paddingBottom: 24,
+    padding: Espaco.lg,
+    paddingTop: Espaco.sm,
+    gap: Espaco.md,
   },
-  card: {
-    backgroundColor: '#f4f4f4',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+  cartao: {
+    gap: Espaco.xs + 2,
   },
-  cardNumero: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#999',
-    marginBottom: 4,
-    textTransform: 'uppercase',
-  },
-  cardTexto: {
+  texto: {
+    fontFamily: Fontes.media,
     fontSize: 16,
-  },
-  erro: {
-    color: 'red',
+    lineHeight: 23,
+    color: Cores.texto,
   },
 });

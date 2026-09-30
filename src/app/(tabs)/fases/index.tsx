@@ -1,6 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+
+import { Carregando, Cartao, Erro, Tela, Vazio } from '@/components/ui';
+import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
 type Fase = {
@@ -8,6 +12,8 @@ type Fase = {
   titulo: string;
   tema: string | null;
 };
+
+const cor = Destaques.fases;
 
 export default function ListaFases() {
   const [fases, setFases] = useState<Fase[]>([]);
@@ -37,72 +43,68 @@ export default function ListaFases() {
     setCarregando(false);
   }
 
-  if (carregando) {
-    return (
-      <View style={styles.centro}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (erro) {
-    return (
-      <View style={styles.centro}>
-        <Text style={styles.erro}>Erro: {erro}</Text>
-      </View>
-    );
-  }
+  if (carregando) return <Carregando cor={cor.cor} />;
+  if (erro) return <Erro mensagem={erro} onTentar={buscarFases} />;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>🎮 Passa de Fase</Text>
+    <Tela titulo="Passa de Fase" subtitulo="Treine como agir nas situações do dia a dia.">
       <FlatList
         data={fases}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.lista}
-        renderItem={({ item }) => (
+        contentContainerStyle={estilos.lista}
+        ListEmptyComponent={<Vazio mensagem="Nenhuma fase liberada ainda." icone="game-controller-outline" />}
+        renderItem={({ item, index }) => (
           <Link href={`/fases/${item.id}`} asChild>
-            <Pressable style={styles.card}>
-              <Text style={styles.cardTitulo}>{item.titulo}</Text>
-            </Pressable>
+            <Cartao style={estilos.cartao}>
+              <View style={estilos.numero}>
+                <Text style={estilos.numeroTexto}>{index + 1}</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={estilos.titulo}>{item.titulo}</Text>
+                {item.tema && <Text style={estilos.tema}>{item.tema}</Text>}
+              </View>
+              <Ionicons name="chevron-forward" size={18} color={Cores.textoClaro} />
+            </Cartao>
           </Link>
         )}
       />
-    </View>
+    </Tela>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 24,
-    paddingHorizontal: 16,
+const estilos = StyleSheet.create({
+  lista: {
+    paddingHorizontal: Espaco.lg,
+    paddingBottom: Espaco.xl,
+    gap: Espaco.md,
   },
-  centro: {
-    flex: 1,
+  cartao: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Espaco.md,
+  },
+  numero: {
+    width: 44,
+    height: 44,
+    borderRadius: Raio.sm,
+    backgroundColor: cor.clara,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  numeroTexto: {
+    fontFamily: Fontes.extra,
+    fontSize: 18,
+    color: cor.escura,
+  },
   titulo: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  lista: {
-    paddingBottom: 24,
-  },
-  card: {
-    backgroundColor: '#f4f4f4',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-  },
-  cardTitulo: {
+    fontFamily: Fontes.negrito,
     fontSize: 16,
-    fontWeight: '600',
+    color: Cores.texto,
   },
-  erro: {
-    color: 'red',
+  tema: {
+    fontFamily: Fontes.regular,
+    fontSize: 14,
+    color: Cores.textoSuave,
+    marginTop: 2,
   },
 });

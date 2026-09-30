@@ -1,6 +1,9 @@
 import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+
+import { Carregando, Cartao, Erro, Tela, Vazio } from '@/components/ui';
+import { Cores, Destaques, Espaco, Fontes } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
 type Situacao = {
@@ -8,6 +11,8 @@ type Situacao = {
   rotulo: string;
   emoji: string | null;
 };
+
+const cor = Destaques.manualeve;
 
 export default function ManuaLeve() {
   const [situacoes, setSituacoes] = useState<Situacao[]>([]);
@@ -37,83 +42,63 @@ export default function ManuaLeve() {
     setCarregando(false);
   }
 
-  if (carregando) {
-    return (
-      <View style={styles.centro}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (erro) {
-    return (
-      <View style={styles.centro}>
-        <Text style={styles.erro}>Erro: {erro}</Text>
-      </View>
-    );
-  }
+  if (carregando) return <Carregando cor={cor.cor} />;
+  if (erro) return <Erro mensagem={erro} onTentar={buscarSituacoes} />;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>Meu filho não quer...</Text>
+    <Tela titulo="Meu filho não quer..." subtitulo="Escolha a situação e veja por onde começar.">
       <FlatList
         data={situacoes}
         keyExtractor={(item) => item.id}
         numColumns={2}
-        contentContainerStyle={styles.lista}
+        columnWrapperStyle={estilos.linha}
+        contentContainerStyle={estilos.lista}
+        ListEmptyComponent={<Vazio mensagem="Nenhuma situação por aqui ainda." />}
         renderItem={({ item }) => (
           <Link href={`/manualeve/${item.id}`} asChild>
-            <Pressable style={styles.card}>
-              <Text style={styles.emoji}>{item.emoji}</Text>
-              <Text style={styles.rotulo}>{item.rotulo}</Text>
-            </Pressable>
+            <Cartao style={estilos.cartao}>
+              <View style={estilos.emojiFundo}>
+                <Text style={estilos.emoji}>{item.emoji ?? '🌿'}</Text>
+              </View>
+              <Text style={estilos.rotulo}>{item.rotulo}</Text>
+            </Cartao>
           </Link>
         )}
       />
-    </View>
+    </Tela>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 24,
-    paddingHorizontal: 12,
+const estilos = StyleSheet.create({
+  lista: {
+    paddingHorizontal: Espaco.lg,
+    paddingBottom: Espaco.xl,
+    gap: Espaco.md,
   },
-  centro: {
+  linha: {
+    gap: Espaco.md,
+  },
+  cartao: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: Espaco.lg,
+    gap: Espaco.sm,
   },
-  titulo: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    paddingHorizontal: 8,
-  },
-  lista: {
-    paddingBottom: 24,
-  },
-  card: {
-    flex: 1,
-    margin: 8,
-    backgroundColor: '#f4f4f4',
-    borderRadius: 12,
-    paddingVertical: 24,
+  emojiFundo: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: cor.clara,
     alignItems: 'center',
     justifyContent: 'center',
   },
   emoji: {
-    fontSize: 32,
-    marginBottom: 8,
+    fontSize: 30,
   },
   rotulo: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontFamily: Fontes.negrito,
+    fontSize: 15,
+    color: Cores.texto,
     textAlign: 'center',
-  },
-  erro: {
-    color: 'red',
   },
 });

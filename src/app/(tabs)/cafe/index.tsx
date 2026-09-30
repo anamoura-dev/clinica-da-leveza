@@ -1,6 +1,10 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+
+import { Carregando, Cartao, Erro, Tela, Vazio } from '@/components/ui';
+import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
 type Cafe = {
@@ -8,6 +12,8 @@ type Cafe = {
   titulo: string;
   gancho: string | null;
 };
+
+const cor = Destaques.cafe;
 
 export default function ListaCafes() {
   const [cafes, setCafes] = useState<Cafe[]>([]);
@@ -38,78 +44,67 @@ export default function ListaCafes() {
     setCarregando(false);
   }
 
-  if (carregando) {
-    return (
-      <View style={styles.centro}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
-  if (erro) {
-    return (
-      <View style={styles.centro}>
-        <Text style={styles.erro}>Erro: {erro}</Text>
-      </View>
-    );
-  }
+  if (carregando) return <Carregando cor={cor.cor} />;
+  if (erro) return <Erro mensagem={erro} onTentar={buscarCafes} />;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>☕ Cafés</Text>
+    <Tela titulo="Cafés" subtitulo="Conversas curtas para tomar com calma.">
       <FlatList
         data={cafes}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.lista}
+        contentContainerStyle={estilos.lista}
+        ListEmptyComponent={<Vazio mensagem="Nenhum café servido ainda." icone="cafe-outline" />}
         renderItem={({ item }) => (
           <Link href={`/cafe/${item.id}`} asChild>
-            <Pressable style={styles.card}>
-              <Text style={styles.cardTitulo}>{item.titulo}</Text>
-              {item.gancho && <Text style={styles.cardGancho}>{item.gancho}</Text>}
-            </Pressable>
+            <Cartao style={estilos.cartao}>
+              <View style={estilos.icone}>
+                <Ionicons name="play" size={20} color={cor.escura} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={estilos.titulo}>{item.titulo}</Text>
+                {item.gancho && (
+                  <Text style={estilos.gancho} numberOfLines={2}>
+                    {item.gancho}
+                  </Text>
+                )}
+              </View>
+            </Cartao>
           </Link>
         )}
       />
-    </View>
+    </Tela>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 24,
-    paddingHorizontal: 16,
+const estilos = StyleSheet.create({
+  lista: {
+    paddingHorizontal: Espaco.lg,
+    paddingBottom: Espaco.xl,
+    gap: Espaco.md,
   },
-  centro: {
-    flex: 1,
+  cartao: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Espaco.md,
+  },
+  icone: {
+    width: 48,
+    height: 48,
+    borderRadius: Raio.sm,
+    backgroundColor: cor.clara,
     alignItems: 'center',
     justifyContent: 'center',
   },
   titulo: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  lista: {
-    paddingBottom: 24,
-  },
-  card: {
-    backgroundColor: '#f4f4f4',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-  },
-  cardTitulo: {
+    fontFamily: Fontes.negrito,
     fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
+    color: Cores.texto,
   },
-  cardGancho: {
+  gancho: {
+    fontFamily: Fontes.regular,
     fontSize: 14,
-    color: '#666',
-  },
-  erro: {
-    color: 'red',
+    lineHeight: 20,
+    color: Cores.textoSuave,
+    marginTop: 2,
   },
 });
