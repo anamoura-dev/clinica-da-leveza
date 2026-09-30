@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Href, Link, useNavigation } from 'expo-router';
+import { Href, router, useNavigation } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -12,11 +12,13 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BalaoAr, BalaoFlutuante } from '@/components/balao-ar';
 import { barraAbasEscondida, estiloBarraAbas } from '@/components/navegacao';
 import { PauladaAnimada } from '@/components/paulada-animada';
+import { TransicaoBalao } from '@/components/transicao-balao';
 import { Cartao, Rotulo } from '@/components/ui';
 import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
@@ -41,12 +43,13 @@ async function buscarPauladas() {
 }
 
 // Cada caminho tem a cor de uma listra do balão (a mesma da seção).
-const CAMINHOS: { emoji: string; texto: string; href: Href; cor: string }[] = [
-  { emoji: '🔍', texto: 'Quero entender uma situação', href: '/manualeve', cor: Destaques.manualeve.cor },
-  { emoji: '☕', texto: 'Quero aprender alguma coisa', href: '/cafe', cor: Destaques.cafe.cor },
-  { emoji: '🎮', texto: 'Quero passar de fase', href: '/fases', cor: Destaques.fases.cor },
-  { emoji: '💬', texto: 'Quero conversar', href: '/conversar', cor: Destaques.lupa.cor },
-  { emoji: '🎈', texto: 'Quero entrar no mundo das crianças', href: '/mundo', cor: Destaques.mundo.cor },
+type Caminho = { emoji: string; texto: string; href: Href; cor: string; nome: string };
+const CAMINHOS: Caminho[] = [
+  { emoji: '🔍', texto: 'Quero entender uma situação', href: '/manualeve', cor: Destaques.manualeve.cor, nome: 'o ManuaLeve' },
+  { emoji: '☕', texto: 'Quero aprender alguma coisa', href: '/cafe', cor: Destaques.cafe.cor, nome: 'os Cafés' },
+  { emoji: '🎮', texto: 'Quero passar de fase', href: '/fases', cor: Destaques.fases.cor, nome: 'os Jogos' },
+  { emoji: '💬', texto: 'Quero conversar', href: '/conversar', cor: Destaques.lupa.cor, nome: 'a Lupa' },
+  { emoji: '🎈', texto: 'Quero entrar no mundo das crianças', href: '/mundo', cor: Destaques.mundo.cor, nome: 'o Espaço das Crianças' },
 ];
 
 export default function Home() {
@@ -55,6 +58,23 @@ export default function Home() {
   const paginas = useRef<ScrollView>(null);
   const [pagina, setPagina] = useState(0);
   const [altura, setAltura] = useState(0);
+  const [viagem, setViagem] = useState<Caminho | null>(null);
+  const reduzirMovimento = useReducedMotion();
+
+  // Ao tocar num caminho, o balão sobe voando e só então a página abre.
+  function viajar(c: Caminho) {
+    if (viagem) return;
+    if (reduzirMovimento) {
+      router.push(c.href);
+      return;
+    }
+    setViagem(c);
+  }
+
+  const chegar = useCallback(() => {
+    if (viagem) router.push(viagem.href);
+    setViagem(null);
+  }, [viagem]);
 
   const { dados, carregando, erro, tentarDeNovo } = useDados(buscarPauladas);
   const [escolhida, setEscolhida] = useState<string | null>(null);
@@ -78,6 +98,7 @@ export default function Home() {
   return (
     <View style={estilos.raiz} onLayout={(e) => setAltura(e.nativeEvent.layout.height)}>
       <StatusBar style="dark" />
+      {viagem && <TransicaoBalao destino={viagem.nome} aoTerminar={chegar} />}
       <ScrollView
         ref={paginas}
         horizontal
@@ -133,15 +154,13 @@ export default function Home() {
 
             <View style={estilos.caminhos}>
               {CAMINHOS.map((c) => (
-                <Link key={c.texto} href={c.href} asChild>
-                  <Cartao style={estilos.caminho}>
-                    <View style={[estilos.bolinha, { backgroundColor: c.cor }]}>
-                      <Text style={estilos.emoji}>{c.emoji}</Text>
-                    </View>
-                    <Text style={estilos.caminhoTexto}>{c.texto}</Text>
-                    <Ionicons name="chevron-forward" size={18} color={Cores.textoClaro} />
-                  </Cartao>
-                </Link>
+                <Cartao key={c.texto} style={estilos.caminho} onPress={() => viajar(c)} accessibilityRole="link">
+                  <View style={[estilos.bolinha, { backgroundColor: c.cor }]}>
+                    <Text style={estilos.emoji}>{c.emoji}</Text>
+                  </View>
+                  <Text style={estilos.caminhoTexto}>{c.texto}</Text>
+                  <Ionicons name="chevron-forward" size={18} color={Cores.textoClaro} />
+                </Cartao>
               ))}
             </View>
           </ScrollView>
