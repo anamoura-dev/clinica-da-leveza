@@ -6,8 +6,25 @@ import { supabase } from '../../../../lib/supabase';
 
 type Cafe = {
   titulo: string;
+  gancho: string | null;
   video_url: string | null;
 };
+
+// Aceita tanto o ID puro ("dQw4w9WgXcQ") quanto links completos do YouTube
+// (youtube.com/watch?v=..., youtu.be/..., /shorts/..., /embed/...).
+function extrairVideoId(valor: string): string {
+  const texto = valor.trim();
+  const padroes = [
+    /[?&]v=([A-Za-z0-9_-]{11})/,
+    /youtu\.be\/([A-Za-z0-9_-]{11})/,
+    /\/(?:shorts|embed|live)\/([A-Za-z0-9_-]{11})/,
+  ];
+  for (const padrao of padroes) {
+    const achado = texto.match(padrao);
+    if (achado) return achado[1];
+  }
+  return texto;
+}
 
 export default function Cafe() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -25,7 +42,7 @@ export default function Cafe() {
 
     const { data, error } = await supabase
       .from('content')
-      .select('titulo, video_url')
+      .select('titulo, gancho, video_url')
       .eq('id', id)
       .maybeSingle();
 
@@ -61,11 +78,12 @@ export default function Cafe() {
       {cafe.video_url && (
         <YoutubePlayer
           height={220}
-          videoId={cafe.video_url}
+          videoId={extrairVideoId(cafe.video_url)}
         />
       )}
       <View style={styles.conteudo}>
         <Text style={styles.titulo}>{cafe.titulo}</Text>
+        {cafe.gancho && <Text style={styles.gancho}>{cafe.gancho}</Text>}
       </View>
     </ScrollView>
   );
@@ -87,6 +105,12 @@ const styles = StyleSheet.create({
   titulo: {
     fontSize: 20,
     fontWeight: 'bold',
+  },
+  gancho: {
+    fontSize: 16,
+    color: '#666',
+    lineHeight: 24,
+    marginTop: 8,
   },
   erro: {
     color: 'red',

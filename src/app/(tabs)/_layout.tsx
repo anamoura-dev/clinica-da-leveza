@@ -28,12 +28,10 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="fases"
         options={{
-         title: 'Fases',
+          title: 'Fases',
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🎮</Text>,
-  }}
-/>
+        }}
+      />
     </Tabs>
-
-      
   );
 }

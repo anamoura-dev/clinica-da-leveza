@@ -47,11 +47,9 @@ export default function Index() {
         <>
           <Text style={styles.label}>#PAULADA</Text>
           <Text style={styles.texto}>{paulada}</Text>
-          
         </>
       )}
     </View>
-    
   );
 }
 
@@ -79,10 +77,4 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
   },
-  botao: {
-  marginTop: 32,
-  fontSize: 16,
-  color: '#0066cc',
-  fontWeight: 'bold',
-},
 });
