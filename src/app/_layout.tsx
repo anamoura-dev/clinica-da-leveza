@@ -38,7 +38,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="conversar"
-          options={{ ...opcoesDaPilha(Cores.lavandaEscura), headerShown: true, title: 'Conversar' }}
+          options={{ ...opcoesDaPilha(Cores.lavandaEscura), headerShown: true, title: 'Lupa IA' }}
         />
         <Stack.Screen
           name="mundo"
