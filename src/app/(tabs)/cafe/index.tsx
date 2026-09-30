@@ -1,37 +1,38 @@
 import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../../lib/supabase';
 
-type Situacao = {
+type Cafe = {
   id: string;
-  rotulo: string;
-  emoji: string | null;
+  titulo: string;
+  gancho: string | null;
 };
 
-export default function ManuaLeve() {
-  const [situacoes, setSituacoes] = useState<Situacao[]>([]);
+export default function ListaCafes() {
+  const [cafes, setCafes] = useState<Cafe[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
 
   useEffect(() => {
-    buscarSituacoes();
+    buscarCafes();
   }, []);
 
-  async function buscarSituacoes() {
+  async function buscarCafes() {
     setCarregando(true);
     setErro(null);
 
     const { data, error } = await supabase
-      .from('manualeve_situacoes')
-      .select('id, rotulo, emoji')
-      .eq('ativa', true)
+      .from('content')
+      .select('id, titulo, gancho')
+      .eq('tipo', 'cafe')
+      .eq('publicado', true)
       .order('ordem', { ascending: true });
 
     if (error) {
       setErro(error.message);
     } else {
-      setSituacoes(data || []);
+      setCafes(data || []);
     }
 
     setCarregando(false);
@@ -55,17 +56,16 @@ export default function ManuaLeve() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Meu filho não quer...</Text>
+      <Text style={styles.titulo}>☕ Cafés</Text>
       <FlatList
-        data={situacoes}
+        data={cafes}
         keyExtractor={(item) => item.id}
-        numColumns={2}
         contentContainerStyle={styles.lista}
         renderItem={({ item }) => (
-          <Link href={`/manualeve/${item.id}`} asChild>
+          <Link href={`/cafe/${item.id}`} asChild>
             <Pressable style={styles.card}>
-              <Text style={styles.emoji}>{item.emoji}</Text>
-              <Text style={styles.rotulo}>{item.rotulo}</Text>
+              <Text style={styles.cardTitulo}>{item.titulo}</Text>
+              {item.gancho && <Text style={styles.cardGancho}>{item.gancho}</Text>}
             </Pressable>
           </Link>
         )}
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingTop: 24,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
   },
   centro: {
     flex: 1,
@@ -87,31 +87,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   titulo: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 16,
-    paddingHorizontal: 8,
   },
   lista: {
     paddingBottom: 24,
   },
   card: {
-    flex: 1,
-    margin: 8,
     backgroundColor: '#f4f4f4',
     borderRadius: 12,
-    paddingVertical: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 16,
+    marginBottom: 12,
   },
-  emoji: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  rotulo: {
-    fontSize: 14,
+  cardTitulo: {
+    fontSize: 16,
     fontWeight: '600',
-    textAlign: 'center',
+    marginBottom: 4,
+  },
+  cardGancho: {
+    fontSize: 14,
+    color: '#666',
   },
   erro: {
     color: 'red',

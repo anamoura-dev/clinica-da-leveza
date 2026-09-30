@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { supabase } from '../../lib/supabase';
-import { Link } from 'expo-router';
+import { supabase } from '../../../lib/supabase';
 
 export default function Index() {
   const [paulada, setPaulada] = useState<string | null>(null);
@@ -48,14 +47,11 @@ export default function Index() {
         <>
           <Text style={styles.label}>#PAULADA</Text>
           <Text style={styles.texto}>{paulada}</Text>
-          <Link href="/manualeve" style={styles.botao}>
-        
-        Entrar no ManuaLeve ->
           
-          </Link>
         </>
       )}
     </View>
+    
   );
 }
 
