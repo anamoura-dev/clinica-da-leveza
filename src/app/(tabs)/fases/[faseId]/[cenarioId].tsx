@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Botao, Carregando, Erro, Rotulo } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
+import { registrarProgresso } from '@/components/conta/dados';
 import { Contorno, Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../../lib/supabase';
 
@@ -66,7 +67,10 @@ export default function TelaCenario() {
               {opcoes.map((o, i) => (
                 <Pressable
                   key={o.id}
-                  onPress={() => setEscolhida(i)}
+                  onPress={() => {
+                    setEscolhida(i);
+                    registrarProgresso('cenario', cenarioId); // conta como jogado (se estiver logado)
+                  }}
                   style={({ pressed }) => [estilos.opcao, pressed && estilos.pressionado]}>
                   <View style={estilos.letra}>
                     <Text style={estilos.letraTexto}>{letra(i)}</Text>

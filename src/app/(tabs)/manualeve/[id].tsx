@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Carregando, Erro } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
+import { BotaoFavorito } from '@/components/conta/botao-favorito';
 import { Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
@@ -83,7 +84,18 @@ export default function ResultadoManuaLeve() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '' }} />
+      <Stack.Screen
+        options={{
+          title: '',
+          headerRight: () => (
+            <BotaoFavorito
+              tipo="manualeve"
+              itemId={id}
+              titulo={situacao ? `Meu filho não quer ${situacao.rotulo}` : undefined}
+            />
+          ),
+        }}
+      />
       {carregando ? (
         <Carregando />
       ) : erro || !entrada ? (

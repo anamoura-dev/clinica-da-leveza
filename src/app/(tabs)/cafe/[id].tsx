@@ -5,6 +5,7 @@ import YoutubePlayer from 'react-native-youtube-iframe';
 
 import { Carregando, Erro, Rotulo } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
+import { BotaoFavorito } from '@/components/conta/botao-favorito';
 import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
@@ -53,7 +54,12 @@ export default function DetalheCafe() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Café' }} />
+      <Stack.Screen
+        options={{
+          title: 'Café',
+          headerRight: () => <BotaoFavorito tipo="cafe" itemId={id} titulo={cafe?.titulo} />,
+        }}
+      />
       {carregando ? (
         <Carregando />
       ) : erro || !cafe ? (

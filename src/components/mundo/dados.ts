@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 
+import { progressoNaConta, registrarProgresso } from '@/components/conta/dados';
 import { supabase } from '../../../lib/supabase';
 
 export type Personagem = {
@@ -111,6 +112,13 @@ export async function marcarMissaoConcluida(id: string) {
   if (!atuais.includes(id)) {
     await AsyncStorage.setItem(CHAVE_MISSOES, JSON.stringify([...atuais, id]));
   }
+  await registrarProgresso('missao', id); // também salva na conta, se estiver logado
+}
+
+/** Ao entrar na conta, leva para ela as estrelas que estavam só no celular. */
+export async function sincronizarMissoes() {
+  const locais = await lerConcluidas();
+  await Promise.all(locais.map((id) => registrarProgresso('missao', id)));
 }
 
 /** Lista de missões concluídas; atualiza sempre que a tela volta a aparecer. */
@@ -119,8 +127,9 @@ export function useMissoesConcluidas() {
   useFocusEffect(
     useCallback(() => {
       let ativo = true;
-      lerConcluidas().then((lista) => {
-        if (ativo) setConcluidas(lista);
+      // Junta as estrelas do celular com as da conta (se estiver logado).
+      Promise.all([lerConcluidas(), progressoNaConta('missao')]).then(([locais, naConta]) => {
+        if (ativo) setConcluidas([...new Set([...locais, ...naConta])]);
       });
       return () => {
         ativo = false;

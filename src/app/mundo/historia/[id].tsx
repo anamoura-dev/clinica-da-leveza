@@ -8,6 +8,7 @@ import Animated, { FadeInRight, ZoomIn } from 'react-native-reanimated';
 import { buscarHistoria } from '@/components/mundo/dados';
 import { Carregando, Erro } from '@/components/ui';
 import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
+import { BotaoFavorito } from '@/components/conta/botao-favorito';
 import { useDados } from '@/hooks/use-dados';
 
 /** Botão "Ouvir" — só aparece quando a história tem um áudio. */
@@ -49,7 +50,12 @@ export default function LerHistoria() {
         options={{
           title: '',
           headerStyle: { backgroundColor: corFundo },
-          headerRight: () => (historia.audio_url ? <BotaoOuvir url={historia.audio_url} /> : null),
+          headerRight: () => (
+            <View style={estilos.acoesTopo}>
+              {historia.audio_url && <BotaoOuvir url={historia.audio_url} />}
+              <BotaoFavorito tipo="historia" itemId={historia.id} titulo={historia.titulo} />
+            </View>
+          ),
         }}
       />
       <View style={[estilos.tela, { backgroundColor: corFundo }]}>
@@ -218,6 +224,11 @@ const estilos = StyleSheet.create({
     fontFamily: Fontes.extra,
     fontSize: 20,
     color: Cores.marinho,
+  },
+  acoesTopo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
   },
   ouvir: {
     flexDirection: 'row',
