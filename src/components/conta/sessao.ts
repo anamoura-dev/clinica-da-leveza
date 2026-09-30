@@ -51,6 +51,8 @@ function codigoDaUrl(url: string) {
 /** Login com Google pelo navegador (funciona no Expo Go e no app instalado). */
 export async function entrarComGoogle() {
   const voltarPara = Linking.createURL('auth');
+  // Em desenvolvimento, mostra no Terminal o endereço de volta (tem que estar nas Redirect URLs do Supabase).
+  if (__DEV__) console.log('[login] endereço de volta:', voltarPara);
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: voltarPara, skipBrowserRedirect: true },
