@@ -25,6 +25,15 @@ export default function TabsLayout() {
           tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>☕</Text>,
         }}
       />
+      <Tabs.Screen
+        name="fases"
+        options={{
+         title: 'Fases',
+          tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 20 }}>🎮</Text>,
+  }}
+/>
     </Tabs>
+
+      
   );
 }
