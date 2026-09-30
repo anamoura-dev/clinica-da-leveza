@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Href, Link } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { PauladaAnimada } from '@/components/paulada-animada';
 import { Carregando, Cartao, Erro, Rotulo, Tela } from '@/components/ui';
 import { Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
@@ -46,19 +47,16 @@ export default function Home() {
   return (
     <Tela>
       <ScrollView contentContainerStyle={estilos.conteudo}>
-        <View style={estilos.topo}>
-          <Rotulo cor={Cores.lavandaEscura}>Clínica da Leveza</Rotulo>
-          {pauladas.length > 1 && (
-            <Pressable
-              hitSlop={12}
-              accessibilityLabel="Outra paulada"
-              onPress={() => setEscolhida(sortear(pauladas, atual))}>
-              <Ionicons name="refresh" size={18} color={Cores.lavanda} />
-            </Pressable>
-          )}
-        </View>
+        <Rotulo cor={Cores.lavandaEscura}>Clínica da Leveza</Rotulo>
 
-        <Text style={estilos.paulada}>{atual}</Text>
+        {atual && (
+          <View style={estilos.destaque}>
+            <PauladaAnimada
+              texto={atual}
+              onOutra={pauladas.length > 1 ? () => setEscolhida(sortear(pauladas, atual)) : undefined}
+            />
+          </View>
+        )}
 
         <Text style={estilos.pergunta}>O que trouxe você até aqui?</Text>
 
@@ -83,16 +81,7 @@ const estilos = StyleSheet.create({
     padding: Espaco.lg,
     paddingTop: Espaco.lg,
   },
-  topo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  paulada: {
-    fontFamily: Fontes.extra,
-    fontSize: 28,
-    lineHeight: 36,
-    color: Cores.texto,
+  destaque: {
     marginTop: Espaco.md,
   },
   pergunta: {
