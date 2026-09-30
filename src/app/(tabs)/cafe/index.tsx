@@ -30,7 +30,7 @@ export default function ListaCafes() {
   const { dados, carregando, erro, tentarDeNovo } = useDados(buscarCafes);
   const cafes = dados ?? [];
 
-  if (carregando) return <Carregando cor={cor.cor} />;
+  if (carregando) return <Carregando />;
   if (erro) return <Erro mensagem={erro} onTentar={tentarDeNovo} />;
 
   return (

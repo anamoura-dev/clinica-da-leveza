@@ -7,7 +7,7 @@ import Animated, { FadeInRight, ZoomIn } from 'react-native-reanimated';
 
 import { buscarHistoria } from '@/components/mundo/dados';
 import { Carregando, Erro } from '@/components/ui';
-import { Cores, Espaco, Fontes, Raio, Sombra } from '@/constants/theme';
+import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 
 /** Botão "Ouvir" — só aparece quando a história tem um áudio. */
@@ -33,7 +33,7 @@ export default function LerHistoria() {
   const { dados, carregando, erro, tentarDeNovo } = useDados(carregar);
   const [pagina, setPagina] = useState(0);
 
-  if (carregando) return <Carregando cor={Cores.pessego} />;
+  if (carregando) return <Carregando />;
   if (erro || !dados) return <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />;
 
   const { historia, personagem } = dados;
@@ -41,7 +41,7 @@ export default function LerHistoria() {
   const total = paginas.length;
   const noFim = pagina >= total; // "página" extra de conversa no final
   const atual = paginas[Math.min(pagina, total - 1)];
-  const corFundo = personagem?.cor ?? Cores.pessegoClaro;
+  const corFundo = personagem?.cor ?? Cores.amareloClaro;
 
   return (
     <>
@@ -100,7 +100,7 @@ export default function LerHistoria() {
                 style={[estilos.botao, estilos.botaoFrente]}
                 accessibilityLabel="Próxima página">
                 <Text style={estilos.botaoTexto}>{pagina === total - 1 ? 'Acabou?' : 'Próxima'}</Text>
-                <Ionicons name="arrow-forward" size={24} color="#FFFFFF" />
+                <Ionicons name="arrow-forward" size={24} color={Cores.marinho} />
               </Pressable>
             )}
           </View>
@@ -136,7 +136,7 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
     gap: Espaco.lg,
     minHeight: 380,
-    ...Sombra,
+    ...Contorno,
   },
   ilustracao: {
     fontSize: 84,
@@ -152,10 +152,10 @@ const estilos = StyleSheet.create({
   fim: {
     fontFamily: Fontes.extra,
     fontSize: 34,
-    color: Cores.pessegoEscuro,
+    color: Cores.terracota,
   },
   conversa: {
-    backgroundColor: Cores.lavandaClara,
+    backgroundColor: Cores.azulClaro,
     borderRadius: Raio.md,
     padding: Espaco.md,
     gap: 6,
@@ -164,7 +164,7 @@ const estilos = StyleSheet.create({
   conversaRotulo: {
     fontFamily: Fontes.extra,
     fontSize: 13,
-    color: Cores.lavandaEscura,
+    color: Cores.azulEscuro,
   },
   conversaTexto: {
     fontFamily: Fontes.media,
@@ -207,21 +207,23 @@ const estilos = StyleSheet.create({
   botaoVoltar: {
     width: 60,
     backgroundColor: Cores.superficie,
+    ...Contorno,
   },
   botaoFrente: {
     flex: 1,
-    backgroundColor: Cores.pessegoEscuro,
+    backgroundColor: Cores.amarelo,
+    ...Contorno,
   },
   botaoTexto: {
     fontFamily: Fontes.extra,
     fontSize: 20,
-    color: '#FFFFFF',
+    color: Cores.marinho,
   },
   ouvir: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: Cores.pessegoEscuro,
+    backgroundColor: Cores.amareloEscuro,
     borderRadius: Raio.pilula,
     paddingVertical: 6,
     paddingHorizontal: 12,

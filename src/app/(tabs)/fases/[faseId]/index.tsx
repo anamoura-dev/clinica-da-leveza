@@ -41,7 +41,7 @@ export default function ListaCenarios() {
     <>
       <Stack.Screen options={{ title: tituloFase }} />
       {carregando ? (
-        <Carregando cor={cor.cor} />
+        <Carregando />
       ) : erro ? (
         <Erro mensagem={erro} onTentar={tentarDeNovo} />
       ) : (

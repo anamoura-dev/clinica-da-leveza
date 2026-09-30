@@ -5,7 +5,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Carregando, Erro } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
-import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
 type Entrada = {
@@ -31,29 +31,29 @@ const SECOES: {
     campo: 'o_que_pode_estar_acontecendo',
     titulo: 'O que pode estar acontecendo',
     icone: 'bulb-outline',
-    corFundo: Cores.lavandaClara,
-    corIcone: Cores.lavandaEscura,
+    corFundo: Cores.azulClaro,
+    corIcone: Cores.azulEscuro,
   },
   {
     campo: 'o_que_evitar',
     titulo: 'O que evitar',
     icone: 'hand-left-outline',
-    corFundo: Cores.pessegoClaro,
-    corIcone: Cores.pessegoEscuro,
+    corFundo: Cores.terracotaClara,
+    corIcone: Cores.terracotaEscura,
   },
   {
     campo: 'o_que_fazer_hoje',
     titulo: 'O que você pode fazer hoje',
     icone: 'heart-outline',
-    corFundo: Cores.salviaClara,
-    corIcone: Cores.salviaEscura,
+    corFundo: Cores.verdeClaro,
+    corIcone: Cores.verdeEscuro,
   },
   {
     campo: 'quando_investigar_mais',
     titulo: 'Quando investigar mais',
     icone: 'search-outline',
-    corFundo: Cores.lavandaClara,
-    corIcone: Cores.lavandaEscura,
+    corFundo: Cores.azulClaro,
+    corIcone: Cores.azulEscuro,
   },
 ];
 
@@ -85,7 +85,7 @@ export default function ResultadoManuaLeve() {
     <>
       <Stack.Screen options={{ title: '' }} />
       {carregando ? (
-        <Carregando cor={Destaques.manualeve.cor} />
+        <Carregando />
       ) : erro || !entrada ? (
         <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />
       ) : (

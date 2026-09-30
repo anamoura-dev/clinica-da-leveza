@@ -28,7 +28,7 @@ export default function ManuaLeve() {
   const { dados, carregando, erro, tentarDeNovo } = useDados(buscarSituacoes);
   const situacoes = dados ?? [];
 
-  if (carregando) return <Carregando cor={cor.cor} />;
+  if (carregando) return <Carregando />;
   if (erro) return <Erro mensagem={erro} onTentar={tentarDeNovo} />;
 
   return (

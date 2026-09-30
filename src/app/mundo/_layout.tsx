@@ -5,7 +5,7 @@ import { Cores } from '@/constants/theme';
 
 export default function LayoutMundo() {
   return (
-    <Stack screenOptions={opcoesDaPilha(Cores.pessegoEscuro)}>
+    <Stack screenOptions={opcoesDaPilha(Cores.amareloEscuro)}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="desenhar" options={{ title: 'Desenhar' }} />
     </Stack>

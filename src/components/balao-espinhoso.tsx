@@ -1,4 +1,8 @@
+import { ReactNode, useState } from 'react';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+
+import { Cores } from '@/constants/theme';
 
 /** "Ruído" determinístico entre 0 e 1, para as pontas variarem sem mudar a cada render. */
 function ruido(k: number) {
@@ -32,7 +36,7 @@ export function BalaoEspinhoso({
   pontas = 22,
   profundidade = 0.16,
   cor = '#FFFFFF',
-  contorno = '#3D3450',
+  contorno = Cores.marinho,
   espessura = 3,
 }: {
   largura: number;
@@ -53,5 +57,48 @@ export function BalaoEspinhoso({
         strokeLinejoin="round"
       />
     </Svg>
+  );
+}
+
+/**
+ * Caixa com balão pontudo atrás do conteúdo, que se ajusta ao tamanho do texto.
+ * Use para "falas" (personagens, avisos) no estilo da paulada.
+ */
+export function CaixaEspinhosa({
+  children,
+  style,
+  pontas = 16,
+  profundidade = 0.13,
+  espessura = 2.5,
+}: {
+  children: ReactNode;
+  style?: StyleProp<ViewStyle>;
+  pontas?: number;
+  profundidade?: number;
+  espessura?: number;
+}) {
+  const [tamanho, setTamanho] = useState<{ w: number; h: number } | null>(null);
+  return (
+    <View
+      style={[{ paddingHorizontal: '15%', paddingVertical: 26 }, style]}
+      onLayout={(e) => {
+        const { width, height } = e.nativeEvent.layout;
+        if (!tamanho || Math.abs(tamanho.w - width) > 1 || Math.abs(tamanho.h - height) > 1) {
+          setTamanho({ w: width, h: height });
+        }
+      }}>
+      {tamanho && (
+        <View pointerEvents="none" style={{ position: 'absolute', left: 0, top: 0 }}>
+          <BalaoEspinhoso
+            largura={tamanho.w}
+            altura={tamanho.h}
+            pontas={pontas}
+            profundidade={profundidade}
+            espessura={espessura}
+          />
+        </View>
+      )}
+      {children}
+    </View>
   );
 }

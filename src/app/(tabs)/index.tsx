@@ -3,7 +3,6 @@ import { Href, Link, useNavigation } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
   NativeScrollEvent,
   NativeSyntheticEvent,
   Pressable,
@@ -15,10 +14,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BalaoAr, BalaoFlutuante } from '@/components/balao-ar';
 import { barraAbasEscondida, estiloBarraAbas } from '@/components/navegacao';
 import { PauladaAnimada } from '@/components/paulada-animada';
 import { Cartao, Rotulo } from '@/components/ui';
-import { Cores, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 import { supabase } from '../../../lib/supabase';
 
@@ -40,12 +40,13 @@ async function buscarPauladas() {
   return { textos, inicial: sortear(textos, null) };
 }
 
-const CAMINHOS: { emoji: string; texto: string; href: Href }[] = [
-  { emoji: '🔍', texto: 'Quero entender uma situação', href: '/manualeve' },
-  { emoji: '☕', texto: 'Quero aprender alguma coisa', href: '/cafe' },
-  { emoji: '🎮', texto: 'Quero passar de fase', href: '/fases' },
-  { emoji: '💬', texto: 'Quero conversar', href: '/conversar' },
-  { emoji: '🎈', texto: 'Quero entrar no mundo das crianças', href: '/mundo' },
+// Cada caminho tem a cor de uma listra do balão (a mesma da seção).
+const CAMINHOS: { emoji: string; texto: string; href: Href; cor: string }[] = [
+  { emoji: '🔍', texto: 'Quero entender uma situação', href: '/manualeve', cor: Destaques.manualeve.cor },
+  { emoji: '☕', texto: 'Quero aprender alguma coisa', href: '/cafe', cor: Destaques.cafe.cor },
+  { emoji: '🎮', texto: 'Quero passar de fase', href: '/fases', cor: Destaques.fases.cor },
+  { emoji: '💬', texto: 'Quero conversar', href: '/conversar', cor: Destaques.lupa.cor },
+  { emoji: '🎈', texto: 'Quero entrar no mundo das crianças', href: '/mundo', cor: Destaques.mundo.cor },
 ];
 
 export default function Home() {
@@ -76,7 +77,7 @@ export default function Home() {
 
   return (
     <View style={estilos.raiz} onLayout={(e) => setAltura(e.nativeEvent.layout.height)}>
-      <StatusBar style={pagina === 0 ? 'light' : 'dark'} />
+      <StatusBar style="dark" />
       <ScrollView
         ref={paginas}
         horizontal
@@ -88,7 +89,7 @@ export default function Home() {
         <View style={{ width, height: altura }}>
           {carregando ? (
             <View style={[estilos.abertura, estilos.centro]}>
-              <ActivityIndicator size="large" color={Cores.pessegoClaro} />
+              <BalaoFlutuante largura={56} amplitude={10} duracao={900} />
             </View>
           ) : erro || !atual ? (
             <View style={[estilos.abertura, estilos.centro, { gap: Espaco.md }]}>
@@ -113,9 +114,18 @@ export default function Home() {
         <SafeAreaView style={[estilos.menu, { width, height: altura }]} edges={['top']}>
           <ScrollView contentContainerStyle={estilos.conteudo}>
             <View style={estilos.topo}>
-              <Rotulo cor={Cores.lavandaEscura}>Clínica da Leveza</Rotulo>
+              <BalaoAr largura={40} />
+              <View style={{ flex: 1 }}>
+                <Rotulo cor={Cores.marinho}>Clínica da Leveza</Rotulo>
+                <Text style={estilos.slogan}>
+                  <Text style={{ color: Cores.verdeEscuro }}>aprendendo </Text>
+                  <Text style={{ color: Cores.terracota }}>a </Text>
+                  <Text style={{ color: Cores.amareloEscuro }}>ser </Text>
+                  <Text style={{ color: Cores.lilasEscuro }}>leve</Text>
+                </Text>
+              </View>
               <Pressable onPress={() => irPara(0)} hitSlop={12} accessibilityLabel="Ver a paulada">
-                <Ionicons name="sparkles-outline" size={20} color={Cores.lavanda} />
+                <Ionicons name="sparkles-outline" size={22} color={Cores.marinho} />
               </Pressable>
             </View>
 
@@ -125,7 +135,9 @@ export default function Home() {
               {CAMINHOS.map((c) => (
                 <Link key={c.texto} href={c.href} asChild>
                   <Cartao style={estilos.caminho}>
-                    <Text style={estilos.emoji}>{c.emoji}</Text>
+                    <View style={[estilos.bolinha, { backgroundColor: c.cor }]}>
+                      <Text style={estilos.emoji}>{c.emoji}</Text>
+                    </View>
                     <Text style={estilos.caminhoTexto}>{c.texto}</Text>
                     <Ionicons name="chevron-forward" size={18} color={Cores.textoClaro} />
                   </Cartao>
@@ -142,11 +154,11 @@ export default function Home() {
 const estilos = StyleSheet.create({
   raiz: {
     flex: 1,
-    backgroundColor: Cores.lavandaEscura,
+    backgroundColor: Cores.ceuTopo,
   },
   abertura: {
     flex: 1,
-    backgroundColor: Cores.lavandaEscura,
+    backgroundColor: Cores.ceuTopo,
   },
   centro: {
     alignItems: 'center',
@@ -156,11 +168,13 @@ const estilos = StyleSheet.create({
   erroTexto: {
     fontFamily: Fontes.media,
     fontSize: 15,
-    color: Cores.pessegoClaro,
+    color: Cores.marinho,
     textAlign: 'center',
   },
   erroBotao: {
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: Cores.superficie,
+    borderWidth: 2,
+    borderColor: Cores.marinho,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: Raio.pilula,
@@ -168,7 +182,7 @@ const estilos = StyleSheet.create({
   erroBotaoTexto: {
     fontFamily: Fontes.negrito,
     fontSize: 15,
-    color: '#FFFFFF',
+    color: Cores.marinho,
   },
   menu: {
     flex: 1,
@@ -180,7 +194,19 @@ const estilos = StyleSheet.create({
   topo: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: Espaco.sm + 4,
+  },
+  slogan: {
+    fontFamily: Fontes.extra,
+    fontSize: 14,
+    marginTop: 2,
+  },
+  bolinha: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pergunta: {
     fontFamily: Fontes.extra,
@@ -201,7 +227,7 @@ const estilos = StyleSheet.create({
     borderRadius: Raio.md,
   },
   emoji: {
-    fontSize: 22,
+    fontSize: 19,
   },
   caminhoTexto: {
     flex: 1,

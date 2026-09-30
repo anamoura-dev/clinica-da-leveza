@@ -55,7 +55,7 @@ export default function DetalheCafe() {
     <>
       <Stack.Screen options={{ title: 'Café' }} />
       {carregando ? (
-        <Carregando cor={cor.cor} />
+        <Carregando />
       ) : erro || !cafe ? (
         <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />
       ) : (

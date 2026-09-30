@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useEffect } from 'react';
 import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   Easing,
   FadeIn,
@@ -15,7 +16,9 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { BalaoAr } from '@/components/balao-ar';
 import { BalaoEspinhoso } from '@/components/balao-espinhoso';
+import { Ceu } from '@/components/ceu';
 import { Cores, Fontes } from '@/constants/theme';
 
 // Linha do tempo da abertura (ms) — tudo acontece em ~3,5 s
@@ -24,6 +27,7 @@ const GOLPE = 200; // o pau vem na direção de quem está olhando
 const RECUO = 250; // entre as pancadas o pau volta para o outro lado
 // Três pancadas, uma sílaba em cada: PAU · LA · DA!
 const SILABAS = ['PAU', 'LA', 'DA!'];
+const CORES_SILABAS = [Cores.terracota, Cores.azulEscuro, Cores.verde]; // listras do balão
 const IMPACTOS = SILABAS.map((_, i) => PREPARO + GOLPE + i * (RECUO + GOLPE)); // 480, 930, 1380
 const ULTIMO_IMPACTO = IMPACTOS[IMPACTOS.length - 1];
 const BOLINHAS = 1850; // bolinhas do pensamento (as sílabas somem aqui)
@@ -31,6 +35,7 @@ const BALAO = 2050; // balão principal
 const FRASE = 2250; // palavras começam
 const DURACAO_FRASE = 900; // tempo total para todas as palavras entrarem
 const DICA = 3500; // "arraste para o lado"
+const SOBE_BALAO = 1700; // o balão de ar quente sobe até o topo
 
 const MADEIRA = '#C48A55';
 const MADEIRA_ESCURA = '#8B5A2B';
@@ -93,7 +98,17 @@ function Pau() {
 }
 
 /** Clarão na tela inteira + "PÁ!" no momento da pancada. */
-function Impacto({ momento, silaba, posicao }: { momento: number; silaba: string; posicao: number }) {
+function Impacto({
+  momento,
+  silaba,
+  posicao,
+  cor,
+}: {
+  momento: number;
+  silaba: string;
+  posicao: number;
+  cor: string;
+}) {
   const clarao = useSharedValue(0);
   const estouro = useSharedValue(0);
   const opacidadeEstouro = useSharedValue(0);
@@ -134,7 +149,7 @@ function Impacto({ momento, silaba, posicao }: { momento: number; silaba: string
   return (
     <>
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, estilos.centro]}>
-        <Animated.View style={[estilos.estouro, estiloEstouro]}>
+        <Animated.View style={[estilos.estouro, { backgroundColor: cor }, estiloEstouro]}>
           <Text style={estilos.estouroTexto}>{silaba}</Text>
         </Animated.View>
       </View>
@@ -188,6 +203,39 @@ function Estouro({
   return <Animated.View style={estilo}>{children}</Animated.View>;
 }
 
+/** O balão de ar quente sobe do pé da tela até o topo e fica flutuando. */
+function BalaoSubindo({ parado }: { parado: boolean }) {
+  const { height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const y = useSharedValue(parado ? 0 : height);
+  const flutua = useSharedValue(0);
+
+  useEffect(() => {
+    if (parado) return;
+    y.value = withDelay(SOBE_BALAO, withTiming(0, { duration: 1400, easing: Easing.out(Easing.cubic) }));
+    flutua.value = withDelay(
+      SOBE_BALAO + 1400,
+      withRepeat(
+        withSequence(
+          withTiming(-6, { duration: 1600, easing: Easing.inOut(Easing.sin) }),
+          withTiming(0, { duration: 1600, easing: Easing.inOut(Easing.sin) }),
+        ),
+        -1,
+      ),
+    );
+  }, [y, flutua, parado]);
+
+  const estilo = useAnimatedStyle(() => ({
+    transform: [{ translateY: y.value + flutua.value }, { rotate: `${flutua.value * 0.4}deg` }],
+  }));
+
+  return (
+    <Animated.View pointerEvents="none" style={[estilos.balaoAr, { top: insets.top + 12 }, estilo]}>
+      <BalaoAr largura={52} />
+    </Animated.View>
+  );
+}
+
 /** Setinha animada: "arraste para o lado". */
 function DicaArrastar({ parado, onPress }: { parado: boolean; onPress?: () => void }) {
   const x = useSharedValue(0);
@@ -213,7 +261,7 @@ function DicaArrastar({ parado, onPress }: { parado: boolean; onPress?: () => vo
       <Pressable onPress={onPress} hitSlop={16} style={estilos.dicaBotao}>
         <Text style={estilos.dicaTexto}>arraste para o lado</Text>
         <Animated.View style={estiloSeta}>
-          <Ionicons name="arrow-forward" size={18} color={Cores.pessegoClaro} />
+          <Ionicons name="arrow-forward" size={18} color={Cores.marinho} />
         </Animated.View>
       </Pressable>
     </Animated.View>
@@ -274,9 +322,19 @@ function Cena({
 
   return (
     <View style={estilos.tela}>
+      <Ceu
+        ateCreme
+        nuvens={[
+          { x: '6%', y: '12%', largura: 90 },
+          { x: '64%', y: '20%', largura: 110 },
+          { x: '10%', y: '78%', largura: 100 },
+          { x: '70%', y: '70%', largura: 70 },
+        ]}
+      />
+      <BalaoSubindo parado={parado} />
       <Animated.View style={[estilos.palco, estiloTremida]}>
         <Animated.View entering={parado ? undefined : FadeIn.delay(BALAO)} style={estilos.rotulo}>
-          <Ionicons name="sparkles" size={14} color={Cores.pessegoClaro} />
+          <Ionicons name="sparkles" size={14} color={Cores.marinho} />
           <Text style={estilos.rotuloTexto}>#Paulada</Text>
         </Animated.View>
 
@@ -322,7 +380,7 @@ function Cena({
       {!parado && <Pau />}
       {!parado &&
         SILABAS.map((silaba, i) => (
-          <Impacto key={silaba} momento={IMPACTOS[i]} silaba={silaba} posicao={i - 1} />
+          <Impacto key={silaba} momento={IMPACTOS[i]} silaba={silaba} posicao={i - 1} cor={CORES_SILABAS[i]} />
         ))}
 
       <DicaArrastar parado={parado} onPress={onAvancar} />
@@ -347,7 +405,7 @@ export function PauladaAnimada({
 const estilos = StyleSheet.create({
   tela: {
     flex: 1,
-    backgroundColor: Cores.lavandaEscura,
+    backgroundColor: Cores.ceuTopo,
     overflow: 'hidden',
   },
   palco: {
@@ -355,6 +413,12 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
+  },
+  balaoAr: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
   },
   centro: {
     alignItems: 'center',
@@ -370,7 +434,7 @@ const estilos = StyleSheet.create({
     fontSize: 13,
     letterSpacing: 2,
     textTransform: 'uppercase',
-    color: Cores.pessegoClaro,
+    color: Cores.marinho,
   },
   frase: {
     flexDirection: 'row',
@@ -433,12 +497,12 @@ const estilos = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   estouro: {
-    backgroundColor: Cores.pessego,
+    backgroundColor: Cores.terracota,
     paddingHorizontal: 26,
     paddingVertical: 12,
     borderRadius: 20,
     borderWidth: 3,
-    borderColor: '#FFFFFF',
+    borderColor: Cores.marinho,
   },
   estouroTexto: {
     fontFamily: Fontes.extra,
@@ -463,6 +527,6 @@ const estilos = StyleSheet.create({
   dicaTexto: {
     fontFamily: Fontes.negrito,
     fontSize: 15,
-    color: Cores.pessegoClaro,
+    color: Cores.marinho,
   },
 });

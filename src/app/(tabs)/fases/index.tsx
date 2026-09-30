@@ -29,7 +29,7 @@ export default function ListaFases() {
   const { dados, carregando, erro, tentarDeNovo } = useDados(buscarFases);
   const fases = dados ?? [];
 
-  if (carregando) return <Carregando cor={cor.cor} />;
+  if (carregando) return <Carregando />;
   if (erro) return <Erro mensagem={erro} onTentar={tentarDeNovo} />;
 
   return (

@@ -4,7 +4,7 @@ import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
-import { Cores, Espaco, Fontes, Raio, Sombra } from '@/constants/theme';
+import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 
 const CORES = ['#3D3450', '#E0564B', '#F29A3F', '#F2C94C', '#7FA677', '#4F8FD6', '#8E78C8', '#E27AAE'];
 const ESPESSURAS = [6, 12, 22];
@@ -109,7 +109,7 @@ export default function Desenhar() {
 const estilos = StyleSheet.create({
   tela: {
     flex: 1,
-    backgroundColor: '#FFF8F2',
+    backgroundColor: Cores.fundo,
     padding: Espaco.md,
     paddingTop: 0,
     gap: Espaco.md,
@@ -125,7 +125,7 @@ const estilos = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: Raio.lg,
     overflow: 'hidden',
-    ...Sombra,
+    ...Contorno,
   },
   dica: {
     ...StyleSheet.absoluteFill,
@@ -148,13 +148,11 @@ const estilos = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
-    ...Sombra,
+    ...Contorno,
   },
   corAtiva: {
     transform: [{ scale: 1.2 }],
-    borderColor: Cores.texto,
+    borderWidth: 3.5,
   },
   linha: {
     flexDirection: 'row',
@@ -189,6 +187,6 @@ const estilos = StyleSheet.create({
     backgroundColor: Cores.superficie,
     alignItems: 'center',
     justifyContent: 'center',
-    ...Sombra,
+    ...Contorno,
   },
 });

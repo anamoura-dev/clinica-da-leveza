@@ -7,7 +7,7 @@ import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 
 import { buscarMissao, marcarMissaoConcluida } from '@/components/mundo/dados';
 import { Carregando, Erro } from '@/components/ui';
-import { Cores, Espaco, Fontes, Raio, Sombra } from '@/constants/theme';
+import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 
 export default function FazerMissao() {
@@ -17,7 +17,7 @@ export default function FazerMissao() {
   const [feitos, setFeitos] = useState<number[]>([]);
   const [comemorando, setComemorando] = useState(false);
 
-  if (carregando) return <Carregando cor={Cores.pessego} />;
+  if (carregando) return <Carregando />;
   if (erro || !missao) return <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />;
 
   const passos = missao.passos ?? [];
@@ -123,28 +123,28 @@ const estilos = StyleSheet.create({
     borderRadius: Raio.md,
     padding: Espaco.md,
     minHeight: 72,
-    ...Sombra,
+    ...Contorno,
   },
   passoFeito: {
-    backgroundColor: Cores.salviaClara,
+    backgroundColor: Cores.verdeClaro,
   },
   caixa: {
     width: 44,
     height: 44,
     borderRadius: 22,
     borderWidth: 3,
-    borderColor: Cores.pessego,
+    borderColor: Cores.marinho,
     alignItems: 'center',
     justifyContent: 'center',
   },
   caixaFeita: {
-    backgroundColor: Cores.salvia,
-    borderColor: Cores.salvia,
+    backgroundColor: Cores.verde,
+    borderColor: Cores.verde,
   },
   numero: {
     fontFamily: Fontes.extra,
     fontSize: 18,
-    color: Cores.pessegoEscuro,
+    color: Cores.marinho,
   },
   passoTexto: {
     flex: 1,
@@ -154,11 +154,12 @@ const estilos = StyleSheet.create({
     color: Cores.texto,
   },
   passoTextoFeito: {
-    color: Cores.salviaEscura,
+    color: Cores.verdeEscuro,
   },
   comemoracao: {
     alignItems: 'center',
-    backgroundColor: '#FFF4D6',
+    backgroundColor: Cores.amareloClaro,
+    ...Contorno,
     borderRadius: Raio.lg,
     padding: Espaco.lg,
     gap: 6,
@@ -178,7 +179,8 @@ const estilos = StyleSheet.create({
     color: Cores.textoSuave,
   },
   botao: {
-    backgroundColor: Cores.pessegoEscuro,
+    backgroundColor: Cores.amarelo,
+    ...Contorno,
     borderRadius: Raio.pilula,
     paddingVertical: 14,
     paddingHorizontal: 32,
@@ -187,6 +189,6 @@ const estilos = StyleSheet.create({
   botaoTexto: {
     fontFamily: Fontes.extra,
     fontSize: 18,
-    color: '#FFFFFF',
+    color: Cores.marinho,
   },
 });

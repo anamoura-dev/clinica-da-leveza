@@ -23,7 +23,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EmBreve } from '@/components/ui';
-import { Cores, Espaco, Fontes, Raio, Sombra } from '@/constants/theme';
+import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../lib/supabase';
 
 // A Lupa só liga depois que a função "lupa" estiver publicada no Supabase
@@ -144,7 +144,7 @@ function LupaIA() {
           headerRight: () =>
             soBoasVindas ? null : (
               <Pressable onPress={novaConversa} hitSlop={10} accessibilityLabel="Nova conversa">
-                <Ionicons name="create-outline" size={22} color={Cores.lavandaEscura} />
+                <Ionicons name="create-outline" size={22} color={Cores.lilasEscuro} />
               </Pressable>
             ),
         }}
@@ -259,11 +259,11 @@ const estilos = StyleSheet.create({
     alignSelf: 'flex-start',
     backgroundColor: Cores.superficie,
     borderBottomLeftRadius: 6,
-    ...Sombra,
+    ...Contorno,
   },
   balaoPessoa: {
     alignSelf: 'flex-end',
-    backgroundColor: Cores.lavandaEscura,
+    backgroundColor: Cores.lilasEscuro,
     borderBottomRightRadius: 6,
   },
   balaoTexto: {
@@ -282,7 +282,7 @@ const estilos = StyleSheet.create({
   },
   sugestao: {
     borderWidth: 1.5,
-    borderColor: Cores.lavanda,
+    borderColor: Cores.lilas,
     borderRadius: Raio.pilula,
     paddingVertical: 8,
     paddingHorizontal: 14,
@@ -290,7 +290,7 @@ const estilos = StyleSheet.create({
   sugestaoTexto: {
     fontFamily: Fontes.media,
     fontSize: 14,
-    color: Cores.lavandaEscura,
+    color: Cores.lilasEscuro,
   },
   digitando: {
     flexDirection: 'row',
@@ -301,7 +301,7 @@ const estilos = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Cores.lavanda,
+    backgroundColor: Cores.lilas,
   },
   erro: {
     alignSelf: 'center',
@@ -318,7 +318,7 @@ const estilos = StyleSheet.create({
   erroBotao: {
     fontFamily: Fontes.negrito,
     fontSize: 14,
-    color: Cores.lavandaEscura,
+    color: Cores.lilasEscuro,
   },
   barra: {
     flexDirection: 'row',
@@ -347,7 +347,7 @@ const estilos = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: Cores.lavandaEscura,
+    backgroundColor: Cores.lilasEscuro,
     alignItems: 'center',
     justifyContent: 'center',
   },

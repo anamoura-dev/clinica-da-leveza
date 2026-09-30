@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ReactNode } from 'react';
 import {
-  ActivityIndicator,
   Pressable,
   PressableProps,
   StyleProp,
@@ -12,7 +11,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Cores, Espaco, Fontes, Raio, Sombra } from '@/constants/theme';
+import { BalaoFlutuante } from '@/components/balao-ar';
+import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 
 /** Tela de topo de aba: fundo creme, respeita o notch e mostra título/subtítulo. */
 export function Tela({
@@ -37,10 +37,11 @@ export function Tela({
   );
 }
 
-export function Carregando({ cor = Cores.lavanda }: { cor?: string }) {
+/** "Carregando": o balão da Leveza flutuando. */
+export function Carregando() {
   return (
-    <View style={estilos.centro}>
-      <ActivityIndicator size="large" color={cor} />
+    <View style={estilos.centro} accessibilityLabel="Carregando">
+      <BalaoFlutuante largura={52} amplitude={10} duracao={900} />
     </View>
   );
 }
@@ -69,8 +70,8 @@ export function EmBreve({
   icone,
   titulo,
   texto,
-  cor = Cores.lavandaEscura,
-  corFundo = Cores.lavandaClara,
+  cor = Cores.azulEscuro,
+  corFundo = Cores.azulClaro,
 }: {
   icone: keyof typeof Ionicons.glyphMap;
   titulo: string;
@@ -107,7 +108,7 @@ export function Cartao({
 export function Botao({
   titulo,
   onPress,
-  cor = Cores.lavanda,
+  cor = Cores.azul,
   variante = 'cheio',
   icone,
 }: {
@@ -196,7 +197,7 @@ const estilos = StyleSheet.create({
     backgroundColor: Cores.superficie,
     borderRadius: Raio.md,
     padding: Espaco.md,
-    ...Sombra,
+    ...Contorno,
   },
   pressionado: {
     opacity: 0.85,

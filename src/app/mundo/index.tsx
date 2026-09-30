@@ -3,11 +3,13 @@ import { Link, router } from 'expo-router';
 import { ReactNode, useState } from 'react';
 import { Pressable, PressableProps, ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { CaixaEspinhosa } from '@/components/balao-espinhoso';
+import { Ceu } from '@/components/ceu';
 import { buscarMundo, Sentimento, useMissoesConcluidas } from '@/components/mundo/dados';
 import { Carregando, Erro } from '@/components/ui';
-import { Cores, Espaco, Fontes, Raio, Sombra } from '@/constants/theme';
+import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 
 /**
@@ -31,10 +33,11 @@ const tom = (hex: string, alfa: number) =>
 export default function EspacoDasCriancas() {
   const { dados, carregando, erro, tentarDeNovo } = useDados(buscarMundo);
   const concluidas = useMissoesConcluidas();
+  const insets = useSafeAreaInsets();
   const [sentimento, setSentimento] = useState<Sentimento | null>(null);
   const [personagemFalando, setPersonagemFalando] = useState<string | null>(null);
 
-  if (carregando) return <Carregando cor={Cores.pessego} />;
+  if (carregando) return <Carregando />;
   if (erro || !dados) return <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />;
 
   const { personagens, sentimentos, historias, missoes } = dados;
@@ -64,32 +67,38 @@ export default function EspacoDasCriancas() {
   const estrelas = missoes.filter((m) => concluidas.includes(m.id)).length;
 
   return (
-    <SafeAreaView style={estilos.tela} edges={['top']}>
-      <View style={estilos.topo}>
-        <Pressable onPress={() => router.back()} hitSlop={12} accessibilityLabel="Sair do Espaço das Crianças">
-          <Ionicons name="close" size={26} color={Cores.pessegoEscuro} />
-        </Pressable>
-        <Text style={estilos.topoTitulo}>Espaço das Crianças</Text>
-        <View style={estilos.estrelas}>
-          <Text style={estilos.estrelasTexto}>⭐ {estrelas}</Text>
-        </View>
-      </View>
+    <View style={estilos.tela}>
+      <ScrollView contentContainerStyle={{ paddingBottom: Espaco.xl * 2 }}>
+        {/* Céu com a turma falando no balão pontudo */}
+        <View style={[estilos.ceu, { paddingTop: insets.top + Espaco.sm }]}>
+          <Ceu nuvens={[{ x: '62%', y: 34, largura: 90 }, { x: '4%', y: 96, largura: 60 }]} />
+          <View style={estilos.topo}>
+            <Pressable onPress={() => router.back()} hitSlop={12} accessibilityLabel="Sair do Espaço das Crianças">
+              <Ionicons name="close" size={26} color={Cores.marinho} />
+            </Pressable>
+            <Text style={estilos.topoTitulo}>Espaço das Crianças</Text>
+            <View style={estilos.estrelas}>
+              <Text style={estilos.estrelasTexto}>⭐ {estrelas}</Text>
+            </View>
+          </View>
 
-      <ScrollView contentContainerStyle={estilos.conteudo}>
-        {/* Personagem falando */}
-        <View style={estilos.cena}>
-          <Animated.View
-            key={`${falante?.id}-${sentimento?.id ?? ''}`}
-            entering={ZoomIn.springify().damping(12)}
-            style={[estilos.personagem, { backgroundColor: falante?.cor ?? Cores.pessegoClaro }]}>
-            <Text style={estilos.personagemEmoji}>{falante?.emoji ?? '🦊'}</Text>
-          </Animated.View>
-          <Animated.View key={fala} entering={FadeIn.duration(300)} style={estilos.fala}>
-            {falante && <Text style={estilos.falaNome}>{falante.nome}</Text>}
-            <Text style={estilos.falaTexto}>{fala}</Text>
-          </Animated.View>
+          <View style={estilos.cena}>
+            <Animated.View
+              key={`${falante?.id}-${sentimento?.id ?? ''}`}
+              entering={ZoomIn.springify().damping(12)}
+              style={[estilos.personagem, { backgroundColor: falante?.cor ?? Cores.amareloClaro }]}>
+              <Text style={estilos.personagemEmoji}>{falante?.emoji ?? '🦊'}</Text>
+            </Animated.View>
+            <Animated.View key={fala} entering={FadeIn.duration(300)} style={{ flex: 1 }}>
+              <CaixaEspinhosa>
+                {falante && <Text style={estilos.falaNome}>{falante.nome}</Text>}
+                <Text style={estilos.falaTexto}>{fala}</Text>
+              </CaixaEspinhosa>
+            </Animated.View>
+          </View>
         </View>
 
+        <View style={estilos.conteudo}>
         {/* Termômetro de sentimentos */}
         <Text style={estilos.pergunta}>Como você está se sentindo agora?</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={estilos.sentimentos}>
@@ -104,7 +113,7 @@ export default function EspacoDasCriancas() {
                 }}
                 style={({ pressed }) => [
                   estilos.sentimento,
-                  { backgroundColor: tom(s.cor, ativo ? 1 : 0.35), borderColor: s.cor },
+                  { backgroundColor: tom(s.cor, ativo ? 1 : 0.55) },
                   ativo && estilos.sentimentoAtivo,
                   pressed && { transform: [{ scale: 0.94 }] },
                 ]}>
@@ -129,7 +138,7 @@ export default function EspacoDasCriancas() {
                     <Text style={estilos.itemTipo}>{s.tipo === 'historia' ? 'História' : 'Missão'}</Text>
                     <Text style={estilos.itemTitulo}>{s.titulo}</Text>
                   </View>
-                  <Ionicons name="chevron-forward" size={20} color={Cores.pessegoEscuro} />
+                  <Ionicons name="chevron-forward" size={20} color={Cores.amareloEscuro} />
                 </Toque>
               </Link>
             ))}
@@ -141,7 +150,7 @@ export default function EspacoDasCriancas() {
           <Text style={estilos.secao}>📖 Histórias</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={estilos.carrossel}>
             {historias.map((h) => {
-              const cor = personagens.find((p) => p.id === h.personagem_id)?.cor ?? Cores.pessegoClaro;
+              const cor = personagens.find((p) => p.id === h.personagem_id)?.cor ?? Cores.amareloClaro;
               return (
                 <Link key={h.id} href={`/mundo/historia/${h.id}`} asChild>
                   <Toque style={StyleSheet.flatten([estilos.historia, { backgroundColor: cor }])}>
@@ -209,35 +218,43 @@ export default function EspacoDasCriancas() {
           </View>
         </View>
 
-        <Text style={estilos.rodape}>Um espaço para explorar junto com um adulto 💛</Text>
+          <Text style={estilos.rodape}>Um espaço para explorar junto com um adulto 💛</Text>
+        </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const estilos = StyleSheet.create({
   tela: {
     flex: 1,
-    backgroundColor: '#FFF8F2',
+    backgroundColor: Cores.fundo,
+  },
+  ceu: {
+    paddingHorizontal: Espaco.md,
+    paddingBottom: Espaco.lg,
+    borderBottomLeftRadius: Raio.lg,
+    borderBottomRightRadius: Raio.lg,
+    overflow: 'hidden',
+    gap: Espaco.sm,
   },
   topo: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Espaco.md,
-    paddingVertical: Espaco.sm,
+    paddingVertical: Espaco.xs,
   },
   topoTitulo: {
     fontFamily: Fontes.extra,
     fontSize: 18,
-    color: Cores.pessegoEscuro,
+    color: Cores.marinho,
   },
   estrelas: {
     backgroundColor: Cores.superficie,
     borderRadius: Raio.pilula,
     paddingVertical: 4,
     paddingHorizontal: 10,
-    ...Sombra,
+    ...Contorno,
   },
   estrelasTexto: {
     fontFamily: Fontes.extra,
@@ -246,7 +263,6 @@ const estilos = StyleSheet.create({
   },
   conteudo: {
     padding: Espaco.md,
-    paddingBottom: Espaco.xl * 2,
     gap: Espaco.md,
   },
   cena: {
@@ -255,33 +271,28 @@ const estilos = StyleSheet.create({
     gap: Espaco.md,
   },
   personagem: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    ...Contorno,
     alignItems: 'center',
     justifyContent: 'center',
   },
   personagemEmoji: {
     fontSize: 56,
   },
-  fala: {
-    flex: 1,
-    backgroundColor: Cores.superficie,
-    borderRadius: Raio.md,
-    borderTopLeftRadius: 6,
-    padding: Espaco.md,
-    ...Sombra,
-  },
   falaNome: {
     fontFamily: Fontes.extra,
     fontSize: 13,
-    color: Cores.pessegoEscuro,
+    color: Cores.terracota,
+    textAlign: 'center',
     marginBottom: 2,
   },
   falaTexto: {
-    fontFamily: Fontes.media,
-    fontSize: 17,
-    lineHeight: 24,
+    fontFamily: Fontes.negrito,
+    fontSize: 15,
+    lineHeight: 21,
+    textAlign: 'center',
     color: Cores.texto,
   },
   pergunta: {
@@ -298,14 +309,14 @@ const estilos = StyleSheet.create({
     width: 84,
     height: 96,
     borderRadius: Raio.md,
-    borderWidth: 2,
+    ...Contorno,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
   },
   sentimentoAtivo: {
-    borderColor: Cores.texto,
-    borderWidth: 3,
+    borderWidth: 3.5,
+    transform: [{ translateY: -3 }],
   },
   sentimentoEmoji: {
     fontSize: 36,
@@ -328,11 +339,10 @@ const estilos = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Espaco.md,
-    backgroundColor: Cores.pessegoClaro,
+    backgroundColor: Cores.amareloClaro,
     borderRadius: Raio.md,
     padding: Espaco.md,
-    borderWidth: 2,
-    borderColor: Cores.pessego,
+    ...Contorno,
   },
   itemEmoji: {
     fontSize: 34,
@@ -342,7 +352,7 @@ const estilos = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 1,
     textTransform: 'uppercase',
-    color: Cores.pessegoEscuro,
+    color: Cores.terracota,
   },
   itemTitulo: {
     fontFamily: Fontes.extra,
@@ -365,7 +375,7 @@ const estilos = StyleSheet.create({
     borderRadius: Raio.lg,
     padding: Espaco.md,
     justifyContent: 'space-between',
-    ...Sombra,
+    ...Contorno,
   },
   historiaEmoji: {
     fontSize: 54,
@@ -383,17 +393,18 @@ const estilos = StyleSheet.create({
     backgroundColor: Cores.superficie,
     borderRadius: Raio.md,
     padding: Espaco.md,
-    ...Sombra,
+    ...Contorno,
   },
   missaoEstrela: {
     fontSize: 26,
-    color: '#E0B64A',
+    color: Cores.amareloEscuro,
   },
   desenhar: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Espaco.md,
-    backgroundColor: Cores.lavandaClara,
+    ...Contorno,
+    backgroundColor: Cores.lilasClaro,
     borderRadius: Raio.lg,
     padding: Espaco.lg,
     marginTop: Espaco.sm,
@@ -404,7 +415,7 @@ const estilos = StyleSheet.create({
   desenharTitulo: {
     fontFamily: Fontes.extra,
     fontSize: 19,
-    color: Cores.lavandaEscura,
+    color: Cores.lilasEscuro,
   },
   desenharTexto: {
     fontFamily: Fontes.media,
@@ -423,12 +434,13 @@ const estilos = StyleSheet.create({
     backgroundColor: Cores.superficie,
     borderRadius: Raio.md,
     padding: Espaco.md,
-    ...Sombra,
+    ...Contorno,
   },
   amigoCirculo: {
     width: 64,
     height: 64,
     borderRadius: 32,
+    ...Contorno,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 6,

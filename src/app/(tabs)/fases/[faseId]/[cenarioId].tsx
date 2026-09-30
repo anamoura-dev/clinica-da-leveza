@@ -5,7 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Botao, Carregando, Erro, Rotulo } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
-import { Cores, Destaques, Espaco, Fontes, Raio, Sombra } from '@/constants/theme';
+import { Contorno, Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../../lib/supabase';
 
 type Cenario = {
@@ -50,7 +50,7 @@ export default function TelaCenario() {
     <>
       <Stack.Screen options={{ title: 'Cenário' }} />
       {carregando ? (
-        <Carregando cor={cor.cor} />
+        <Carregando />
       ) : erro || !cenario ? (
         <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />
       ) : (
@@ -88,7 +88,7 @@ export default function TelaCenario() {
 
               <View style={estilos.devolutiva}>
                 <View style={estilos.devolutivaCabecalho}>
-                  <Ionicons name="sparkles-outline" size={20} color={Cores.salviaEscura} />
+                  <Ionicons name="sparkles-outline" size={20} color={Cores.verdeEscuro} />
                   <Text style={estilos.vamosPensar}>Vamos pensar...</Text>
                 </View>
                 <Text style={estilos.devolutivaTexto}>{opcao.devolutiva}</Text>
@@ -140,7 +140,7 @@ const estilos = StyleSheet.create({
     backgroundColor: Cores.superficie,
     borderRadius: Raio.md,
     padding: Espaco.md,
-    ...Sombra,
+    ...Contorno,
   },
   pressionado: {
     opacity: 0.85,
@@ -177,7 +177,7 @@ const estilos = StyleSheet.create({
     color: Cores.texto,
   },
   devolutiva: {
-    backgroundColor: Cores.salviaClara,
+    backgroundColor: Cores.verdeClaro,
     borderRadius: Raio.md,
     padding: Espaco.lg,
     gap: Espaco.sm,
@@ -190,7 +190,7 @@ const estilos = StyleSheet.create({
   vamosPensar: {
     fontFamily: Fontes.extra,
     fontSize: 16,
-    color: Cores.salviaEscura,
+    color: Cores.verdeEscuro,
   },
   devolutivaTexto: {
     fontFamily: Fontes.regular,

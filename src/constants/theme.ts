@@ -1,38 +1,55 @@
 /**
- * Identidade visual da Leveza — suave e acolhedora.
- * Tons pastel (lavanda, pêssego, sálvia) sobre um fundo creme quente.
+ * Identidade visual da Leveza — "Balão da Leveza".
+ * A paleta vem das listras do balão de ar quente (símbolo da clínica):
+ * azul céu, terracota, verde e amarelo, com contornos em azul-marinho
+ * e fundo creme (como o tecido do bordado "aprendendo a ser leve").
  */
 
 export const Cores = {
-  fundo: '#FBF7F4',
+  fundo: '#FAF6EE',
   superficie: '#FFFFFF',
-  borda: '#EFE7E1',
+  borda: '#EAE3D6',
 
-  texto: '#3D3450',
-  textoSuave: '#7A7089',
-  textoClaro: '#A59DB1',
+  marinho: '#2F3A6B', // contornos e texto principal
+  texto: '#2F3A6B',
+  textoSuave: '#6B7090',
+  textoClaro: '#9AA0B8',
 
-  lavanda: '#8E78C8',
-  lavandaEscura: '#5E4A9A',
-  lavandaClara: '#EEE8FA',
+  azul: '#7FA8D2',
+  azulEscuro: '#3F6E9E',
+  azulClaro: '#E3EEF8',
 
-  pessego: '#E8956F',
-  pessegoEscuro: '#A95B38',
-  pessegoClaro: '#FDEDE4',
+  terracota: '#C9664E',
+  terracotaEscura: '#A24A34',
+  terracotaClara: '#F7E0D8',
 
-  salvia: '#7FA677',
-  salviaEscura: '#4B7244',
-  salviaClara: '#E7F0E4',
+  verde: '#8FBA5C',
+  verdeEscuro: '#4F7F2E',
+  verdeClaro: '#E6F0DA',
+
+  amarelo: '#EEC46A',
+  amareloEscuro: '#8A6A1F',
+  amareloClaro: '#FBF0D2',
+
+  lilas: '#B6AEDD',
+  lilasEscuro: '#6A5FAE',
+  lilasClaro: '#EEEBF8',
+
+  cesto: '#F0B24E',
+  ceuTopo: '#A9CBEA',
+  ceuBase: '#D8E8F4',
 
   erro: '#C0564B',
 } as const;
 
-/** Cada seção do app tem sua cor de destaque. */
+/** Cada seção do app tem a cor de uma listra do balão. */
 export const Destaques = {
-  hoje: { cor: Cores.lavanda, escura: Cores.lavandaEscura, clara: Cores.lavandaClara },
-  manualeve: { cor: Cores.salvia, escura: Cores.salviaEscura, clara: Cores.salviaClara },
-  cafe: { cor: Cores.pessego, escura: Cores.pessegoEscuro, clara: Cores.pessegoClaro },
-  fases: { cor: Cores.lavanda, escura: Cores.lavandaEscura, clara: Cores.lavandaClara },
+  hoje: { cor: Cores.azul, escura: Cores.azulEscuro, clara: Cores.azulClaro },
+  manualeve: { cor: Cores.verde, escura: Cores.verdeEscuro, clara: Cores.verdeClaro },
+  cafe: { cor: Cores.terracota, escura: Cores.terracotaEscura, clara: Cores.terracotaClara },
+  fases: { cor: Cores.azul, escura: Cores.azulEscuro, clara: Cores.azulClaro },
+  lupa: { cor: Cores.lilas, escura: Cores.lilasEscuro, clara: Cores.lilasClaro },
+  mundo: { cor: Cores.amarelo, escura: Cores.amareloEscuro, clara: Cores.amareloClaro },
 } as const;
 
 export type Destaque = (typeof Destaques)[keyof typeof Destaques];
@@ -59,10 +76,16 @@ export const Raio = {
   pilula: 999,
 } as const;
 
+/** Contorno "de quadrinho" usado em cartões e balões. */
+export const Contorno = {
+  borderWidth: 2,
+  borderColor: Cores.marinho,
+} as const;
+
 export const Sombra = {
-  shadowColor: '#5E4A9A',
-  shadowOpacity: 0.08,
-  shadowRadius: 16,
-  shadowOffset: { width: 0, height: 6 },
-  elevation: 3,
+  shadowColor: '#2F3A6B',
+  shadowOpacity: 0.06,
+  shadowRadius: 10,
+  shadowOffset: { width: 0, height: 4 },
+  elevation: 2,
 } as const;
