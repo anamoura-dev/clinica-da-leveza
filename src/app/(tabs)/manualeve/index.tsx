@@ -1,8 +1,8 @@
 import { Link } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { Carregando, Cartao, Erro, Tela, Vazio } from '@/components/ui';
+import { useDados } from '@/hooks/use-dados';
 import { Cores, Destaques, Espaco, Fontes } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
@@ -14,36 +14,22 @@ type Situacao = {
 
 const cor = Destaques.manualeve;
 
+async function buscarSituacoes(): Promise<Situacao[]> {
+  const { data, error } = await supabase
+    .from('manualeve_situacoes')
+    .select('id, rotulo, emoji')
+    .eq('ativa', true)
+    .order('ordem', { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
 export default function ManuaLeve() {
-  const [situacoes, setSituacoes] = useState<Situacao[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
-
-  useEffect(() => {
-    buscarSituacoes();
-  }, []);
-
-  async function buscarSituacoes() {
-    setCarregando(true);
-    setErro(null);
-
-    const { data, error } = await supabase
-      .from('manualeve_situacoes')
-      .select('id, rotulo, emoji')
-      .eq('ativa', true)
-      .order('ordem', { ascending: true });
-
-    if (error) {
-      setErro(error.message);
-    } else {
-      setSituacoes(data || []);
-    }
-
-    setCarregando(false);
-  }
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarSituacoes);
+  const situacoes = dados ?? [];
 
   if (carregando) return <Carregando cor={cor.cor} />;
-  if (erro) return <Erro mensagem={erro} onTentar={buscarSituacoes} />;
+  if (erro) return <Erro mensagem={erro} onTentar={tentarDeNovo} />;
 
   return (
     <Tela titulo="Meu filho não quer..." subtitulo="Escolha a situação e veja por onde começar.">

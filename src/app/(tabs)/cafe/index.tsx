@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { Carregando, Cartao, Erro, Tela, Vazio } from '@/components/ui';
+import { useDados } from '@/hooks/use-dados';
 import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
@@ -15,37 +15,23 @@ type Cafe = {
 
 const cor = Destaques.cafe;
 
+async function buscarCafes(): Promise<Cafe[]> {
+  const { data, error } = await supabase
+    .from('content')
+    .select('id, titulo, gancho')
+    .eq('tipo', 'cafe')
+    .eq('publicado', true)
+    .order('ordem', { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
 export default function ListaCafes() {
-  const [cafes, setCafes] = useState<Cafe[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
-
-  useEffect(() => {
-    buscarCafes();
-  }, []);
-
-  async function buscarCafes() {
-    setCarregando(true);
-    setErro(null);
-
-    const { data, error } = await supabase
-      .from('content')
-      .select('id, titulo, gancho')
-      .eq('tipo', 'cafe')
-      .eq('publicado', true)
-      .order('ordem', { ascending: true });
-
-    if (error) {
-      setErro(error.message);
-    } else {
-      setCafes(data || []);
-    }
-
-    setCarregando(false);
-  }
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarCafes);
+  const cafes = dados ?? [];
 
   if (carregando) return <Carregando cor={cor.cor} />;
-  if (erro) return <Erro mensagem={erro} onTentar={buscarCafes} />;
+  if (erro) return <Erro mensagem={erro} onTentar={tentarDeNovo} />;
 
   return (
     <Tela titulo="Cafés" subtitulo="Conversas curtas para tomar com calma.">

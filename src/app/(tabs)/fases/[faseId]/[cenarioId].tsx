@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Botao, Carregando, Erro, Rotulo } from '@/components/ui';
+import { useDados } from '@/hooks/use-dados';
 import { Cores, Destaques, Espaco, Fontes, Raio, Sombra } from '@/constants/theme';
 import { supabase } from '../../../../../lib/supabase';
 
@@ -22,42 +23,26 @@ const letra = (i: number) => String.fromCharCode(65 + i);
 
 export default function TelaCenario() {
   const { cenarioId } = useLocalSearchParams<{ cenarioId: string }>();
-  const [cenario, setCenario] = useState<Cenario | null>(null);
-  const [opcoes, setOpcoes] = useState<Opcao[]>([]);
   const [escolhida, setEscolhida] = useState<number | null>(null);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
 
-  useEffect(() => {
-    buscarCenario();
+  const carregar = useCallback(async () => {
+    const [cenarioRes, opcoesRes] = await Promise.all([
+      supabase.from('cenarios').select('texto').eq('id', cenarioId).maybeSingle(),
+      supabase
+        .from('opcoes')
+        .select('id, texto, devolutiva')
+        .eq('cenario_id', cenarioId)
+        .order('ordem', { ascending: true }),
+    ]);
+    const falha = cenarioRes.error || opcoesRes.error;
+    if (falha) throw new Error(falha.message);
+    if (!cenarioRes.data) throw new Error('Cenário não encontrado.');
+    return { cenario: cenarioRes.data as Cenario, opcoes: (opcoesRes.data ?? []) as Opcao[] };
   }, [cenarioId]);
 
-  async function buscarCenario() {
-    setCarregando(true);
-    setErro(null);
-    setEscolhida(null);
-
-    const [{ data: cenarioData, error: cenarioError }, { data: opcoesData, error: opcoesError }] =
-      await Promise.all([
-        supabase.from('cenarios').select('texto').eq('id', cenarioId).maybeSingle(),
-        supabase
-          .from('opcoes')
-          .select('id, texto, devolutiva')
-          .eq('cenario_id', cenarioId)
-          .order('ordem', { ascending: true }),
-      ]);
-
-    if (cenarioError || opcoesError) {
-      setErro(cenarioError?.message || opcoesError?.message || 'Erro ao carregar.');
-    } else if (!cenarioData) {
-      setErro('Cenário não encontrado.');
-    } else {
-      setCenario(cenarioData);
-      setOpcoes(opcoesData || []);
-    }
-
-    setCarregando(false);
-  }
+  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar);
+  const cenario = dados?.cenario ?? null;
+  const opcoes = dados?.opcoes ?? [];
 
   const opcao = escolhida !== null ? opcoes[escolhida] : null;
 
@@ -67,7 +52,7 @@ export default function TelaCenario() {
       {carregando ? (
         <Carregando cor={cor.cor} />
       ) : erro || !cenario ? (
-        <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={buscarCenario} />
+        <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />
       ) : (
         <ScrollView contentContainerStyle={estilos.conteudo}>
           <View style={estilos.situacao}>

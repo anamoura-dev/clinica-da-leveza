@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
-import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { Carregando, Cartao, Erro, Tela, Vazio } from '@/components/ui';
+import { useDados } from '@/hooks/use-dados';
 import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
@@ -15,36 +15,22 @@ type Fase = {
 
 const cor = Destaques.fases;
 
+async function buscarFases(): Promise<Fase[]> {
+  const { data, error } = await supabase
+    .from('fases')
+    .select('id, titulo, tema')
+    .eq('ativa', true)
+    .order('ordem', { ascending: true });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
 export default function ListaFases() {
-  const [fases, setFases] = useState<Fase[]>([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
-
-  useEffect(() => {
-    buscarFases();
-  }, []);
-
-  async function buscarFases() {
-    setCarregando(true);
-    setErro(null);
-
-    const { data, error } = await supabase
-      .from('fases')
-      .select('id, titulo, tema')
-      .eq('ativa', true)
-      .order('ordem', { ascending: true });
-
-    if (error) {
-      setErro(error.message);
-    } else {
-      setFases(data || []);
-    }
-
-    setCarregando(false);
-  }
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarFases);
+  const fases = dados ?? [];
 
   if (carregando) return <Carregando cor={cor.cor} />;
-  if (erro) return <Erro mensagem={erro} onTentar={buscarFases} />;
+  if (erro) return <Erro mensagem={erro} onTentar={tentarDeNovo} />;
 
   return (
     <Tela titulo="Passa de Fase" subtitulo="Treine como agir nas situações do dia a dia.">

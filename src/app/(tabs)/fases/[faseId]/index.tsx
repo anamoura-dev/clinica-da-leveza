@@ -1,8 +1,9 @@
 import { Link, Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { FlatList, StyleSheet, Text } from 'react-native';
 
 import { Carregando, Cartao, Erro, Rotulo, Vazio } from '@/components/ui';
+import { useDados } from '@/hooks/use-dados';
 import { Cores, Destaques, Espaco, Fontes } from '@/constants/theme';
 import { supabase } from '../../../../../lib/supabase';
 
@@ -16,19 +17,7 @@ const cor = Destaques.fases;
 
 export default function ListaCenarios() {
   const { faseId } = useLocalSearchParams<{ faseId: string }>();
-  const [cenarios, setCenarios] = useState<Cenario[]>([]);
-  const [tituloFase, setTituloFase] = useState('');
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
-
-  useEffect(() => {
-    buscarCenarios();
-  }, [faseId]);
-
-  async function buscarCenarios() {
-    setCarregando(true);
-    setErro(null);
-
+  const carregar = useCallback(async () => {
     const [cenariosRes, faseRes] = await Promise.all([
       supabase
         .from('cenarios')
@@ -37,16 +26,16 @@ export default function ListaCenarios() {
         .order('ordem', { ascending: true }),
       supabase.from('fases').select('titulo').eq('id', faseId).maybeSingle(),
     ]);
+    if (cenariosRes.error) throw new Error(cenariosRes.error.message);
+    return {
+      cenarios: (cenariosRes.data ?? []) as Cenario[],
+      tituloFase: (faseRes.data?.titulo as string | undefined) ?? '',
+    };
+  }, [faseId]);
 
-    if (cenariosRes.error) {
-      setErro(cenariosRes.error.message);
-    } else {
-      setCenarios(cenariosRes.data || []);
-    }
-    setTituloFase(faseRes.data?.titulo ?? '');
-
-    setCarregando(false);
-  }
+  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar);
+  const cenarios = dados?.cenarios ?? [];
+  const tituloFase = dados?.tituloFase ?? '';
 
   return (
     <>
@@ -54,7 +43,7 @@ export default function ListaCenarios() {
       {carregando ? (
         <Carregando cor={cor.cor} />
       ) : erro ? (
-        <Erro mensagem={erro} onTentar={buscarCenarios} />
+        <Erro mensagem={erro} onTentar={tentarDeNovo} />
       ) : (
         <FlatList
           data={cenarios}

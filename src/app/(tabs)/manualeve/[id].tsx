@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Carregando, Erro } from '@/components/ui';
+import { useDados } from '@/hooks/use-dados';
 import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
@@ -58,19 +59,7 @@ const SECOES: {
 
 export default function ResultadoManuaLeve() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [entrada, setEntrada] = useState<Entrada | null>(null);
-  const [situacao, setSituacao] = useState<Situacao | null>(null);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
-
-  useEffect(() => {
-    buscarEntrada();
-  }, [id]);
-
-  async function buscarEntrada() {
-    setCarregando(true);
-    setErro(null);
-
+  const carregar = useCallback(async () => {
     const [entradaRes, situacaoRes] = await Promise.all([
       supabase
         .from('manualeve_entradas')
@@ -80,18 +69,17 @@ export default function ResultadoManuaLeve() {
         .maybeSingle(),
       supabase.from('manualeve_situacoes').select('rotulo, emoji').eq('id', id).maybeSingle(),
     ]);
+    if (entradaRes.error) throw new Error(entradaRes.error.message);
+    if (!entradaRes.data) throw new Error('Ainda não há conteúdo para essa situação.');
+    return {
+      entrada: entradaRes.data as Entrada,
+      situacao: (situacaoRes.data ?? null) as Situacao | null,
+    };
+  }, [id]);
 
-    if (entradaRes.error) {
-      setErro(entradaRes.error.message);
-    } else if (!entradaRes.data) {
-      setErro('Ainda não há conteúdo para essa situação.');
-    } else {
-      setEntrada(entradaRes.data);
-    }
-    setSituacao(situacaoRes.data ?? null);
-
-    setCarregando(false);
-  }
+  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar);
+  const entrada = dados?.entrada ?? null;
+  const situacao = dados?.situacao ?? null;
 
   return (
     <>
@@ -99,7 +87,7 @@ export default function ResultadoManuaLeve() {
       {carregando ? (
         <Carregando cor={Destaques.manualeve.cor} />
       ) : erro || !entrada ? (
-        <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={buscarEntrada} />
+        <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />
       ) : (
         <ScrollView contentContainerStyle={estilos.conteudo}>
           {situacao && (

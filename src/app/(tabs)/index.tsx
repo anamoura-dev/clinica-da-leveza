@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Href, Link } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Botao, Carregando, Cartao, Erro, Rotulo, Tela } from '@/components/ui';
+import { useDados } from '@/hooks/use-dados';
 import { Cores, Destaque, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../lib/supabase';
 
@@ -12,6 +13,11 @@ function saudacao() {
   if (hora < 12) return 'Bom dia';
   if (hora < 18) return 'Boa tarde';
   return 'Boa noite';
+}
+
+function sortear(lista: string[], evitar: string | null) {
+  const opcoes = lista.length > 1 ? lista.filter((t) => t !== evitar) : lista;
+  return opcoes[Math.floor(Math.random() * opcoes.length)];
 }
 
 const ATALHOS: {
@@ -44,46 +50,27 @@ const ATALHOS: {
   },
 ];
 
+async function buscarPauladas() {
+  const { data, error } = await supabase
+    .from('pauladas')
+    .select('texto')
+    .eq('ativa', true)
+    .eq('uso', 'abertura');
+
+  if (error) throw new Error(error.message);
+  const textos = (data ?? []).map((p) => p.texto as string);
+  if (textos.length === 0) throw new Error('Nenhuma paulada encontrada.');
+  return { textos, inicial: sortear(textos, null) };
+}
+
 export default function Hoje() {
-  const [pauladas, setPauladas] = useState<string[]>([]);
-  const [atual, setAtual] = useState<string | null>(null);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
-
-  useEffect(() => {
-    buscarPauladas();
-  }, []);
-
-  async function buscarPauladas() {
-    setCarregando(true);
-    setErro(null);
-
-    const { data, error } = await supabase
-      .from('pauladas')
-      .select('texto')
-      .eq('ativa', true)
-      .eq('uso', 'abertura');
-
-    if (error) {
-      setErro(error.message);
-    } else if (!data || data.length === 0) {
-      setErro('Nenhuma paulada encontrada.');
-    } else {
-      const textos = data.map((p) => p.texto as string);
-      setPauladas(textos);
-      setAtual(sortear(textos, null));
-    }
-
-    setCarregando(false);
-  }
-
-  function sortear(lista: string[], evitar: string | null) {
-    const opcoes = lista.length > 1 ? lista.filter((t) => t !== evitar) : lista;
-    return opcoes[Math.floor(Math.random() * opcoes.length)];
-  }
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarPauladas);
+  const [escolhida, setEscolhida] = useState<string | null>(null);
+  const pauladas = dados?.textos ?? [];
+  const atual = escolhida ?? dados?.inicial ?? null;
 
   if (carregando) return <Carregando />;
-  if (erro) return <Erro mensagem={erro} onTentar={buscarPauladas} />;
+  if (erro) return <Erro mensagem={erro} onTentar={tentarDeNovo} />;
 
   return (
     <Tela titulo={`${saudacao()}!`} subtitulo="Um respiro para começar.">
@@ -97,7 +84,7 @@ export default function Hoje() {
               icone="refresh"
               variante="suave"
               cor={Cores.lavandaEscura}
-              onPress={() => setAtual(sortear(pauladas, atual))}
+              onPress={() => setEscolhida(sortear(pauladas, atual))}
             />
           )}
         </View>

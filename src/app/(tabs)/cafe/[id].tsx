@@ -1,9 +1,10 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import YoutubePlayer from 'react-native-youtube-iframe';
 
 import { Carregando, Erro, Rotulo } from '@/components/ui';
+import { useDados } from '@/hooks/use-dados';
 import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
@@ -31,40 +32,24 @@ function extrairVideoId(valor: string): string {
   return texto;
 }
 
-export default function Cafe() {
+export default function DetalheCafe() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { width } = useWindowDimensions();
-  const [cafe, setCafe] = useState<Cafe | null>(null);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
-
-  const larguraVideo = width - Espaco.lg * 2;
-  const alturaVideo = Math.round((larguraVideo * 9) / 16);
-
-  useEffect(() => {
-    buscarCafe();
-  }, [id]);
-
-  async function buscarCafe() {
-    setCarregando(true);
-    setErro(null);
-
+  const carregar = useCallback(async () => {
     const { data, error } = await supabase
       .from('content')
       .select('titulo, gancho, video_url')
       .eq('id', id)
       .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error('Café não encontrado.');
+    return data as Cafe;
+  }, [id]);
 
-    if (error) {
-      setErro(error.message);
-    } else if (!data) {
-      setErro('Café não encontrado.');
-    } else {
-      setCafe(data);
-    }
+  const { dados: cafe, carregando, erro, tentarDeNovo } = useDados(carregar);
 
-    setCarregando(false);
-  }
+  const larguraVideo = width - Espaco.lg * 2;
+  const alturaVideo = Math.round((larguraVideo * 9) / 16);
 
   return (
     <>
@@ -72,7 +57,7 @@ export default function Cafe() {
       {carregando ? (
         <Carregando cor={cor.cor} />
       ) : erro || !cafe ? (
-        <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={buscarCafe} />
+        <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />
       ) : (
         <ScrollView contentContainerStyle={estilos.conteudo}>
           {cafe.video_url && (

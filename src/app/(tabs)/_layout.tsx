@@ -7,9 +7,9 @@ import { Cores, Destaques, Fontes } from '@/constants/theme';
 type NomeIcone = keyof typeof Ionicons.glyphMap;
 
 function icone(ativo: NomeIcone, inativo: NomeIcone) {
-  return ({ color, focused, size }: { color: ColorValue; focused: boolean; size: number }) => (
-    <Ionicons name={focused ? ativo : inativo} size={size} color={color as string} />
-  );
+  return function IconeDaAba({ color, focused, size }: { color: ColorValue; focused: boolean; size: number }) {
+    return <Ionicons name={focused ? ativo : inativo} size={size} color={color as string} />;
+  };
 }
 
 export default function TabsLayout() {
