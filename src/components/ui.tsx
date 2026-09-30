@@ -64,6 +64,31 @@ export function Vazio({ mensagem, icone = 'leaf-outline' }: { mensagem: string; 
   );
 }
 
+/** Tela provisória para áreas que ainda vão ser construídas. */
+export function EmBreve({
+  icone,
+  titulo,
+  texto,
+  cor = Cores.lavandaEscura,
+  corFundo = Cores.lavandaClara,
+}: {
+  icone: keyof typeof Ionicons.glyphMap;
+  titulo: string;
+  texto: string;
+  cor?: string;
+  corFundo?: string;
+}) {
+  return (
+    <View style={estilos.centro}>
+      <View style={[estilos.emBreveIcone, { backgroundColor: corFundo }]}>
+        <Ionicons name={icone} size={36} color={cor} />
+      </View>
+      <Text style={estilos.emBreveTitulo}>{titulo}</Text>
+      <Text style={estilos.vazioTexto}>{texto}</Text>
+    </View>
+  );
+}
+
 /** Cartão branco arredondado que responde ao toque. */
 export function Cartao({
   children,
@@ -152,6 +177,19 @@ const estilos = StyleSheet.create({
     fontFamily: Fontes.regular,
     fontSize: 15,
     color: Cores.textoSuave,
+    textAlign: 'center',
+  },
+  emBreveIcone: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emBreveTitulo: {
+    fontFamily: Fontes.extra,
+    fontSize: 22,
+    color: Cores.texto,
     textAlign: 'center',
   },
   cartao: {

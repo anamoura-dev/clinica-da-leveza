@@ -28,9 +28,17 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Hoje',
+          title: 'Home',
           tabBarActiveTintColor: Destaques.hoje.escura,
-          tabBarIcon: icone('sunny', 'sunny-outline'),
+          tabBarIcon: icone('home', 'home-outline'),
+        }}
+      />
+      <Tabs.Screen
+        name="cafe"
+        options={{
+          title: 'Café',
+          tabBarActiveTintColor: Destaques.cafe.escura,
+          tabBarIcon: icone('cafe', 'cafe-outline'),
         }}
       />
       <Tabs.Screen
@@ -42,19 +50,19 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="cafe"
+        name="fases"
         options={{
-          title: 'Cafés',
-          tabBarActiveTintColor: Destaques.cafe.escura,
-          tabBarIcon: icone('cafe', 'cafe-outline'),
+          title: 'Jogos',
+          tabBarActiveTintColor: Destaques.fases.escura,
+          tabBarIcon: icone('game-controller', 'game-controller-outline'),
         }}
       />
       <Tabs.Screen
-        name="fases"
+        name="perfil"
         options={{
-          title: 'Fases',
-          tabBarActiveTintColor: Destaques.fases.escura,
-          tabBarIcon: icone('game-controller', 'game-controller-outline'),
+          title: 'Perfil',
+          tabBarActiveTintColor: Destaques.hoje.escura,
+          tabBarIcon: icone('person', 'person-outline'),
         }}
       />
     </Tabs>

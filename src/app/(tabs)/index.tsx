@@ -1,54 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Href, Link } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Botao, Carregando, Cartao, Erro, Rotulo, Tela } from '@/components/ui';
+import { Carregando, Cartao, Erro, Rotulo, Tela } from '@/components/ui';
+import { Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
-import { Cores, Destaque, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
 import { supabase } from '../../../lib/supabase';
-
-function saudacao() {
-  const hora = new Date().getHours();
-  if (hora < 12) return 'Bom dia';
-  if (hora < 18) return 'Boa tarde';
-  return 'Boa noite';
-}
 
 function sortear(lista: string[], evitar: string | null) {
   const opcoes = lista.length > 1 ? lista.filter((t) => t !== evitar) : lista;
   return opcoes[Math.floor(Math.random() * opcoes.length)];
 }
-
-const ATALHOS: {
-  href: Href;
-  titulo: string;
-  descricao: string;
-  icone: keyof typeof Ionicons.glyphMap;
-  destaque: Destaque;
-}[] = [
-  {
-    href: '/manualeve',
-    titulo: 'ManuaLeve',
-    descricao: 'Meu filho não quer... e agora?',
-    icone: 'book-outline',
-    destaque: Destaques.manualeve,
-  },
-  {
-    href: '/cafe',
-    titulo: 'Cafés',
-    descricao: 'Conversas curtas para o seu dia',
-    icone: 'cafe-outline',
-    destaque: Destaques.cafe,
-  },
-  {
-    href: '/fases',
-    titulo: 'Passa de Fase',
-    descricao: 'Treine situações do dia a dia',
-    icone: 'game-controller-outline',
-    destaque: Destaques.fases,
-  },
-];
 
 async function buscarPauladas() {
   const { data, error } = await supabase
@@ -63,7 +26,15 @@ async function buscarPauladas() {
   return { textos, inicial: sortear(textos, null) };
 }
 
-export default function Hoje() {
+const CAMINHOS: { emoji: string; texto: string; href: Href }[] = [
+  { emoji: '🔍', texto: 'Quero entender uma situação', href: '/manualeve' },
+  { emoji: '☕', texto: 'Quero aprender alguma coisa', href: '/cafe' },
+  { emoji: '🎮', texto: 'Quero passar de fase', href: '/fases' },
+  { emoji: '💬', texto: 'Quero conversar', href: '/conversar' },
+  { emoji: '🎈', texto: 'Quero entrar no mundo das crianças', href: '/mundo' },
+];
+
+export default function Home() {
   const { dados, carregando, erro, tentarDeNovo } = useDados(buscarPauladas);
   const [escolhida, setEscolhida] = useState<string | null>(null);
   const pauladas = dados?.textos ?? [];
@@ -73,37 +44,35 @@ export default function Hoje() {
   if (erro) return <Erro mensagem={erro} onTentar={tentarDeNovo} />;
 
   return (
-    <Tela titulo={`${saudacao()}!`} subtitulo="Um respiro para começar.">
+    <Tela>
       <ScrollView contentContainerStyle={estilos.conteudo}>
-        <View style={estilos.paulada}>
-          <Rotulo cor={Cores.lavandaEscura}>#Paulada</Rotulo>
-          <Text style={estilos.pauladaTexto}>{atual}</Text>
+        <View style={estilos.topo}>
+          <Rotulo cor={Cores.lavandaEscura}>Clínica da Leveza</Rotulo>
           {pauladas.length > 1 && (
-            <Botao
-              titulo="Outra paulada"
-              icone="refresh"
-              variante="suave"
-              cor={Cores.lavandaEscura}
-              onPress={() => setEscolhida(sortear(pauladas, atual))}
-            />
+            <Pressable
+              hitSlop={12}
+              accessibilityLabel="Outra paulada"
+              onPress={() => setEscolhida(sortear(pauladas, atual))}>
+              <Ionicons name="refresh" size={18} color={Cores.lavanda} />
+            </Pressable>
           )}
         </View>
 
-        <Text style={estilos.secao}>Para explorar</Text>
-        {ATALHOS.map((a) => (
-          <Link key={a.titulo} href={a.href} asChild>
-            <Cartao style={estilos.atalho}>
-              <View style={[estilos.atalhoIcone, { backgroundColor: a.destaque.clara }]}>
-                <Ionicons name={a.icone} size={22} color={a.destaque.escura} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={estilos.atalhoTitulo}>{a.titulo}</Text>
-                <Text style={estilos.atalhoDescricao}>{a.descricao}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={18} color={Cores.textoClaro} />
-            </Cartao>
-          </Link>
-        ))}
+        <Text style={estilos.paulada}>{atual}</Text>
+
+        <Text style={estilos.pergunta}>O que trouxe você até aqui?</Text>
+
+        <View style={estilos.caminhos}>
+          {CAMINHOS.map((c) => (
+            <Link key={c.texto} href={c.href} asChild>
+              <Cartao style={estilos.caminho}>
+                <Text style={estilos.emoji}>{c.emoji}</Text>
+                <Text style={estilos.caminhoTexto}>{c.texto}</Text>
+                <Ionicons name="chevron-forward" size={18} color={Cores.textoClaro} />
+              </Cartao>
+            </Link>
+          ))}
+        </View>
       </ScrollView>
     </Tela>
   );
@@ -111,52 +80,45 @@ export default function Hoje() {
 
 const estilos = StyleSheet.create({
   conteudo: {
-    paddingHorizontal: Espaco.lg,
-    paddingBottom: Espaco.xl,
-    gap: Espaco.md,
+    padding: Espaco.lg,
+    paddingTop: Espaco.lg,
+  },
+  topo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   paulada: {
-    backgroundColor: Cores.lavandaClara,
-    borderRadius: Raio.lg,
-    padding: Espaco.lg,
-    paddingVertical: Espaco.xl,
-    alignItems: 'center',
-    gap: Espaco.lg,
-  },
-  pauladaTexto: {
-    fontFamily: Fontes.negrito,
-    fontSize: 22,
-    lineHeight: 31,
-    color: Cores.texto,
-    textAlign: 'center',
-  },
-  secao: {
     fontFamily: Fontes.extra,
-    fontSize: 18,
+    fontSize: 28,
+    lineHeight: 36,
     color: Cores.texto,
-    marginTop: Espaco.sm,
+    marginTop: Espaco.md,
   },
-  atalho: {
+  pergunta: {
+    fontFamily: Fontes.media,
+    fontSize: 16,
+    color: Cores.textoSuave,
+    marginTop: Espaco.lg,
+    marginBottom: Espaco.md,
+  },
+  caminhos: {
+    gap: Espaco.sm + 4,
+  },
+  caminho: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Espaco.md,
+    paddingVertical: Espaco.md + 2,
+    borderRadius: Raio.md,
   },
-  atalhoIcone: {
-    width: 44,
-    height: 44,
-    borderRadius: Raio.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
+  emoji: {
+    fontSize: 22,
   },
-  atalhoTitulo: {
-    fontFamily: Fontes.negrito,
+  caminhoTexto: {
+    flex: 1,
+    fontFamily: Fontes.media,
     fontSize: 16,
     color: Cores.texto,
-  },
-  atalhoDescricao: {
-    fontFamily: Fontes.regular,
-    fontSize: 14,
-    color: Cores.textoSuave,
-    marginTop: 2,
   },
 });

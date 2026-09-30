@@ -10,6 +10,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
+import { opcoesDaPilha } from '@/components/navegacao';
 import { Cores } from '@/constants/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -33,7 +34,17 @@ export default function RootLayout() {
   return (
     <>
       <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Cores.fundo } }} />
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Cores.fundo } }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen
+          name="conversar"
+          options={{ ...opcoesDaPilha(Cores.lavandaEscura), headerShown: true, title: 'Conversar' }}
+        />
+        <Stack.Screen
+          name="mundo"
+          options={{ ...opcoesDaPilha(Cores.pessegoEscuro), headerShown: true, title: 'Mundo das crianças' }}
+        />
+      </Stack>
     </>
   );
 }
