@@ -18,15 +18,19 @@ import Animated, {
 import { BalaoEspinhoso } from '@/components/balao-espinhoso';
 import { Cores, Fontes } from '@/constants/theme';
 
-// Linha do tempo da abertura (ms) — tudo acontece em ~2,5 s
-const PREPARO = 300; // o pau pega impulso
-const GOLPE = 220; // o pau vem na direção de quem está olhando
-const IMPACTO = PREPARO + GOLPE; // 520: pancada
-const BOLINHAS = 800; // bolinhas do pensamento
-const BALAO = 1040; // balão principal
-const FRASE = 1250; // palavras começam
-const DURACAO_FRASE = 1000; // tempo total para todas as palavras entrarem
-const DICA = 2500; // "arraste para o lado"
+// Linha do tempo da abertura (ms) — tudo acontece em ~3,5 s
+const PREPARO = 280; // o pau pega impulso
+const GOLPE = 200; // o pau vem na direção de quem está olhando
+const RECUO = 250; // entre as pancadas o pau volta para o outro lado
+// Três pancadas, uma sílaba em cada: PAU · LA · DA!
+const SILABAS = ['PAU', 'LA', 'DA!'];
+const IMPACTOS = SILABAS.map((_, i) => PREPARO + GOLPE + i * (RECUO + GOLPE)); // 480, 930, 1380
+const ULTIMO_IMPACTO = IMPACTOS[IMPACTOS.length - 1];
+const BOLINHAS = 1850; // bolinhas do pensamento (as sílabas somem aqui)
+const BALAO = 2050; // balão principal
+const FRASE = 2250; // palavras começam
+const DURACAO_FRASE = 900; // tempo total para todas as palavras entrarem
+const DICA = 3500; // "arraste para o lado"
 
 const MADEIRA = '#C48A55';
 const MADEIRA_ESCURA = '#8B5A2B';
@@ -45,15 +49,26 @@ function Pau() {
   const opacidade = useSharedValue(0);
 
   useEffect(() => {
+    const golpe = { duration: GOLPE, easing: Easing.in(Easing.cubic) };
+    const recuo = { duration: RECUO, easing: Easing.out(Easing.quad) };
     opacidade.value = withSequence(
       withTiming(1, { duration: 100 }),
-      withDelay(IMPACTO - 60, withTiming(0, { duration: 120 })),
+      withDelay(ULTIMO_IMPACTO - 140, withTiming(0, { duration: 120 })),
     );
-    giro.value = withSequence(
-      withTiming(-115, { duration: PREPARO, easing: Easing.out(Easing.quad) }),
-      withTiming(15, { duration: GOLPE, easing: Easing.in(Easing.cubic) }),
-    );
-    escala.value = withDelay(PREPARO, withTiming(3.2, { duration: GOLPE, easing: Easing.in(Easing.cubic) }));
+    // Pega impulso pela esquerda e bate; depois alterna o lado a cada pancada.
+    const giros: number[] = [withTiming(-115, { duration: PREPARO, easing: Easing.out(Easing.quad) })];
+    const escalas: number[] = [withTiming(0.6, { duration: PREPARO })];
+    SILABAS.forEach((_, i) => {
+      const lado = i % 2 === 0 ? 1 : -1;
+      if (i > 0) {
+        giros.push(withTiming(-lado * 115, recuo));
+        escalas.push(withTiming(0.8, recuo));
+      }
+      giros.push(withTiming(lado * 15, golpe));
+      escalas.push(withTiming(3.2 + i * 0.15, golpe));
+    });
+    giro.value = withSequence(...giros);
+    escala.value = withSequence(...escalas);
   }, [giro, escala, opacidade]);
 
   const estilo = useAnimatedStyle(() => ({
@@ -78,40 +93,49 @@ function Pau() {
 }
 
 /** Clarão na tela inteira + "PÁ!" no momento da pancada. */
-function Impacto() {
+function Impacto({ momento, silaba, posicao }: { momento: number; silaba: string; posicao: number }) {
   const clarao = useSharedValue(0);
   const estouro = useSharedValue(0);
   const opacidadeEstouro = useSharedValue(0);
 
   useEffect(() => {
     clarao.value = withDelay(
-      IMPACTO,
+      momento,
       withSequence(withTiming(0.8, { duration: 50 }), withTiming(0, { duration: 300 })),
     );
     estouro.value = withDelay(
-      IMPACTO,
+      momento,
       withSequence(
         withTiming(1.4, { duration: 130, easing: Easing.out(Easing.back(3)) }),
         withTiming(1, { duration: 110 }),
       ),
     );
     opacidadeEstouro.value = withDelay(
-      IMPACTO,
-      withSequence(withTiming(1, { duration: 30 }), withDelay(260, withTiming(0, { duration: 180 }))),
+      momento,
+      withSequence(
+        withTiming(1, { duration: 30 }),
+        // a sílaba fica até a palavra se formar, e some quando o pensamento começa
+        withDelay(BOLINHAS - momento - 30 - 200, withTiming(0, { duration: 200 })),
+      ),
     );
-  }, [clarao, estouro, opacidadeEstouro]);
+  }, [clarao, estouro, opacidadeEstouro, momento]);
 
   const estiloClarao = useAnimatedStyle(() => ({ opacity: clarao.value }));
   const estiloEstouro = useAnimatedStyle(() => ({
     opacity: opacidadeEstouro.value,
-    transform: [{ scale: estouro.value }, { rotate: '-8deg' }],
+    transform: [
+      { translateX: posicao * 85 },
+      { translateY: posicao * 75 },
+      { scale: estouro.value },
+      { rotate: `${(posicao % 2 === 0 ? -1 : 1) * 8}deg` },
+    ],
   }));
 
   return (
     <>
       <View pointerEvents="none" style={[StyleSheet.absoluteFill, estilos.centro]}>
         <Animated.View style={[estilos.estouro, estiloEstouro]}>
-          <Text style={estilos.estouroTexto}>PÁ!</Text>
+          <Text style={estilos.estouroTexto}>{silaba}</Text>
         </Animated.View>
       </View>
       <Animated.View pointerEvents="none" style={[StyleSheet.absoluteFill, estilos.clarao, estiloClarao]} />
@@ -219,20 +243,29 @@ function Cena({
 
   useEffect(() => {
     if (parado) return;
-    tremida.value = withDelay(
-      IMPACTO,
+    const tremer = (forca: number) =>
       withSequence(
-        withTiming(-16, { duration: 40 }),
-        withTiming(14, { duration: 40 }),
-        withTiming(-9, { duration: 40 }),
-        withTiming(6, { duration: 40 }),
+        withTiming(-16 * forca, { duration: 40 }),
+        withTiming(14 * forca, { duration: 40 }),
+        withTiming(-9 * forca, { duration: 40 }),
+        withTiming(6 * forca, { duration: 40 }),
         withTiming(0, { duration: 50 }),
+      );
+    const DURACAO_TREMIDA = 210;
+    tremida.value = withSequence(
+      ...IMPACTOS.map((momento, i) =>
+        withDelay(
+          i === 0 ? momento : momento - IMPACTOS[i - 1] - DURACAO_TREMIDA,
+          tremer(i % 2 === 0 ? 1 + i * 0.15 : -(1 + i * 0.15)),
+        ),
       ),
     );
-    const vibrar = setTimeout(() => {
-      if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    }, IMPACTO);
-    return () => clearTimeout(vibrar);
+    const vibracoes = IMPACTOS.map((momento) =>
+      setTimeout(() => {
+        if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      }, momento),
+    );
+    return () => vibracoes.forEach(clearTimeout);
   }, [tremida, parado]);
 
   const estiloTremida = useAnimatedStyle(() => ({
@@ -287,7 +320,10 @@ function Cena({
       </Animated.View>
 
       {!parado && <Pau />}
-      {!parado && <Impacto />}
+      {!parado &&
+        SILABAS.map((silaba, i) => (
+          <Impacto key={silaba} momento={IMPACTOS[i]} silaba={silaba} posicao={i - 1} />
+        ))}
 
       <DicaArrastar parado={parado} onPress={onAvancar} />
     </View>
