@@ -26,7 +26,7 @@ async function buscarFases(): Promise<Fase[]> {
 }
 
 export default function ListaFases() {
-  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarFases);
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarFases, 'fases');
   const fases = dados ?? [];
 
   if (carregando) return <Carregando />;

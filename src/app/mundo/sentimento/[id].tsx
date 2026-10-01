@@ -39,7 +39,7 @@ type Opcao = {
  */
 export default function PassoEscolha() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarMundo);
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarMundo, 'mundo');
   const concluidas = useMissoesConcluidas();
 
   if (carregando) return <Carregando />;

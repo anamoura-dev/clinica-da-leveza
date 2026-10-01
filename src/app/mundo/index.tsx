@@ -24,7 +24,7 @@ function emLinhas<T>(lista: T[]) {
  * Só as emoções, ocupando a tela toda. Tocar numa leva ao passo 2.
  */
 export default function PassoSentimento() {
-  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarMundo);
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarMundo, 'mundo');
   const concluidas = useMissoesConcluidas();
   // O portão de adulto protege a saída e o link dos livros (compra fora do app).
   const [portao, setPortao] = useState<'sair' | 'livros' | null>(null);

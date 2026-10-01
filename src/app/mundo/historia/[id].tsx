@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -20,7 +20,14 @@ function BotaoOuvir({ url }: { url: string }) {
 
   return (
     <Pressable
-      onPress={() => (tocando ? player.pause() : player.play())}
+      onPress={async () => {
+        if (tocando) return player.pause();
+        // Toca mesmo com o iPhone no silencioso (a criança apertou "Ouvir").
+        await setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+        // Se já chegou ao fim, começa de novo.
+        if (status.duration > 0 && status.currentTime >= status.duration - 0.3) player.seekTo(0);
+        player.play();
+      }}
       style={({ pressed }) => [estilos.ouvir, pressed && { opacity: 0.8 }]}
       accessibilityLabel={tocando ? 'Pausar a história' : 'Ouvir a história'}>
       <Ionicons name={tocando ? 'pause' : 'headset'} size={20} color="#FFFFFF" />
@@ -34,7 +41,7 @@ export default function LerHistoria() {
   const compacto = useWindowDimensions().height < 720;
   const { id } = useLocalSearchParams<{ id: string }>();
   const carregar = useCallback(() => buscarHistoria(id), [id]);
-  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar);
+  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar, `historia:${id}`);
   const [pagina, setPagina] = useState(0);
 
   if (carregando) return <Carregando />;

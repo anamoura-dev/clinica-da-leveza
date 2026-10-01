@@ -48,7 +48,7 @@ export default function DetalheCafe() {
     return data as Cafe;
   }, [id]);
 
-  const { dados: cafe, carregando, erro, tentarDeNovo } = useDados(carregar);
+  const { dados: cafe, carregando, erro, tentarDeNovo } = useDados(carregar, `cafe:${id}`);
 
   const larguraVideo = width - Espaco.lg * 2;
   const alturaVideo = Math.round((larguraVideo * 9) / 16);

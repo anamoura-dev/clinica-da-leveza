@@ -27,7 +27,7 @@ async function buscarCafes(): Promise<Cafe[]> {
 }
 
 export default function ListaCafes() {
-  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarCafes);
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarCafes, 'cafes');
   const cafes = dados ?? [];
 
   if (carregando) return <Carregando />;

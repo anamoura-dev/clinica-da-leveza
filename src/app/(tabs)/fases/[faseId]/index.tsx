@@ -33,7 +33,7 @@ export default function ListaCenarios() {
     };
   }, [faseId]);
 
-  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar);
+  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar, `fase:${faseId}`);
   const cenarios = dados?.cenarios ?? [];
   const tituloFase = dados?.tituloFase ?? '';
 

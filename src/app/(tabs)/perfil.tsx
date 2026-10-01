@@ -33,7 +33,7 @@ import { sincronizarMissoes } from '@/components/mundo/dados';
 import { Carregando, Erro } from '@/components/ui';
 import { Clinica, preenchido } from '@/constants/clinica';
 import { Contorno, Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
-import { useDados } from '@/hooks/use-dados';
+import { mensagemAmigavel, useDados } from '@/hooks/use-dados';
 
 export default function Perfil() {
   const { usuario, carregando } = useSessao();
@@ -85,7 +85,7 @@ function Entrar() {
     try {
       await (qual === 'google' ? entrarComGoogle() : entrarComApple());
     } catch (e) {
-      Alert.alert('Não deu para entrar', e instanceof Error ? e.message : 'Tente de novo.');
+      Alert.alert('Não deu para entrar', mensagemAmigavel(e));
     } finally {
       setEntrando(null);
     }
@@ -117,18 +117,7 @@ function Entrar() {
           ))}
         </View>
 
-        <Pressable
-          onPress={() => entrar('google')}
-          disabled={!!entrando}
-          style={({ pressed }) => [estilos.botaoEntrar, estilos.botaoGoogle, pressed && estilos.pressionado]}>
-          {entrando === 'google' ? (
-            <ActivityIndicator color={Cores.marinho} />
-          ) : (
-            <Ionicons name="logo-google" size={20} color={Cores.marinho} />
-          )}
-          <Text style={[estilos.botaoEntrarTexto, { color: Cores.marinho }]}>Continuar com Google</Text>
-        </Pressable>
-
+        {/* A Apple pede o botão dela com o mesmo destaque (ou maior) que os outros logins. */}
         {APPLE_ATIVO && Platform.OS === 'ios' && (
           <Pressable
             onPress={() => entrar('apple')}
@@ -142,6 +131,18 @@ function Entrar() {
             <Text style={[estilos.botaoEntrarTexto, { color: '#FFFFFF' }]}>Continuar com Apple</Text>
           </Pressable>
         )}
+
+        <Pressable
+          onPress={() => entrar('google')}
+          disabled={!!entrando}
+          style={({ pressed }) => [estilos.botaoEntrar, estilos.botaoGoogle, pressed && estilos.pressionado]}>
+          {entrando === 'google' ? (
+            <ActivityIndicator color={Cores.marinho} />
+          ) : (
+            <Ionicons name="logo-google" size={20} color={Cores.marinho} />
+          )}
+          <Text style={[estilos.botaoEntrarTexto, { color: Cores.marinho }]}>Continuar com Google</Text>
+        </Pressable>
 
         <LinksAjuda />
 
@@ -250,7 +251,7 @@ function Conta({ usuario, dados }: { usuario: User; dados: Awaited<ReturnType<ty
             try {
               await excluirConta();
             } catch (e) {
-              Alert.alert('Ops', e instanceof Error ? e.message : 'Tente de novo.');
+              Alert.alert('Ops', mensagemAmigavel(e));
             }
           },
         },

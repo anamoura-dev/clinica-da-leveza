@@ -59,7 +59,7 @@ export const POLITICA_DE_PRIVACIDADE: SecaoPolitica[] = [
   {
     "titulo": "Seus direitos",
     "paragrafos": [
-      "Você pode, a qualquer momento: ver e corrigir seus dados (no Perfil), apagar crianças cadastradas, e excluir sua conta e todos os dados dela pelo botão \"Excluir minha conta\", no Perfil. Para qualquer outro pedido previsto na LGPD, fale com a gente pelo e-mail abaixo."
+      "Você pode, a qualquer momento: ver e corrigir seus dados (no Perfil), apagar crianças cadastradas, e excluir sua conta e todos os dados dela pelo botão \"Excluir minha conta\", no Perfil. Para qualquer outro pedido previsto na LGPD, fale com a gente pelo contato indicado no fim desta política."
     ]
   },
   {

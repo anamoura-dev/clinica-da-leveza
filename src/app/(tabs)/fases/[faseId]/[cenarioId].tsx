@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -23,27 +23,33 @@ const cor = Destaques.fases;
 const letra = (i: number) => String.fromCharCode(65 + i);
 
 export default function TelaCenario() {
-  const { cenarioId } = useLocalSearchParams<{ cenarioId: string }>();
+  const { faseId, cenarioId } = useLocalSearchParams<{ faseId: string; cenarioId: string }>();
   const [escolhida, setEscolhida] = useState<number | null>(null);
 
   const carregar = useCallback(async () => {
-    const [cenarioRes, opcoesRes] = await Promise.all([
+    const [cenarioRes, opcoesRes, faseRes] = await Promise.all([
       supabase.from('cenarios').select('texto').eq('id', cenarioId).maybeSingle(),
       supabase
         .from('opcoes')
         .select('id, texto, devolutiva')
         .eq('cenario_id', cenarioId)
         .order('ordem', { ascending: true }),
+      // Os cenários da fase, na ordem, para saber qual é o próximo.
+      supabase.from('cenarios').select('id').eq('fase_id', faseId).order('ordem', { ascending: true }),
     ]);
     const falha = cenarioRes.error || opcoesRes.error;
     if (falha) throw new Error(falha.message);
     if (!cenarioRes.data) throw new Error('Cenário não encontrado.');
-    return { cenario: cenarioRes.data as Cenario, opcoes: (opcoesRes.data ?? []) as Opcao[] };
-  }, [cenarioId]);
+    const ids = ((faseRes.data ?? []) as { id: string }[]).map((c) => c.id);
+    const posicao = ids.indexOf(cenarioId);
+    const proximo = posicao >= 0 && posicao < ids.length - 1 ? ids[posicao + 1] : null;
+    return { cenario: cenarioRes.data as Cenario, opcoes: (opcoesRes.data ?? []) as Opcao[], proximo };
+  }, [faseId, cenarioId]);
 
-  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar);
+  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar, `cenario:${cenarioId}`);
   const cenario = dados?.cenario ?? null;
   const opcoes = dados?.opcoes ?? [];
+  const proximo = dados?.proximo ?? null;
 
   const opcao = escolhida !== null ? opcoes[escolhida] : null;
 
@@ -98,6 +104,16 @@ export default function TelaCenario() {
                 <Text style={estilos.devolutivaTexto}>{opcao.devolutiva}</Text>
               </View>
 
+              {proximo ? (
+                <Botao
+                  titulo="Próxima situação"
+                  icone="arrow-forward"
+                  cor={cor.escura}
+                  onPress={() => router.replace(`/fases/${faseId}/${proximo}`)}
+                />
+              ) : (
+                <Botao titulo="Fim da fase! Voltar" icone="flag-outline" cor={cor.escura} onPress={() => router.back()} />
+              )}
               <Botao
                 titulo="Ver outras opções"
                 icone="arrow-back"

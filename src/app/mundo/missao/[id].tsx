@@ -14,7 +14,7 @@ import { useDados } from '@/hooks/use-dados';
 export default function FazerMissao() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const carregar = useCallback(() => buscarMissao(id), [id]);
-  const { dados: missao, carregando, erro, tentarDeNovo } = useDados(carregar);
+  const { dados: missao, carregando, erro, tentarDeNovo } = useDados(carregar, `missao:${id}`);
   const [feitos, setFeitos] = useState<number[]>([]);
   const [comemorando, setComemorando] = useState(false);
 

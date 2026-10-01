@@ -77,10 +77,14 @@ export default function Home() {
     setViagem(null);
   }, [viagem]);
 
-  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarPauladas);
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarPauladas, 'pauladas');
   const [escolhida, setEscolhida] = useState<string | null>(null);
   const pauladas = dados?.textos ?? [];
-  const atual = escolhida ?? dados?.inicial ?? null;
+  // A primeira paulada fica fixa: se a versão guardada no celular for trocada pela
+  // da internet, a animação não recomeça com outra frase.
+  const [primeira, setPrimeira] = useState<string | null>(null);
+  if (dados && primeira === null) setPrimeira(dados.inicial);
+  const atual = escolhida ?? primeira;
 
   // Na abertura (página 1) só aparece a paulada: a barra de abas fica escondida.
   useEffect(() => {

@@ -25,7 +25,7 @@ async function buscarSituacoes(): Promise<Situacao[]> {
 }
 
 export default function ManuaLeve() {
-  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarSituacoes);
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarSituacoes, 'manualeve');
   const situacoes = dados ?? [];
 
   if (carregando) return <Carregando />;

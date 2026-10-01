@@ -79,7 +79,7 @@ export default function ResultadoManuaLeve() {
     };
   }, [id]);
 
-  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar);
+  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar, `manualeve:${id}`);
   const entrada = dados?.entrada ?? null;
   const situacao = dados?.situacao ?? null;
 

@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
@@ -23,7 +23,6 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ComConsentimentoIA } from '@/components/consentimento-ia';
-import { EmBreve } from '@/components/ui';
 import { LUPA_ATIVA } from '@/constants/recursos';
 import { Contorno, Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../lib/supabase';
@@ -82,18 +81,8 @@ function Ponto({ atraso }: { atraso: number }) {
 }
 
 export default function Conversar() {
-  if (!LUPA_ATIVA) {
-    return (
-      <>
-        <Stack.Screen options={{ title: 'Lupa IA' }} />
-        <EmBreve
-          icone="search-outline"
-          titulo="A Lupa vem aí"
-          texto="Em breve você vai poder conversar com a Lupa, nossa assistente, para investigar situações e organizar possibilidades."
-        />
-      </>
-    );
-  }
+  // Enquanto a Lupa estiver desligada, quem chegar aqui (ex.: por um link antigo) vai para o agendamento.
+  if (!LUPA_ATIVA) return <Redirect href="/agendar" />;
   return (
     <ComConsentimentoIA>
       <LupaIA />
