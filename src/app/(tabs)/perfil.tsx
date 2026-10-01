@@ -45,7 +45,9 @@ export default function Perfil() {
 
 /** "Fale com a gente" e "Privacidade" — a Apple pede um caminho de suporte e a política. */
 function LinksAjuda() {
-  const links: { icone: keyof typeof Ionicons.glyphMap; texto: string; abrir: () => void }[] = [];
+  const links: { icone: keyof typeof Ionicons.glyphMap; texto: string; abrir: () => void }[] = [
+    { icone: 'logo-whatsapp', texto: 'Agendar uma consulta', abrir: () => router.push('/agendar') },
+  ];
   if (preenchido(Clinica.email)) {
     links.push({ icone: 'mail-outline', texto: 'Fale com a gente', abrir: () => Linking.openURL(`mailto:${Clinica.email}`) });
   }

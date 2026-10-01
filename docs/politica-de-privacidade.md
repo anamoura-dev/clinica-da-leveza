@@ -10,6 +10,10 @@ Este aplicativo é oferecido pela Clínica da Leveza ([RAZÃO SOCIAL], CNPJ [CNP
 
 Quase tudo no app funciona sem criar conta. Sem conta, não guardamos nenhum dado seu nos nossos servidores. As estrelas do Espaço das Crianças ficam guardadas só no seu celular, e os desenhos feitos no app não são salvos nem enviados para lugar nenhum.
 
+## Agendamento de consultas
+
+Na tela “Quero conversar” você pode pedir um agendamento. Os dados que você preenche (nome, celular, e-mail, CPF e preferências de horário) não são guardados pelo app nem pelos nossos servidores: eles só montam uma mensagem que você mesma(o) envia pelo seu WhatsApp para a profissional. A partir daí, o atendimento, o cadastro para a nota fiscal e o pagamento do sinal seguem fora do app, pelos canais da clínica.
+
 ## Dados que guardamos quando você cria uma conta
 
 A conta é opcional. Se você entrar com Google ou Apple, guardamos:

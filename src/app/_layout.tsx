@@ -40,6 +40,10 @@ export default function RootLayout() {
           name="conversar"
           options={{ ...opcoesDaPilha(Cores.lilasEscuro), headerShown: true, title: 'Lupa IA' }}
         />
+        <Stack.Screen
+          name="agendar"
+          options={{ ...opcoesDaPilha(Cores.lilasEscuro), headerShown: true, title: 'Agendar consulta' }}
+        />
         <Stack.Screen name="mundo" />
         <Stack.Screen
           name="privacidade"
