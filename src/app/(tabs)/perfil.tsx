@@ -58,6 +58,9 @@ function LinksAjuda() {
       abrir: () => Linking.openURL(`https://instagram.com/${Clinica.instagram}`),
     });
   }
+  if (preenchido(Clinica.site)) {
+    links.push({ icone: 'globe-outline', texto: 'Site da clínica', abrir: () => Linking.openURL(Clinica.site) });
+  }
   links.push({ icone: 'shield-checkmark-outline', texto: 'Política de privacidade', abrir: () => router.push('/privacidade') });
 
   return (

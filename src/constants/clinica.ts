@@ -9,7 +9,7 @@ export const Clinica = {
   cnpj: '[CNPJ]',
   email: '[E-MAIL DE CONTATO]',
   instagram: '[usuario_do_instagram]', // sem o @
-  site: '[https://site-da-clinica.com.br]',
+  site: 'https://aprendendoaserleve.com.br',
   politicaAtualizadaEm: '01/10/2026',
 } as const;
 
