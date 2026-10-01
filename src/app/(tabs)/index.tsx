@@ -48,7 +48,7 @@ const CAMINHOS: Caminho[] = [
   { emoji: '🔍', texto: 'Quero entender uma situação', href: '/manualeve', cor: Destaques.manualeve.cor, nome: 'o ManuaLeve' },
   { emoji: '☕', texto: 'Quero aprender alguma coisa', href: '/cafe', cor: Destaques.cafe.cor, nome: 'os Cafés' },
   { emoji: '🎮', texto: 'Quero passar de fase', href: '/fases', cor: Destaques.fases.cor, nome: 'os Jogos' },
-  { emoji: '💬', texto: 'Quero conversar', href: '/agendar', cor: Destaques.lupa.cor, nome: 'a agenda' },
+  { emoji: '📅', texto: 'Quero agendar uma consulta', href: '/agendar', cor: Destaques.lupa.cor, nome: 'a agenda' },
   { emoji: '🎈', texto: 'Quero entrar no mundo das crianças', href: '/mundo', cor: Destaques.mundo.cor, nome: 'o Espaço das Crianças' },
 ];
 

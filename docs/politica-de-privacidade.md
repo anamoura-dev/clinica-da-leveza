@@ -12,7 +12,7 @@ Quase tudo no app funciona sem criar conta. Sem conta, não guardamos nenhum dad
 
 ## Agendamento de consultas
 
-Na tela “Quero conversar” você pode pedir um agendamento. Os dados que você preenche (nome, celular, e-mail, CPF e preferências de horário) não são guardados pelo app nem pelos nossos servidores: eles só montam uma mensagem que você mesma(o) envia pelo seu WhatsApp para a profissional. A partir daí, o atendimento, o cadastro para a nota fiscal e o pagamento do sinal seguem fora do app, pelos canais da clínica.
+Na tela “Quero agendar uma consulta” você pode pedir um agendamento. Os dados que você preenche (nome, celular, e-mail, CPF e preferências de horário) não são guardados pelo app nem pelos nossos servidores: eles só montam uma mensagem que você mesma(o) envia pelo seu WhatsApp para a profissional. A partir daí, o atendimento, o cadastro para a nota fiscal e o pagamento do sinal seguem fora do app, pelos canais da clínica.
 
 ## Dados que guardamos quando você cria uma conta
 

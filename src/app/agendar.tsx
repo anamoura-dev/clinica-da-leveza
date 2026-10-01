@@ -19,7 +19,7 @@ import { Agenda, Clinica, preenchido, reais, TipoConsulta, valorDoSinal } from '
 import { Contorno, Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 
 /**
- * "Quero conversar": como funciona a consulta + um formulário curto que vira
+ * "Quero agendar uma consulta": como funciona a consulta + um formulário curto que vira
  * uma mensagem de WhatsApp para a Ana Paula. Nada é salvo no app nem no banco:
  * ela confirma o horário, faz o cadastro no Tivita e envia o link do sinal.
  */

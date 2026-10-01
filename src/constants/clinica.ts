@@ -17,7 +17,7 @@ export const Clinica = {
 export const preenchido = (valor: string) => !!valor && !valor.startsWith('[');
 
 /**
- * Agendamento ("Quero conversar").
+ * Agendamento ("Quero agendar uma consulta").
  * ✏️ Valores, duração e regras são EXEMPLOS: troque quando a Ana Paula confirmar.
  * O app não guarda nada: o formulário só monta uma mensagem de WhatsApp.
  */
