@@ -1,6 +1,6 @@
 // ⚠️ Gerado a partir do mesmo texto de docs/politica-de-privacidade.md.
 // Se mudar aqui, mude lá também (ou peça para o Claude regerar os dois).
-// Marcadores {NOME}, {RAZAO}, {CNPJ}, {EMAIL}, {DATA} são trocados pelos dados de src/constants/clinica.ts.
+// Marcadores {NOME}, {RESPONSAVEL}, {CNPJ}, {EMAIL}, {DATA} são trocados pelos dados de src/constants/clinica.ts.
 
 export type SecaoPolitica = { titulo: string; paragrafos: string[] };
 
@@ -8,7 +8,7 @@ export const POLITICA_DE_PRIVACIDADE: SecaoPolitica[] = [
   {
     "titulo": "Quem somos",
     "paragrafos": [
-      "Este aplicativo é oferecido pela {NOME} ({RAZAO}, CNPJ {CNPJ}). Nesta política explicamos, de forma simples, quais dados o app usa, para quê e quais são os seus direitos, de acordo com a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018)."
+      "O app {NOME} é oferecido por {RESPONSAVEL}, Neuropsi Sistêmica (CNPJ {CNPJ}), que é a responsável pelos seus dados. Nesta política explicamos, de forma simples, quais dados o app usa, para quê e quais são os seus direitos, de acordo com a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018)."
     ]
   },
   {
@@ -20,7 +20,7 @@ export const POLITICA_DE_PRIVACIDADE: SecaoPolitica[] = [
   {
     "titulo": "Agendamento de consultas",
     "paragrafos": [
-      "Na tela “Quero agendar uma consulta” você pode pedir um agendamento. Os dados que você preenche (nome, celular, e-mail, CPF e preferências de horário) não são guardados pelo app nem pelos nossos servidores: eles só montam uma mensagem que você mesma(o) envia pelo seu WhatsApp para a profissional. A partir daí, o atendimento, o cadastro para a nota fiscal e o pagamento do sinal seguem fora do app, pelos canais da clínica."
+      "Na tela “Quero agendar uma consulta” você pode pedir um agendamento. Os dados que você preenche (nome, celular, e-mail, CPF e preferências de horário) não são guardados pelo app nem pelos nossos servidores: eles só montam uma mensagem que você mesma(o) envia pelo seu WhatsApp para a profissional. A partir daí, o atendimento, o cadastro para a nota fiscal e o pagamento do sinal seguem fora do app, diretamente com a Ana Paula."
     ]
   },
   {

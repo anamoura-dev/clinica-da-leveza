@@ -1,15 +1,16 @@
 /**
- * Dados da Clínica da Leveza usados no app (contato, política de privacidade).
+ * Dados do app e da responsável por ele (contato, política de privacidade).
+ * Não existe clínica: a Ana Paula atende sozinha no consultório dela.
+ * "Clínica da Leveza" é só o nome do app.
  * ✏️ Preencha os campos entre [colchetes]. Enquanto estiverem entre colchetes,
  * o app esconde aquele contato.
  */
 export const Clinica = {
   nome: 'Clínica da Leveza',
-  razaoSocial: '[RAZÃO SOCIAL DA CLÍNICA]',
-  cnpj: '[CNPJ]',
+  responsavel: 'Ana Paula Rodrigues',
+  cnpj: '[CNPJ]', // só se ela tiver (ex.: MEI). Se não tiver, deixe entre colchetes.
   email: '[E-MAIL DE CONTATO]',
   instagram: '[usuario_do_instagram]', // sem o @
-  site: 'https://aprendendoaserleve.com.br',
   politicaAtualizadaEm: '01/10/2026',
 } as const;
 
@@ -24,6 +25,8 @@ export const preenchido = (valor: string) => !!valor && !valor.startsWith('[');
 export const Agenda = {
   profissional: 'Ana Paula Rodrigues',
   especialidade: 'Neuropsi Sistêmica',
+  /** Site da Ana Paula, onde ela vende os livros dela. */
+  siteLivros: 'https://aprendendoaserleve.com.br',
   /** Só números, com 55 (Brasil) + DDD. */
   whatsapp: '553194131079',
   whatsappExibicao: '(31) 9413-1079',

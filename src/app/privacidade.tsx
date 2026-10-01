@@ -5,16 +5,15 @@ import { Clinica, preenchido } from '@/constants/clinica';
 import { POLITICA_DE_PRIVACIDADE } from '@/constants/politica-privacidade';
 import { Cores, Espaco, Fontes, t } from '@/constants/theme';
 
-/** Troca os marcadores {NOME}, {EMAIL}... pelos dados da clínica. */
+/** Troca os marcadores {NOME}, {EMAIL}... pelos dados de src/constants/clinica.ts. */
 function preencher(texto: string) {
   const ou = (valor: string, alternativa: string) => (preenchido(valor) ? valor : alternativa);
-  const temDadosEmpresa = preenchido(Clinica.razaoSocial) && preenchido(Clinica.cnpj);
   return texto
-    .replaceAll(' ({RAZAO}, CNPJ {CNPJ})', temDadosEmpresa ? ' ({RAZAO}, CNPJ {CNPJ})' : '')
+    .replaceAll(' (CNPJ {CNPJ})', preenchido(Clinica.cnpj) ? ' (CNPJ {CNPJ})' : '')
     .replaceAll('{NOME}', Clinica.nome)
-    .replaceAll('{RAZAO}', ou(Clinica.razaoSocial, Clinica.nome))
-    .replaceAll('{CNPJ}', ou(Clinica.cnpj, '—'))
-    .replaceAll('{EMAIL}', ou(Clinica.email, 'pelo Instagram da clínica'))
+    .replaceAll('{RESPONSAVEL}', Clinica.responsavel)
+    .replaceAll('{CNPJ}', Clinica.cnpj)
+    .replaceAll('{EMAIL}', ou(Clinica.email, 'pelo WhatsApp da tela “Quero agendar uma consulta”'))
     .replaceAll('{DATA}', Clinica.politicaAtualizadaEm);
 }
 

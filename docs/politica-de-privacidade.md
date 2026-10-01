@@ -4,7 +4,7 @@
 
 ## Quem somos
 
-Este aplicativo é oferecido pela Clínica da Leveza ([RAZÃO SOCIAL], CNPJ [CNPJ]). Nesta política explicamos, de forma simples, quais dados o app usa, para quê e quais são os seus direitos, de acordo com a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018).
+O app Clínica da Leveza é oferecido por Ana Paula Rodrigues, Neuropsi Sistêmica (CNPJ [CNPJ], se houver), que é a responsável pelos seus dados. Nesta política explicamos, de forma simples, quais dados o app usa, para quê e quais são os seus direitos, de acordo com a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018).
 
 ## Usar o app sem conta
 
@@ -12,7 +12,7 @@ Quase tudo no app funciona sem criar conta. Sem conta, não guardamos nenhum dad
 
 ## Agendamento de consultas
 
-Na tela “Quero agendar uma consulta” você pode pedir um agendamento. Os dados que você preenche (nome, celular, e-mail, CPF e preferências de horário) não são guardados pelo app nem pelos nossos servidores: eles só montam uma mensagem que você mesma(o) envia pelo seu WhatsApp para a profissional. A partir daí, o atendimento, o cadastro para a nota fiscal e o pagamento do sinal seguem fora do app, pelos canais da clínica.
+Na tela “Quero agendar uma consulta” você pode pedir um agendamento. Os dados que você preenche (nome, celular, e-mail, CPF e preferências de horário) não são guardados pelo app nem pelos nossos servidores: eles só montam uma mensagem que você mesma(o) envia pelo seu WhatsApp para a profissional. A partir daí, o atendimento, o cadastro para a nota fiscal e o pagamento do sinal seguem fora do app, diretamente com a Ana Paula.
 
 ## Dados que guardamos quando você cria uma conta
 
