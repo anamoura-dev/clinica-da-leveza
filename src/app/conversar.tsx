@@ -23,7 +23,7 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EmBreve } from '@/components/ui';
-import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Contorno, Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../lib/supabase';
 
 // A Lupa só liga depois que a função "lupa" estiver publicada no Supabase
@@ -245,8 +245,8 @@ const estilos = StyleSheet.create({
   avisoTexto: {
     flex: 1,
     fontFamily: Fontes.regular,
-    fontSize: 12,
-    lineHeight: 17,
+    fontSize: t(12),
+    lineHeight: t(17),
     color: Cores.textoSuave,
   },
   balao: {
@@ -268,8 +268,8 @@ const estilos = StyleSheet.create({
   },
   balaoTexto: {
     fontFamily: Fontes.regular,
-    fontSize: 16,
-    lineHeight: 23,
+    fontSize: t(16),
+    lineHeight: t(23),
     color: Cores.texto,
   },
   balaoTextoPessoa: {
@@ -289,7 +289,7 @@ const estilos = StyleSheet.create({
   },
   sugestaoTexto: {
     fontFamily: Fontes.media,
-    fontSize: 14,
+    fontSize: t(14),
     color: Cores.lilasEscuro,
   },
   digitando: {
@@ -311,13 +311,13 @@ const estilos = StyleSheet.create({
   },
   erroTexto: {
     fontFamily: Fontes.regular,
-    fontSize: 13,
+    fontSize: t(13),
     color: Cores.erro,
     textAlign: 'center',
   },
   erroBotao: {
     fontFamily: Fontes.negrito,
-    fontSize: 14,
+    fontSize: t(14),
     color: Cores.lilasEscuro,
   },
   barra: {
@@ -340,7 +340,7 @@ const estilos = StyleSheet.create({
     paddingTop: 11,
     paddingBottom: 11,
     fontFamily: Fontes.regular,
-    fontSize: 16,
+    fontSize: t(16),
     color: Cores.texto,
   },
   enviar: {

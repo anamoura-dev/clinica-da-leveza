@@ -7,7 +7,8 @@ export default function LayoutMundo() {
   return (
     <Stack screenOptions={opcoesDaPilha(Cores.amareloEscuro)}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="desenhar" options={{ title: 'Desenhar' }} />
+      <Stack.Screen name="sentimento/[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="desenhar" options={{ title: 'DESENHAR' }} />
     </Stack>
   );
 }

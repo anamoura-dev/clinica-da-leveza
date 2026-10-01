@@ -3,7 +3,7 @@ import { Tabs } from 'expo-router';
 import { ColorValue } from 'react-native';
 
 import { barraAbasEscondida, estiloBarraAbas } from '@/components/navegacao';
-import { Cores, Destaques, Fontes } from '@/constants/theme';
+import { Cores, Destaques, Fontes, t } from '@/constants/theme';
 
 type NomeIcone = keyof typeof Ionicons.glyphMap;
 
@@ -19,7 +19,7 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarInactiveTintColor: Cores.textoClaro,
-        tabBarLabelStyle: { fontFamily: Fontes.negrito, fontSize: 11 },
+        tabBarLabelStyle: { fontFamily: Fontes.negrito, fontSize: t(10) },
         tabBarStyle: estiloBarraAbas,
         sceneStyle: { backgroundColor: Cores.fundo },
       }}>

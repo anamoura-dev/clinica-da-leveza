@@ -6,7 +6,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Carregando, Erro } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
 import { BotaoFavorito } from '@/components/conta/botao-favorito';
-import { Cores, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
 type Entrada = {
@@ -138,17 +138,17 @@ const estilos = StyleSheet.create({
     marginBottom: Espaco.sm,
   },
   emoji: {
-    fontSize: 44,
+    fontSize: t(44),
     marginBottom: Espaco.sm,
   },
   contexto: {
     fontFamily: Fontes.media,
-    fontSize: 14,
+    fontSize: t(14),
     color: Cores.textoSuave,
   },
   titulo: {
     fontFamily: Fontes.extra,
-    fontSize: 24,
+    fontSize: t(24),
     color: Cores.texto,
     textAlign: 'center',
   },
@@ -164,12 +164,12 @@ const estilos = StyleSheet.create({
   },
   secaoTitulo: {
     fontFamily: Fontes.extra,
-    fontSize: 15,
+    fontSize: t(15),
   },
   texto: {
     fontFamily: Fontes.regular,
-    fontSize: 16,
-    lineHeight: 25,
+    fontSize: t(16),
+    lineHeight: t(25),
     color: Cores.texto,
   },
 });

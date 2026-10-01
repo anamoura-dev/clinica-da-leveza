@@ -4,7 +4,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { Carregando, Cartao, Erro, Tela, Vazio } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
-import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
 type Fase = {
@@ -79,17 +79,17 @@ const estilos = StyleSheet.create({
   },
   numeroTexto: {
     fontFamily: Fontes.extra,
-    fontSize: 18,
+    fontSize: t(18),
     color: cor.escura,
   },
   titulo: {
     fontFamily: Fontes.negrito,
-    fontSize: 16,
+    fontSize: t(16),
     color: Cores.texto,
   },
   tema: {
     fontFamily: Fontes.regular,
-    fontSize: 14,
+    fontSize: t(14),
     color: Cores.textoSuave,
     marginTop: 2,
   },

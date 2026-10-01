@@ -4,6 +4,7 @@ import { PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
+import { CaixaAlta, tk } from '@/components/mundo/estilo';
 import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 
 const CORES = ['#3D3450', '#E0564B', '#F29A3F', '#F2C94C', '#7FA677', '#4F8FD6', '#8E78C8', '#E27AAE'];
@@ -91,7 +92,7 @@ export default function Desenhar() {
           </View>
           <View style={estilos.acoes}>
             <Pressable
-              onPress={() => setTracos((t) => t.slice(0, -1))}
+              onPress={() => setTracos((atuais) => atuais.slice(0, -1))}
               style={estilos.acao}
               accessibilityLabel="Desfazer">
               <Ionicons name="arrow-undo" size={24} color={Cores.texto} />
@@ -115,8 +116,9 @@ const estilos = StyleSheet.create({
     gap: Espaco.md,
   },
   pedido: {
+    ...CaixaAlta,
     fontFamily: Fontes.extra,
-    fontSize: 19,
+    fontSize: tk(19),
     color: Cores.texto,
     textAlign: 'center',
   },
@@ -133,8 +135,9 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
   },
   dicaTexto: {
+    ...CaixaAlta,
     fontFamily: Fontes.media,
-    fontSize: 17,
+    fontSize: tk(17),
     color: Cores.textoClaro,
   },
   ferramentas: {

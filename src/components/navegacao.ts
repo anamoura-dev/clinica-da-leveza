@@ -1,4 +1,4 @@
-import { Cores, Fontes } from '@/constants/theme';
+import { Cores, Fontes, t } from '@/constants/theme';
 
 /** Cabeçalho padrão das telas internas (detalhes) de cada aba. */
 export function opcoesDaPilha(corDestaque: string) {
@@ -7,7 +7,7 @@ export function opcoesDaPilha(corDestaque: string) {
     headerShadowVisible: false,
     headerBackButtonDisplayMode: 'minimal',
     headerStyle: { backgroundColor: Cores.fundo },
-    headerTitleStyle: { fontFamily: Fontes.negrito, color: Cores.texto, fontSize: 17 },
+    headerTitleStyle: { fontFamily: Fontes.negrito, color: Cores.texto, fontSize: t(17) },
     contentStyle: { backgroundColor: Cores.fundo },
   } as const;
 }

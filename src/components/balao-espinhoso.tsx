@@ -80,7 +80,7 @@ export function CaixaEspinhosa({
   const [tamanho, setTamanho] = useState<{ w: number; h: number } | null>(null);
   return (
     <View
-      style={[{ paddingHorizontal: '15%', paddingVertical: 26 }, style]}
+      style={[{ paddingHorizontal: '18%', paddingVertical: 40 }, style]}
       onLayout={(e) => {
         const { width, height } = e.nativeEvent.layout;
         if (!tamanho || Math.abs(tamanho.w - width) > 1 || Math.abs(tamanho.h - height) > 1) {

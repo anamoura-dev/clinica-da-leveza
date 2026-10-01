@@ -3,7 +3,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { Carregando, Cartao, Erro, Tela, Vazio } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
-import { Cores, Destaques, Espaco, Fontes } from '@/constants/theme';
+import { Cores, Destaques, Espaco, Fontes, t } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
 type Situacao = {
@@ -79,11 +79,11 @@ const estilos = StyleSheet.create({
     justifyContent: 'center',
   },
   emoji: {
-    fontSize: 30,
+    fontSize: t(30),
   },
   rotulo: {
     fontFamily: Fontes.negrito,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.texto,
     textAlign: 'center',
   },

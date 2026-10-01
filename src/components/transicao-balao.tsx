@@ -12,7 +12,7 @@ import Animated, {
 
 import { BalaoAr } from '@/components/balao-ar';
 import { Ceu } from '@/components/ceu';
-import { Cores, Fontes } from '@/constants/theme';
+import { Cores, Fontes, t } from '@/constants/theme';
 
 // Linha do tempo (ms)
 const ENTRADA = 180; // o céu aparece
@@ -102,7 +102,7 @@ const estilos = StyleSheet.create({
   },
   texto: {
     fontFamily: Fontes.extra,
-    fontSize: 18,
+    fontSize: t(18),
     color: Cores.marinho,
   },
 });

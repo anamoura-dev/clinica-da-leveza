@@ -8,6 +8,7 @@ import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
 import { buscarMissao, marcarMissaoConcluida } from '@/components/mundo/dados';
 import { Carregando, Erro } from '@/components/ui';
 import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
+import { CaixaAlta, tk } from '@/components/mundo/estilo';
 import { useDados } from '@/hooks/use-dados';
 
 export default function FazerMissao() {
@@ -36,7 +37,7 @@ export default function FazerMissao() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Missão' }} />
+      <Stack.Screen options={{ title: 'MISSÃO' }} />
       <ScrollView contentContainerStyle={estilos.conteudo}>
         <View style={estilos.cabecalho}>
           <Text style={estilos.emoji}>{missao.emoji}</Text>
@@ -104,14 +105,16 @@ const estilos = StyleSheet.create({
     fontSize: 72,
   },
   titulo: {
+    ...CaixaAlta,
     fontFamily: Fontes.extra,
-    fontSize: 26,
+    fontSize: tk(26),
     color: Cores.texto,
     textAlign: 'center',
   },
   descricao: {
+    ...CaixaAlta,
     fontFamily: Fontes.media,
-    fontSize: 16,
+    fontSize: tk(16),
     color: Cores.textoSuave,
     textAlign: 'center',
   },
@@ -142,15 +145,17 @@ const estilos = StyleSheet.create({
     borderColor: Cores.verde,
   },
   numero: {
+    ...CaixaAlta,
     fontFamily: Fontes.extra,
-    fontSize: 18,
+    fontSize: tk(18),
     color: Cores.marinho,
   },
   passoTexto: {
+    ...CaixaAlta,
     flex: 1,
     fontFamily: Fontes.negrito,
-    fontSize: 18,
-    lineHeight: 25,
+    fontSize: tk(18),
+    lineHeight: tk(25),
     color: Cores.texto,
   },
   passoTextoFeito: {
@@ -169,13 +174,15 @@ const estilos = StyleSheet.create({
     fontSize: 90,
   },
   parabens: {
+    ...CaixaAlta,
     fontFamily: Fontes.extra,
-    fontSize: 28,
+    fontSize: tk(28),
     color: Cores.texto,
   },
   parabensTexto: {
+    ...CaixaAlta,
     fontFamily: Fontes.media,
-    fontSize: 17,
+    fontSize: tk(17),
     color: Cores.textoSuave,
   },
   botao: {
@@ -187,8 +194,9 @@ const estilos = StyleSheet.create({
     marginTop: Espaco.md,
   },
   botaoTexto: {
+    ...CaixaAlta,
     fontFamily: Fontes.extra,
-    fontSize: 18,
+    fontSize: tk(18),
     color: Cores.marinho,
   },
 });

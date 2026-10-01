@@ -30,7 +30,7 @@ import {
 import { APPLE_ATIVO, entrarComApple, entrarComGoogle, excluirConta, sair, useSessao } from '@/components/conta/sessao';
 import { sincronizarMissoes } from '@/components/mundo/dados';
 import { Carregando, Erro } from '@/components/ui';
-import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Contorno, Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 
 export default function Perfil() {
@@ -306,7 +306,7 @@ function Conta({ usuario, dados }: { usuario: User; dados: Awaited<ReturnType<ty
               />
               <TextInput
                 value={novoAno}
-                onChangeText={(t) => setNovoAno(t.replace(/\D/g, '').slice(0, 4))}
+                onChangeText={(texto) => setNovoAno(texto.replace(/\D/g, '').slice(0, 4))}
                 placeholder="Ano nasc."
                 placeholderTextColor={Cores.textoClaro}
                 keyboardType="number-pad"
@@ -379,13 +379,13 @@ const estilos = StyleSheet.create({
   },
   titulo: {
     fontFamily: Fontes.extra,
-    fontSize: 24,
+    fontSize: t(24),
     color: Cores.marinho,
     marginTop: Espaco.sm,
   },
   subtitulo: {
     fontFamily: Fontes.media,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.textoSuave,
   },
   corpo: {
@@ -405,16 +405,16 @@ const estilos = StyleSheet.create({
     gap: Espaco.md,
   },
   beneficioEmoji: {
-    fontSize: 26,
+    fontSize: t(26),
   },
   beneficioTitulo: {
     fontFamily: Fontes.extra,
-    fontSize: 16,
+    fontSize: t(16),
     color: Cores.marinho,
   },
   beneficioTexto: {
     fontFamily: Fontes.regular,
-    fontSize: 14,
+    fontSize: t(14),
     color: Cores.textoSuave,
   },
   botaoEntrar: {
@@ -435,12 +435,12 @@ const estilos = StyleSheet.create({
   },
   botaoEntrarTexto: {
     fontFamily: Fontes.extra,
-    fontSize: 16,
+    fontSize: t(16),
   },
   nota: {
     fontFamily: Fontes.regular,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: t(13),
+    lineHeight: t(18),
     color: Cores.textoSuave,
     textAlign: 'center',
   },
@@ -462,7 +462,7 @@ const estilos = StyleSheet.create({
   },
   inicial: {
     fontFamily: Fontes.extra,
-    fontSize: 38,
+    fontSize: t(38),
     color: Cores.marinho,
   },
   linhaNome: {
@@ -473,13 +473,13 @@ const estilos = StyleSheet.create({
   },
   nome: {
     fontFamily: Fontes.extra,
-    fontSize: 22,
+    fontSize: t(22),
     color: Cores.marinho,
   },
   entradaNome: {
     minWidth: 180,
     fontFamily: Fontes.extra,
-    fontSize: 20,
+    fontSize: t(20),
     color: Cores.marinho,
     backgroundColor: Cores.superficie,
     borderRadius: Raio.sm,
@@ -489,7 +489,7 @@ const estilos = StyleSheet.create({
   },
   email: {
     fontFamily: Fontes.regular,
-    fontSize: 13,
+    fontSize: t(13),
     color: Cores.textoSuave,
   },
   progresso: {
@@ -505,24 +505,24 @@ const estilos = StyleSheet.create({
   },
   numeroValor: {
     fontFamily: Fontes.extra,
-    fontSize: 24,
+    fontSize: t(24),
     color: Cores.marinho,
   },
   numeroRotulo: {
     fontFamily: Fontes.media,
-    fontSize: 13,
+    fontSize: t(13),
     color: Cores.textoSuave,
   },
   secao: {
     fontFamily: Fontes.extra,
-    fontSize: 19,
+    fontSize: t(19),
     color: Cores.marinho,
     marginTop: Espaco.sm,
     marginBottom: -Espaco.xs,
   },
   vazio: {
     fontFamily: Fontes.regular,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.textoSuave,
   },
   filho: {
@@ -541,17 +541,17 @@ const estilos = StyleSheet.create({
   },
   filhoInicial: {
     fontFamily: Fontes.extra,
-    fontSize: 18,
+    fontSize: t(18),
     color: Cores.verdeEscuro,
   },
   filhoNome: {
     fontFamily: Fontes.extra,
-    fontSize: 16,
+    fontSize: t(16),
     color: Cores.marinho,
   },
   filhoIdade: {
     fontFamily: Fontes.regular,
-    fontSize: 13,
+    fontSize: t(13),
     color: Cores.textoSuave,
   },
   formFilho: {
@@ -564,7 +564,7 @@ const estilos = StyleSheet.create({
     borderRadius: Raio.sm,
     paddingHorizontal: 12,
     fontFamily: Fontes.media,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.marinho,
     backgroundColor: Cores.fundo,
     ...Contorno,
@@ -585,7 +585,7 @@ const estilos = StyleSheet.create({
   },
   adicionarTexto: {
     fontFamily: Fontes.extra,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.azulEscuro,
   },
   favorito: {
@@ -594,12 +594,12 @@ const estilos = StyleSheet.create({
     gap: Espaco.md,
   },
   favoritoEmoji: {
-    fontSize: 22,
+    fontSize: t(22),
   },
   favoritoTitulo: {
     flex: 1,
     fontFamily: Fontes.media,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.marinho,
   },
   botaoSair: {
@@ -615,12 +615,12 @@ const estilos = StyleSheet.create({
   },
   botaoSairTexto: {
     fontFamily: Fontes.extra,
-    fontSize: 16,
+    fontSize: t(16),
     color: Cores.marinho,
   },
   excluir: {
     fontFamily: Fontes.media,
-    fontSize: 14,
+    fontSize: t(14),
     color: Cores.erro,
     textDecorationLine: 'underline',
     marginTop: Espaco.sm,

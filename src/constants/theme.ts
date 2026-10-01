@@ -54,6 +54,16 @@ export const Destaques = {
 
 export type Destaque = (typeof Destaques)[keyof typeof Destaques];
 
+/**
+ * Escala dos textos do app inteiro (1 = tamanho original).
+ * Para letras maiores ou menores em todo o app, mude só este número.
+ * O app também respeita o tamanho de texto escolhido no celular.
+ */
+export const ESCALA_TEXTO = 1.15;
+
+/** Tamanho de texto já com a escala do app: use em fontSize e lineHeight. */
+export const t = (tamanho: number) => Math.round(tamanho * ESCALA_TEXTO);
+
 export const Fontes = {
   regular: 'Nunito_400Regular',
   media: 'Nunito_600SemiBold',

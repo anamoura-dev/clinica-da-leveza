@@ -4,7 +4,7 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 
 import { Carregando, Cartao, Erro, Tela, Vazio } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
-import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
 type Cafe = {
@@ -83,13 +83,13 @@ const estilos = StyleSheet.create({
   },
   titulo: {
     fontFamily: Fontes.negrito,
-    fontSize: 16,
+    fontSize: t(16),
     color: Cores.texto,
   },
   gancho: {
     fontFamily: Fontes.regular,
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: t(14),
+    lineHeight: t(20),
     color: Cores.textoSuave,
     marginTop: 2,
   },

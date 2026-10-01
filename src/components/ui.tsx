@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BalaoFlutuante } from '@/components/balao-ar';
-import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Contorno, Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
 
 /** Tela de topo de aba: fundo creme, respeita o notch e mostra título/subtítulo. */
 export function Tela({
@@ -151,12 +151,12 @@ const estilos = StyleSheet.create({
   },
   titulo: {
     fontFamily: Fontes.extra,
-    fontSize: 28,
+    fontSize: t(28),
     color: Cores.texto,
   },
   subtitulo: {
     fontFamily: Fontes.regular,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.textoSuave,
     marginTop: Espaco.xs,
   },
@@ -170,13 +170,13 @@ const estilos = StyleSheet.create({
   },
   erroTexto: {
     fontFamily: Fontes.media,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.textoSuave,
     textAlign: 'center',
   },
   vazioTexto: {
     fontFamily: Fontes.regular,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.textoSuave,
     textAlign: 'center',
   },
@@ -189,7 +189,7 @@ const estilos = StyleSheet.create({
   },
   emBreveTitulo: {
     fontFamily: Fontes.extra,
-    fontSize: 22,
+    fontSize: t(22),
     color: Cores.texto,
     textAlign: 'center',
   },
@@ -215,11 +215,11 @@ const estilos = StyleSheet.create({
   },
   botaoTexto: {
     fontFamily: Fontes.negrito,
-    fontSize: 15,
+    fontSize: t(15),
   },
   rotulo: {
     fontFamily: Fontes.extra,
-    fontSize: 12,
+    fontSize: t(12),
     letterSpacing: 1.5,
     textTransform: 'uppercase',
   },

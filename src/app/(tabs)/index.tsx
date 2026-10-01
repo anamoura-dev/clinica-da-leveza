@@ -20,12 +20,12 @@ import { barraAbasEscondida, estiloBarraAbas } from '@/components/navegacao';
 import { PauladaAnimada } from '@/components/paulada-animada';
 import { TransicaoBalao } from '@/components/transicao-balao';
 import { Cartao, Rotulo } from '@/components/ui';
-import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 import { supabase } from '../../../lib/supabase';
 
 function sortear(lista: string[], evitar: string | null) {
-  const opcoes = lista.length > 1 ? lista.filter((t) => t !== evitar) : lista;
+  const opcoes = lista.length > 1 ? lista.filter((frase) => frase !== evitar) : lista;
   return opcoes[Math.floor(Math.random() * opcoes.length)];
 }
 
@@ -186,7 +186,7 @@ const estilos = StyleSheet.create({
   },
   erroTexto: {
     fontFamily: Fontes.media,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.marinho,
     textAlign: 'center',
   },
@@ -200,7 +200,7 @@ const estilos = StyleSheet.create({
   },
   erroBotaoTexto: {
     fontFamily: Fontes.negrito,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.marinho,
   },
   menu: {
@@ -217,7 +217,7 @@ const estilos = StyleSheet.create({
   },
   slogan: {
     fontFamily: Fontes.extra,
-    fontSize: 14,
+    fontSize: t(14),
     marginTop: 2,
   },
   bolinha: {
@@ -229,8 +229,8 @@ const estilos = StyleSheet.create({
   },
   pergunta: {
     fontFamily: Fontes.extra,
-    fontSize: 28,
-    lineHeight: 36,
+    fontSize: t(28),
+    lineHeight: t(36),
     color: Cores.texto,
     marginTop: Espaco.md,
     marginBottom: Espaco.lg,
@@ -246,12 +246,12 @@ const estilos = StyleSheet.create({
     borderRadius: Raio.md,
   },
   emoji: {
-    fontSize: 19,
+    fontSize: t(19),
   },
   caminhoTexto: {
     flex: 1,
     fontFamily: Fontes.media,
-    fontSize: 16,
+    fontSize: t(16),
     color: Cores.texto,
   },
 });

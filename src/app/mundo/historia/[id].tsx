@@ -9,6 +9,7 @@ import { buscarHistoria } from '@/components/mundo/dados';
 import { Carregando, Erro } from '@/components/ui';
 import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { BotaoFavorito } from '@/components/conta/botao-favorito';
+import { CaixaAlta, tk } from '@/components/mundo/estilo';
 import { useDados } from '@/hooks/use-dados';
 
 /** Botão "Ouvir" — só aparece quando a história tem um áudio. */
@@ -126,9 +127,10 @@ const estilos = StyleSheet.create({
     flexGrow: 1,
   },
   titulo: {
+    ...CaixaAlta,
     fontFamily: Fontes.extra,
-    fontSize: 22,
-    lineHeight: 28,
+    fontSize: tk(22),
+    lineHeight: tk(28),
     color: Cores.texto,
     textAlign: 'center',
     marginBottom: Espaco.md,
@@ -145,19 +147,21 @@ const estilos = StyleSheet.create({
     ...Contorno,
   },
   ilustracao: {
-    fontSize: 84,
+    fontSize: 72,
     textAlign: 'center',
   },
   texto: {
+    ...CaixaAlta,
     fontFamily: Fontes.negrito,
-    fontSize: 22,
-    lineHeight: 32,
+    fontSize: tk(22),
+    lineHeight: tk(32),
     color: Cores.texto,
     textAlign: 'center',
   },
   fim: {
+    ...CaixaAlta,
     fontFamily: Fontes.extra,
-    fontSize: 34,
+    fontSize: tk(34),
     color: Cores.terracota,
   },
   conversa: {
@@ -168,14 +172,16 @@ const estilos = StyleSheet.create({
     alignSelf: 'stretch',
   },
   conversaRotulo: {
+    ...CaixaAlta,
     fontFamily: Fontes.extra,
-    fontSize: 13,
+    fontSize: tk(13),
     color: Cores.azulEscuro,
   },
   conversaTexto: {
+    ...CaixaAlta,
     fontFamily: Fontes.media,
-    fontSize: 18,
-    lineHeight: 26,
+    fontSize: tk(18),
+    lineHeight: tk(26),
     color: Cores.texto,
   },
   rodape: {
@@ -221,8 +227,9 @@ const estilos = StyleSheet.create({
     ...Contorno,
   },
   botaoTexto: {
+    ...CaixaAlta,
     fontFamily: Fontes.extra,
-    fontSize: 20,
+    fontSize: tk(20),
     color: Cores.marinho,
   },
   acoesTopo: {
@@ -240,8 +247,9 @@ const estilos = StyleSheet.create({
     paddingHorizontal: 12,
   },
   ouvirTexto: {
+    ...CaixaAlta,
     fontFamily: Fontes.extra,
-    fontSize: 14,
+    fontSize: tk(14),
     color: '#FFFFFF',
   },
 });

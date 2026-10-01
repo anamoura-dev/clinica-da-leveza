@@ -4,7 +4,7 @@ import { FlatList, StyleSheet, Text } from 'react-native';
 
 import { Carregando, Cartao, Erro, Rotulo, Vazio } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
-import { Cores, Destaques, Espaco, Fontes } from '@/constants/theme';
+import { Cores, Destaques, Espaco, Fontes, t } from '@/constants/theme';
 import { supabase } from '../../../../../lib/supabase';
 
 type Cenario = {
@@ -77,8 +77,8 @@ const estilos = StyleSheet.create({
   },
   texto: {
     fontFamily: Fontes.media,
-    fontSize: 16,
-    lineHeight: 23,
+    fontSize: t(16),
+    lineHeight: t(23),
     color: Cores.texto,
   },
 });

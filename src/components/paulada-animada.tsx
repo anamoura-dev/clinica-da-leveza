@@ -19,7 +19,7 @@ import Animated, {
 import { BalaoAr } from '@/components/balao-ar';
 import { BalaoEspinhoso } from '@/components/balao-espinhoso';
 import { Ceu } from '@/components/ceu';
-import { Cores, Fontes } from '@/constants/theme';
+import { Cores, Fontes, t } from '@/constants/theme';
 
 // Linha do tempo da abertura (ms) — tudo acontece em ~3,5 s
 const PREPARO = 280; // o pau pega impulso
@@ -431,7 +431,7 @@ const estilos = StyleSheet.create({
   },
   rotuloTexto: {
     fontFamily: Fontes.extra,
-    fontSize: 13,
+    fontSize: t(13),
     letterSpacing: 2,
     textTransform: 'uppercase',
     color: Cores.marinho,
@@ -526,7 +526,7 @@ const estilos = StyleSheet.create({
   },
   dicaTexto: {
     fontFamily: Fontes.negrito,
-    fontSize: 15,
+    fontSize: t(15),
     color: Cores.marinho,
   },
 });

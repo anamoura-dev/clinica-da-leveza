@@ -6,7 +6,7 @@ import YoutubePlayer from 'react-native-youtube-iframe';
 import { Carregando, Erro, Rotulo } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
 import { BotaoFavorito } from '@/components/conta/botao-favorito';
-import { Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
 type Cafe = {
@@ -98,14 +98,14 @@ const estilos = StyleSheet.create({
   },
   titulo: {
     fontFamily: Fontes.extra,
-    fontSize: 24,
-    lineHeight: 31,
+    fontSize: t(24),
+    lineHeight: t(31),
     color: Cores.texto,
   },
   gancho: {
     fontFamily: Fontes.regular,
-    fontSize: 17,
-    lineHeight: 26,
+    fontSize: t(17),
+    lineHeight: t(26),
     color: Cores.textoSuave,
   },
 });

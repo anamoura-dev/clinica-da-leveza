@@ -6,7 +6,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Botao, Carregando, Erro, Rotulo } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
 import { registrarProgresso } from '@/components/conta/dados';
-import { Contorno, Cores, Destaques, Espaco, Fontes, Raio } from '@/constants/theme';
+import { Contorno, Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../../../../lib/supabase';
 
 type Cenario = {
@@ -127,13 +127,13 @@ const estilos = StyleSheet.create({
   },
   situacaoTexto: {
     fontFamily: Fontes.negrito,
-    fontSize: 19,
-    lineHeight: 27,
+    fontSize: t(19),
+    lineHeight: t(27),
     color: Cores.texto,
   },
   pergunta: {
     fontFamily: Fontes.extra,
-    fontSize: 18,
+    fontSize: t(18),
     color: Cores.texto,
     marginTop: Espaco.sm,
   },
@@ -170,14 +170,14 @@ const estilos = StyleSheet.create({
   },
   letraTexto: {
     fontFamily: Fontes.extra,
-    fontSize: 16,
+    fontSize: t(16),
     color: cor.escura,
   },
   opcaoTexto: {
     flex: 1,
     fontFamily: Fontes.media,
-    fontSize: 16,
-    lineHeight: 23,
+    fontSize: t(16),
+    lineHeight: t(23),
     color: Cores.texto,
   },
   devolutiva: {
@@ -193,13 +193,13 @@ const estilos = StyleSheet.create({
   },
   vamosPensar: {
     fontFamily: Fontes.extra,
-    fontSize: 16,
+    fontSize: t(16),
     color: Cores.verdeEscuro,
   },
   devolutivaTexto: {
     fontFamily: Fontes.regular,
-    fontSize: 16,
-    lineHeight: 25,
+    fontSize: t(16),
+    lineHeight: t(25),
     color: Cores.texto,
   },
 });
