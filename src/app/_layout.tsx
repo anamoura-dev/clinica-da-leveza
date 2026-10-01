@@ -44,6 +44,10 @@ export default function RootLayout() {
           name="agendar"
           options={{ ...opcoesDaPilha(Cores.lilasEscuro), headerShown: true, title: 'Agendar consulta' }}
         />
+        <Stack.Screen
+          name="livros"
+          options={{ ...opcoesDaPilha(Cores.terracotaEscura), headerShown: true, title: 'Livros da Ana' }}
+        />
         <Stack.Screen name="mundo" />
         <Stack.Screen
           name="privacidade"

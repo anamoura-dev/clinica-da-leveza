@@ -6,6 +6,7 @@ import YoutubePlayer from 'react-native-youtube-iframe';
 import { Carregando, Erro, Rotulo } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
 import { BotaoFavorito } from '@/components/conta/botao-favorito';
+import { LivroRecomendado } from '@/components/livros';
 import { Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
@@ -78,6 +79,7 @@ export default function DetalheCafe() {
           <Rotulo cor={cor.escura}>☕ Café</Rotulo>
           <Text style={estilos.titulo}>{cafe.titulo}</Text>
           {cafe.gancho && <Text style={estilos.gancho}>{cafe.gancho}</Text>}
+          <LivroRecomendado semente={id} />
         </ScrollView>
       )}
     </>

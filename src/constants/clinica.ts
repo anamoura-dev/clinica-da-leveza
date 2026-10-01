@@ -25,8 +25,6 @@ export const preenchido = (valor: string) => !!valor && !valor.startsWith('[');
 export const Agenda = {
   profissional: 'Ana Paula Rodrigues',
   especialidade: 'Neuropsi Sistêmica',
-  /** Site da Ana Paula, onde ela vende os livros dela. */
-  siteLivros: 'https://aprendendoaserleve.com.br',
   /** Só números, com 55 (Brasil) + DDD. */
   whatsapp: '553194131079',
   whatsappExibicao: '(31) 9413-1079',

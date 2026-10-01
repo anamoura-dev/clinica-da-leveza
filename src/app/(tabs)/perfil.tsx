@@ -31,7 +31,7 @@ import {
 import { APPLE_ATIVO, entrarComApple, entrarComGoogle, excluirConta, sair, useSessao } from '@/components/conta/sessao';
 import { sincronizarMissoes } from '@/components/mundo/dados';
 import { Carregando, Erro } from '@/components/ui';
-import { Agenda, Clinica, preenchido } from '@/constants/clinica';
+import { Clinica, preenchido } from '@/constants/clinica';
 import { Contorno, Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 
@@ -58,7 +58,7 @@ function LinksAjuda() {
       abrir: () => Linking.openURL(`https://instagram.com/${Clinica.instagram}`),
     });
   }
-  links.push({ icone: 'book-outline', texto: 'Livros da Ana', abrir: () => Linking.openURL(Agenda.siteLivros) });
+  links.push({ icone: 'book-outline', texto: 'Livros da Ana', abrir: () => router.push('/livros') });
   links.push({ icone: 'shield-checkmark-outline', texto: 'Política de privacidade', abrir: () => router.push('/privacidade') });
 
   return (

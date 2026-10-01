@@ -16,6 +16,7 @@ import { useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BalaoAr, BalaoFlutuante } from '@/components/balao-ar';
+import { VitrineLivros } from '@/components/livros';
 import { barraAbasEscondida, estiloBarraAbas } from '@/components/navegacao';
 import { PauladaAnimada } from '@/components/paulada-animada';
 import { TransicaoBalao } from '@/components/transicao-balao';
@@ -163,6 +164,8 @@ export default function Home() {
                 </Cartao>
               ))}
             </View>
+
+            <VitrineLivros />
           </ScrollView>
         </SafeAreaView>
       </ScrollView>

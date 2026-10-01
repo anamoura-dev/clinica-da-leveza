@@ -6,6 +6,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Carregando, Erro } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
 import { BotaoFavorito } from '@/components/conta/botao-favorito';
+import { LivroRecomendado } from '@/components/livros';
 import { Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
@@ -121,6 +122,7 @@ export default function ResultadoManuaLeve() {
               </View>
             ) : null,
           )}
+          <LivroRecomendado semente={id} />
         </ScrollView>
       )}
     </>

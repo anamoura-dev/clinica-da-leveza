@@ -26,7 +26,8 @@ function emLinhas<T>(lista: T[]) {
 export default function PassoSentimento() {
   const { dados, carregando, erro, tentarDeNovo } = useDados(buscarMundo);
   const concluidas = useMissoesConcluidas();
-  const [portaoAberto, setPortaoAberto] = useState(false);
+  // O portão de adulto protege a saída e o link dos livros (compra fora do app).
+  const [portao, setPortao] = useState<'sair' | 'livros' | null>(null);
 
   if (carregando) return <Carregando />;
   if (erro || !dados) return <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />;
@@ -47,15 +48,17 @@ export default function PassoSentimento() {
           estrelas={estrelas}
           icone="close"
           rotuloIcone="Sair do Espaço das Crianças"
-          aoTocarIcone={() => setPortaoAberto(true)}
+          aoTocarIcone={() => setPortao('sair')}
         />
         {/* Para sair do Espaço das Crianças, uma continha que só adulto resolve */}
         <PortaoAdulto
-          visivel={portaoAberto}
-          aoCancelar={() => setPortaoAberto(false)}
+          visivel={portao !== null}
+          aoCancelar={() => setPortao(null)}
           aoLiberar={() => {
-            setPortaoAberto(false);
-            router.back();
+            const destino = portao;
+            setPortao(null);
+            if (destino === 'livros') router.push('/livros');
+            else router.back();
           }}
         />
 
@@ -89,6 +92,14 @@ export default function PassoSentimento() {
             </View>
           ))}
         </View>
+
+        <Pressable
+          onPress={() => setPortao('livros')}
+          accessibilityRole="button"
+          accessibilityLabel="Para os adultos: livros da Ana"
+          style={({ pressed }) => [estilos.adultos, pressed && estilos.pressionado]}>
+          <Text style={estilos.adultosTexto}>📚 Para os adultos: livros para ler junto</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -113,6 +124,21 @@ const estilos = StyleSheet.create({
     color: Cores.marinho,
     textAlign: 'center',
     marginTop: Espaco.md,
+  },
+  adultos: {
+    alignSelf: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: Raio.pilula,
+    borderWidth: 1.5,
+    borderColor: Cores.borda,
+    backgroundColor: Cores.superficie,
+  },
+  adultosTexto: {
+    ...CaixaAlta,
+    fontFamily: Fontes.negrito,
+    fontSize: tk(11),
+    color: Cores.textoSuave,
   },
   dica: {
     ...CaixaAlta,
