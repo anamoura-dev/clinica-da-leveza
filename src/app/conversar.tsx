@@ -22,13 +22,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { ComConsentimentoIA } from '@/components/consentimento-ia';
 import { EmBreve } from '@/components/ui';
+import { LUPA_ATIVA } from '@/constants/recursos';
 import { Contorno, Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../lib/supabase';
 
-// A Lupa só liga depois que a função "lupa" estiver publicada no Supabase
-// (e, no futuro, para quem tiver assinatura). Troque para true para ativar.
-const LUPA_ATIVA = false;
 
 type Mensagem = { id: string; role: 'user' | 'assistant'; content: string };
 
@@ -95,7 +94,11 @@ export default function Conversar() {
       </>
     );
   }
-  return <LupaIA />;
+  return (
+    <ComConsentimentoIA>
+      <LupaIA />
+    </ComConsentimentoIA>
+  );
 }
 
 function LupaIA() {

@@ -20,6 +20,7 @@ import { barraAbasEscondida, estiloBarraAbas } from '@/components/navegacao';
 import { PauladaAnimada } from '@/components/paulada-animada';
 import { TransicaoBalao } from '@/components/transicao-balao';
 import { Cartao, Rotulo } from '@/components/ui';
+import { LUPA_ATIVA } from '@/constants/recursos';
 import { Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 import { supabase } from '../../../lib/supabase';
@@ -44,13 +45,16 @@ async function buscarPauladas() {
 
 // Cada caminho tem a cor de uma listra do balão (a mesma da seção).
 type Caminho = { emoji: string; texto: string; href: Href; cor: string; nome: string };
-const CAMINHOS: Caminho[] = [
+const TODOS_OS_CAMINHOS: Caminho[] = [
   { emoji: '🔍', texto: 'Quero entender uma situação', href: '/manualeve', cor: Destaques.manualeve.cor, nome: 'o ManuaLeve' },
   { emoji: '☕', texto: 'Quero aprender alguma coisa', href: '/cafe', cor: Destaques.cafe.cor, nome: 'os Cafés' },
   { emoji: '🎮', texto: 'Quero passar de fase', href: '/fases', cor: Destaques.fases.cor, nome: 'os Jogos' },
   { emoji: '💬', texto: 'Quero conversar', href: '/conversar', cor: Destaques.lupa.cor, nome: 'a Lupa' },
   { emoji: '🎈', texto: 'Quero entrar no mundo das crianças', href: '/mundo', cor: Destaques.mundo.cor, nome: 'o Espaço das Crianças' },
 ];
+
+// O que ainda não está pronto não aparece (a Apple reprova telas "em breve").
+const CAMINHOS = TODOS_OS_CAMINHOS.filter((c) => c.href !== '/conversar' || LUPA_ATIVA);
 
 export default function Home() {
   const { width } = useWindowDimensions();

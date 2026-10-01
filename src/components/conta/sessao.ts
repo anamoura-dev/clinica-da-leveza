@@ -11,11 +11,8 @@ import { supabase } from '../../../lib/supabase';
 // No web, fecha a janelinha de login quando o Google devolve para o app.
 WebBrowser.maybeCompleteAuthSession();
 
-/**
- * "Entrar com Apple" fica desligado até a conta Apple Developer existir
- * e o provedor Apple estar configurado no Supabase. Troque para true para ligar.
- */
-export const APPLE_ATIVO = false;
+// "Entrar com Apple" liga/desliga em src/constants/recursos.ts
+export { APPLE_ATIVO } from '@/constants/recursos';
 
 /** Sessão atual (ou null) e se ainda está descobrindo. Atualiza sozinha no login/logout. */
 export function useSessao() {

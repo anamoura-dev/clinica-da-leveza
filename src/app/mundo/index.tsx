@@ -1,11 +1,13 @@
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { buscarMundo, Sentimento, useMissoesConcluidas } from '@/components/mundo/dados';
 import { BarraPassos, CaixaAlta, tk, tom } from '@/components/mundo/estilo';
+import { PortaoAdulto } from '@/components/portao-adulto';
 import { Carregando, Erro } from '@/components/ui';
 import { Contorno, Cores, Espaco, Fontes, Raio } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
@@ -24,6 +26,7 @@ function emLinhas<T>(lista: T[]) {
 export default function PassoSentimento() {
   const { dados, carregando, erro, tentarDeNovo } = useDados(buscarMundo);
   const concluidas = useMissoesConcluidas();
+  const [portaoAberto, setPortaoAberto] = useState(false);
 
   if (carregando) return <Carregando />;
   if (erro || !dados) return <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />;
@@ -44,7 +47,16 @@ export default function PassoSentimento() {
           estrelas={estrelas}
           icone="close"
           rotuloIcone="Sair do Espaço das Crianças"
-          aoTocarIcone={() => router.back()}
+          aoTocarIcone={() => setPortaoAberto(true)}
+        />
+        {/* Para sair do Espaço das Crianças, uma continha que só adulto resolve */}
+        <PortaoAdulto
+          visivel={portaoAberto}
+          aoCancelar={() => setPortaoAberto(false)}
+          aoLiberar={() => {
+            setPortaoAberto(false);
+            router.back();
+          }}
         />
 
         <Text style={estilos.pergunta}>Como você está se sentindo agora?</Text>

@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -30,6 +31,7 @@ import {
 import { APPLE_ATIVO, entrarComApple, entrarComGoogle, excluirConta, sair, useSessao } from '@/components/conta/sessao';
 import { sincronizarMissoes } from '@/components/mundo/dados';
 import { Carregando, Erro } from '@/components/ui';
+import { Clinica, preenchido } from '@/constants/clinica';
 import { Contorno, Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 
@@ -37,6 +39,36 @@ export default function Perfil() {
   const { usuario, carregando } = useSessao();
   if (carregando) return <Carregando />;
   return usuario ? <MinhaConta usuario={usuario} /> : <Entrar />;
+}
+
+// ---------------------------------------------------------------- Ajuda (com e sem login)
+
+/** "Fale com a gente" e "Privacidade" — a Apple pede um caminho de suporte e a política. */
+function LinksAjuda() {
+  const links: { icone: keyof typeof Ionicons.glyphMap; texto: string; abrir: () => void }[] = [];
+  if (preenchido(Clinica.email)) {
+    links.push({ icone: 'mail-outline', texto: 'Fale com a gente', abrir: () => Linking.openURL(`mailto:${Clinica.email}`) });
+  }
+  if (preenchido(Clinica.instagram)) {
+    links.push({
+      icone: 'logo-instagram',
+      texto: `@${Clinica.instagram}`,
+      abrir: () => Linking.openURL(`https://instagram.com/${Clinica.instagram}`),
+    });
+  }
+  links.push({ icone: 'shield-checkmark-outline', texto: 'Política de privacidade', abrir: () => router.push('/privacidade') });
+
+  return (
+    <View style={estilos.cartao}>
+      {links.map((l) => (
+        <Pressable key={l.texto} onPress={l.abrir} style={({ pressed }) => [estilos.link, pressed && { opacity: 0.7 }]}>
+          <Ionicons name={l.icone} size={20} color={Cores.marinho} />
+          <Text style={estilos.linkTexto}>{l.texto}</Text>
+          <Ionicons name="chevron-forward" size={18} color={Cores.textoClaro} />
+        </Pressable>
+      ))}
+    </View>
+  );
 }
 
 // ---------------------------------------------------------------- Sem login
@@ -107,6 +139,8 @@ function Entrar() {
             <Text style={[estilos.botaoEntrarTexto, { color: '#FFFFFF' }]}>Continuar com Apple</Text>
           </Pressable>
         )}
+
+        <LinksAjuda />
 
         <Text style={estilos.nota}>
           A conta é opcional: o app continua todo aberto sem ela. Seus dados ficam só com você, e dá para excluir tudo
@@ -350,6 +384,10 @@ function Conta({ usuario, dados }: { usuario: User; dados: Awaited<ReturnType<ty
           )}
         </View>
 
+        {/* Ajuda e privacidade */}
+        <Text style={estilos.secao}>Ajuda</Text>
+        <LinksAjuda />
+
         {/* Conta */}
         <Pressable onPress={sair} style={({ pressed }) => [estilos.botaoSair, pressed && estilos.pressionado]}>
           <Ionicons name="log-out-outline" size={20} color={Cores.marinho} />
@@ -587,6 +625,17 @@ const estilos = StyleSheet.create({
     fontFamily: Fontes.extra,
     fontSize: t(15),
     color: Cores.azulEscuro,
+  },
+  link: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Espaco.md,
+  },
+  linkTexto: {
+    flex: 1,
+    fontFamily: Fontes.media,
+    fontSize: t(15),
+    color: Cores.marinho,
   },
   favorito: {
     flexDirection: 'row',

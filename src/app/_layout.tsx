@@ -41,6 +41,10 @@ export default function RootLayout() {
           options={{ ...opcoesDaPilha(Cores.lilasEscuro), headerShown: true, title: 'Lupa IA' }}
         />
         <Stack.Screen name="mundo" />
+        <Stack.Screen
+          name="privacidade"
+          options={{ ...opcoesDaPilha(Cores.marinho), headerShown: true, title: 'Privacidade' }}
+        />
       </Stack>
     </>
   );
