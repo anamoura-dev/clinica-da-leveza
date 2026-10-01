@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeInRight, ZoomIn } from 'react-native-reanimated';
 
 import { buscarHistoria } from '@/components/mundo/dados';
@@ -30,6 +30,8 @@ function BotaoOuvir({ url }: { url: string }) {
 }
 
 export default function LerHistoria() {
+  // Em celular pequeno (ex.: iPhone SE), letra e ilustração um pouco menores para a página caber.
+  const compacto = useWindowDimensions().height < 720;
   const { id } = useLocalSearchParams<{ id: string }>();
   const carregar = useCallback(() => buscarHistoria(id), [id]);
   const { dados, carregando, erro, tentarDeNovo } = useDados(carregar);
@@ -65,17 +67,17 @@ export default function LerHistoria() {
 
           {!noFim && atual ? (
             <Animated.View key={pagina} entering={FadeInRight.duration(350)} style={estilos.pagina}>
-              <Text style={estilos.ilustracao}>{atual.emoji}</Text>
-              <Text style={estilos.texto}>{atual.texto}</Text>
+              <Text style={[estilos.ilustracao, compacto && estilos.ilustracaoCompacta]}>{atual.emoji}</Text>
+              <Text style={[estilos.texto, compacto && estilos.textoCompacto]}>{atual.texto}</Text>
             </Animated.View>
           ) : (
             <Animated.View entering={ZoomIn.springify().damping(12)} style={estilos.pagina}>
-              <Text style={estilos.ilustracao}>🎉</Text>
+              <Text style={[estilos.ilustracao, compacto && estilos.ilustracaoCompacta]}>🎉</Text>
               <Text style={estilos.fim}>Fim!</Text>
               {historia.pergunta_final && (
                 <View style={estilos.conversa}>
                   <Text style={estilos.conversaRotulo}>💬 Para conversar</Text>
-                  <Text style={estilos.conversaTexto}>{historia.pergunta_final}</Text>
+                  <Text style={[estilos.conversaTexto, compacto && estilos.conversaCompacta]}>{historia.pergunta_final}</Text>
                 </View>
               )}
             </Animated.View>
@@ -157,6 +159,17 @@ const estilos = StyleSheet.create({
     lineHeight: tk(32),
     color: Cores.texto,
     textAlign: 'center',
+  },
+  ilustracaoCompacta: {
+    fontSize: 54,
+  },
+  conversaCompacta: {
+    fontSize: tk(14),
+    lineHeight: tk(20),
+  },
+  textoCompacto: {
+    fontSize: tk(18),
+    lineHeight: tk(25),
   },
   fim: {
     ...CaixaAlta,

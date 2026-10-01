@@ -5,7 +5,7 @@ import { Pressable, PressableProps, ScrollView, StyleProp, StyleSheet, Text, Vie
 import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { CaixaEspinhosa } from '@/components/balao-espinhoso';
+import { CaixaFofa } from '@/components/balao-fofo';
 import { buscarMundo, useMissoesConcluidas } from '@/components/mundo/dados';
 import { BarraPassos, CaixaAlta, tk, tom } from '@/components/mundo/estilo';
 import { Carregando, Erro } from '@/components/ui';
@@ -112,10 +112,10 @@ export default function PassoEscolha() {
             <Text style={estilos.personagemEmoji}>{personagem?.emoji ?? '🦊'}</Text>
           </Animated.View>
           <Animated.View entering={FadeInDown.delay(150).duration(350)} style={{ flex: 1 }}>
-            <CaixaEspinhosa>
+            <CaixaFofa>
               {personagem && <Text style={estilos.falaNome}>{personagem.nome}</Text>}
               <Text style={estilos.falaTexto}>{sentimento.mensagem}</Text>
-            </CaixaEspinhosa>
+            </CaixaFofa>
           </Animated.View>
         </View>
 

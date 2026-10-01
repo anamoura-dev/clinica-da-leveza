@@ -175,12 +175,14 @@ const estilos = StyleSheet.create({
   },
   parabens: {
     ...CaixaAlta,
+    textAlign: 'center',
     fontFamily: Fontes.extra,
-    fontSize: tk(28),
+    fontSize: tk(26),
     color: Cores.texto,
   },
   parabensTexto: {
     ...CaixaAlta,
+    textAlign: 'center',
     fontFamily: Fontes.media,
     fontSize: tk(17),
     color: Cores.textoSuave,
@@ -190,13 +192,15 @@ const estilos = StyleSheet.create({
     ...Contorno,
     borderRadius: Raio.pilula,
     paddingVertical: 14,
-    paddingHorizontal: 32,
+    paddingHorizontal: 28,
     marginTop: Espaco.md,
+    alignSelf: 'center',
   },
   botaoTexto: {
     ...CaixaAlta,
+    textAlign: 'center',
     fontFamily: Fontes.extra,
-    fontSize: tk(18),
+    fontSize: tk(16),
     color: Cores.marinho,
   },
 });
