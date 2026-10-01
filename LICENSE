@@ -1,6 +1,8 @@
-The MIT License (MIT)
+Copyright (c) 2026 Ana Carolina Alves de Moura
 
-Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)
+SOURCE CODE — MIT License
+
+The source code in this repository is licensed under the MIT License:
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +21,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+CONTENT AND BRAND — All rights reserved
+
+The MIT License above does NOT cover the following, which remain the property
+of Ana Paula Rodrigues (all rights reserved) and may not be copied, reused or
+redistributed without written permission:
+
+- the "Clínica da Leveza" and "aprendendo a ser leve" names and visual identity;
+- all texts and educational content (pauladas, ManuaLeve, Cafés, games,
+  stories, missions and characters), including the SQL files in supabase/seeds/;
+- the book titles, covers and images in assets/images/livros/;
+- the privacy policy and other documents in docs/.
