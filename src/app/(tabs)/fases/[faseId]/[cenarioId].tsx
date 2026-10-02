@@ -2,7 +2,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeInDown, FadeInUp, useReducedMotion } from 'react-native-reanimated';
 
+import { BalaoFlutuante } from '@/components/balao-ar';
 import { Botao, Carregando, Erro, Rotulo } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
 import { registrarProgresso } from '@/components/conta/dados';
@@ -22,9 +24,23 @@ type Opcao = {
 const cor = Destaques.fases;
 const letra = (i: number) => String.fromCharCode(65 + i);
 
+/** A devolutiva vem em camadas: cada parágrafo (separado por linha em branco) é uma camada. */
+const camadasDe = (texto: string) =>
+  texto
+    .split(/\n\s*\n/)
+    .map((parte) => parte.trim())
+    .filter(Boolean);
+
 export default function TelaCenario() {
   const { faseId, cenarioId } = useLocalSearchParams<{ faseId: string; cenarioId: string }>();
   const [escolhida, setEscolhida] = useState<number | null>(null);
+  const [visiveis, setVisiveis] = useState(1);
+  const parado = useReducedMotion();
+
+  function escolher(i: number | null) {
+    setEscolhida(i);
+    setVisiveis(1);
+  }
 
   const carregar = useCallback(async () => {
     const [cenarioRes, opcoesRes, faseRes] = await Promise.all([
@@ -52,6 +68,8 @@ export default function TelaCenario() {
   const proximo = dados?.proximo ?? null;
 
   const opcao = escolhida !== null ? opcoes[escolhida] : null;
+  const camadas = opcao ? camadasDe(opcao.devolutiva) : [];
+  const tudoVisto = visiveis >= camadas.length;
 
   return (
     <>
@@ -63,18 +81,18 @@ export default function TelaCenario() {
       ) : (
         <ScrollView contentContainerStyle={estilos.conteudo}>
           <View style={estilos.situacao}>
-            <Rotulo cor={cor.escura}>A situação</Rotulo>
+            <Rotulo cor={cor.escura}>A cena</Rotulo>
             <Text style={estilos.situacaoTexto}>{cenario.texto}</Text>
           </View>
 
           {!opcao && (
             <>
-              <Text style={estilos.pergunta}>E você?</Text>
+              <Text style={estilos.pergunta}>E agora?</Text>
               {opcoes.map((o, i) => (
                 <Pressable
                   key={o.id}
                   onPress={() => {
-                    setEscolhida(i);
+                    escolher(i);
                     registrarProgresso('cenario', cenarioId); // conta como jogado (se estiver logado)
                   }}
                   style={({ pressed }) => [estilos.opcao, pressed && estilos.pressionado]}>
@@ -99,10 +117,34 @@ export default function TelaCenario() {
               <View style={estilos.devolutiva}>
                 <View style={estilos.devolutivaCabecalho}>
                   <Ionicons name="sparkles-outline" size={20} color={Cores.verdeEscuro} />
-                  <Text style={estilos.vamosPensar}>Vamos pensar...</Text>
+                  <Text style={estilos.vamosPensar}>Vamos olhar melhor para essa escolha?</Text>
                 </View>
-                <Text style={estilos.devolutivaTexto}>{opcao.devolutiva}</Text>
+                {camadas.slice(0, visiveis).map((camada, i) => (
+                  <Animated.Text
+                    key={i}
+                    entering={i === 0 || parado ? undefined : FadeInDown.duration(400)}
+                    style={estilos.devolutivaTexto}>
+                    {camada}
+                  </Animated.Text>
+                ))}
+                {!tudoVisto && (
+                  <Pressable
+                    onPress={() => setVisiveis((n) => n + 1)}
+                    hitSlop={8}
+                    style={({ pressed }) => [estilos.maisFundo, pressed && estilos.pressionado]}>
+                    <Text style={estilos.maisFundoTexto}>Olhar mais de perto</Text>
+                    <Ionicons name="chevron-down" size={18} color={Cores.verdeEscuro} />
+                  </Pressable>
+                )}
               </View>
+
+              {/* Fim da fase: o balão sobe, sem medalha nem pontos. */}
+              {!proximo && tudoVisto && (
+                <Animated.View entering={parado ? undefined : FadeInUp.duration(1200)} style={estilos.fimDaFase}>
+                  <BalaoFlutuante largura={56} amplitude={8} />
+                  <Text style={estilos.fimDaFaseTexto}>Fase concluída.</Text>
+                </Animated.View>
+              )}
 
               {proximo ? (
                 <Botao
@@ -119,7 +161,7 @@ export default function TelaCenario() {
                 icone="arrow-back"
                 variante="suave"
                 cor={cor.escura}
-                onPress={() => setEscolhida(null)}
+                onPress={() => escolher(null)}
               />
             </>
           )}
@@ -211,6 +253,29 @@ const estilos = StyleSheet.create({
     fontFamily: Fontes.extra,
     fontSize: t(16),
     color: Cores.verdeEscuro,
+  },
+  maisFundo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Espaco.xs,
+    alignSelf: 'flex-start',
+    paddingVertical: Espaco.xs,
+  },
+  maisFundoTexto: {
+    fontFamily: Fontes.negrito,
+    fontSize: t(15),
+    color: Cores.verdeEscuro,
+    textDecorationLine: 'underline',
+  },
+  fimDaFase: {
+    alignItems: 'center',
+    gap: Espaco.sm,
+    paddingVertical: Espaco.md,
+  },
+  fimDaFaseTexto: {
+    fontFamily: Fontes.extra,
+    fontSize: t(18),
+    color: Cores.marinho,
   },
   devolutivaTexto: {
     fontFamily: Fontes.regular,

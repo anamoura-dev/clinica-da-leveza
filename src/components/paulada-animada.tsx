@@ -17,7 +17,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { BalaoAr } from '@/components/balao-ar';
-import { BalaoEspinhoso } from '@/components/balao-espinhoso';
+import { BalaoNuvem } from '@/components/balao-fofo';
 import { Ceu } from '@/components/ceu';
 import { Cores, Fontes, t } from '@/constants/theme';
 
@@ -338,11 +338,11 @@ function Cena({
           <Text style={estilos.rotuloTexto}>#Paulada</Text>
         </Animated.View>
 
-        {/* Balão de pensamento pontudo com a frase dentro. Tocar sorteia outra. */}
+        {/* Balão de pensamento fofo (nuvem) com a frase dentro. Tocar sorteia outra. */}
         <Pressable onPress={onOutra} disabled={!onOutra} accessibilityLabel={texto} accessibilityHint="Toque para outra paulada">
           <Estouro atraso={BALAO} parado={parado}>
             <View style={{ width: larguraBalao, height: alturaBalao }}>
-              <BalaoEspinhoso largura={larguraBalao} altura={alturaBalao} contorno={Cores.texto} />
+              <BalaoNuvem largura={larguraBalao} altura={alturaBalao} contorno={Cores.texto} espessura={3} />
               <View style={[StyleSheet.absoluteFill, estilos.centro, { paddingHorizontal: larguraBalao * 0.17 }]}>
                 <View style={estilos.frase}>
                   {palavras.map((palavra, i) => (
@@ -362,16 +362,16 @@ function Cena({
         {/* Bolinhas do pensamento, descendo até quem está "pensando" */}
         <View style={estilos.bolinhas}>
           <Estouro atraso={BOLINHAS + 160} parado={parado} balanco={4}>
-            <BalaoEspinhoso largura={64} altura={54} pontas={11} profundidade={0.22} espessura={2.5} contorno={Cores.texto} />
+            <View style={[estilos.bolinha, { width: 40, height: 34 }]} />
           </Estouro>
-          <View style={{ marginLeft: -30, marginTop: 44 }}>
+          <View style={{ marginLeft: -10, marginTop: 38 }}>
             <Estouro atraso={BOLINHAS + 80} parado={parado} balanco={5}>
-              <BalaoEspinhoso largura={42} altura={36} pontas={9} profundidade={0.24} espessura={2.5} contorno={Cores.texto} />
+              <View style={[estilos.bolinha, { width: 26, height: 22 }]} />
             </Estouro>
           </View>
-          <View style={{ marginLeft: -20, marginTop: 78 }}>
+          <View style={{ marginLeft: -6, marginTop: 64 }}>
             <Estouro atraso={BOLINHAS} parado={parado} balanco={6}>
-              <BalaoEspinhoso largura={26} altura={22} pontas={7} profundidade={0.25} espessura={2} contorno={Cores.texto} />
+              <View style={[estilos.bolinha, { width: 15, height: 13 }]} />
             </Estouro>
           </View>
         </View>
@@ -447,6 +447,12 @@ const estilos = StyleSheet.create({
     fontFamily: Fontes.extra,
     color: Cores.texto,
     textAlign: 'center',
+  },
+  bolinha: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2.5,
+    borderColor: Cores.texto,
+    borderRadius: 999,
   },
   bolinhas: {
     flexDirection: 'row',

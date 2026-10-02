@@ -19,37 +19,24 @@ import { BalaoAr, BalaoFlutuante } from '@/components/balao-ar';
 import { VitrineLivros } from '@/components/livros';
 import { barraAbasEscondida, estiloBarraAbas } from '@/components/navegacao';
 import { PauladaAnimada } from '@/components/paulada-animada';
+import { buscarPauladas, sortear } from '@/components/pauladas';
 import { TransicaoBalao } from '@/components/transicao-balao';
-import { Cartao, Rotulo } from '@/components/ui';
+import { Rotulo } from '@/components/ui';
+import { LUPA_ATIVA } from '@/constants/recursos';
 import { Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
-import { supabase } from '../../../lib/supabase';
-
-function sortear(lista: string[], evitar: string | null) {
-  const opcoes = lista.length > 1 ? lista.filter((frase) => frase !== evitar) : lista;
-  return opcoes[Math.floor(Math.random() * opcoes.length)];
-}
-
-async function buscarPauladas() {
-  const { data, error } = await supabase
-    .from('pauladas')
-    .select('texto')
-    .eq('ativa', true)
-    .eq('uso', 'abertura');
-
-  if (error) throw new Error(error.message);
-  const textos = (data ?? []).map((p) => p.texto as string);
-  if (textos.length === 0) throw new Error('Nenhuma paulada encontrada.');
-  return { textos, inicial: sortear(textos, null) };
-}
 
 // Cada caminho tem a cor de uma listra do balão (a mesma da seção).
 type Caminho = { emoji: string; texto: string; href: Href; cor: string; nome: string };
+// A Lupa só aparece quando estiver ligada (a Apple reprova botões que levam a "em breve").
 const CAMINHOS: Caminho[] = [
-  { emoji: '🔍', texto: 'Quero entender uma situação', href: '/manualeve', cor: Destaques.manualeve.cor, nome: 'o ManuaLeve' },
-  { emoji: '☕', texto: 'Quero aprender alguma coisa', href: '/cafe', cor: Destaques.cafe.cor, nome: 'os Cafés' },
+  ...(LUPA_ATIVA
+    ? [{ emoji: '🔍', texto: 'Quero entender uma situação', href: '/conversar', cor: Destaques.lupa.cor, nome: 'a Lupa' } as Caminho]
+    : []),
+  { emoji: '☕', texto: 'Quero tomar um café', href: '/cafe', cor: Destaques.cafe.cor, nome: 'os Cafés' },
+  { emoji: '🧰', texto: 'Preciso de uma saída prática', href: '/manualeve', cor: Destaques.manualeve.cor, nome: 'o ManuaLeve' },
   { emoji: '🎮', texto: 'Quero passar de fase', href: '/fases', cor: Destaques.fases.cor, nome: 'os Jogos' },
-  { emoji: '📅', texto: 'Quero agendar uma consulta', href: '/agendar', cor: Destaques.lupa.cor, nome: 'a agenda' },
+  { emoji: '💬', texto: 'Quero conversar com a Ana', href: '/agendar', cor: Destaques.lupa.cor, nome: 'a agenda' },
   { emoji: '🎈', texto: 'Quero entrar no mundo das crianças', href: '/mundo', cor: Destaques.mundo.cor, nome: 'o Espaço das Crianças' },
 ];
 
@@ -155,19 +142,31 @@ export default function Home() {
               </Pressable>
             </View>
 
-            <Text style={estilos.pergunta}>O que trouxe você até aqui?</Text>
+            <Text style={estilos.pergunta}>O que você precisa hoje?</Text>
 
-            <View style={estilos.caminhos}>
+            {/* Lista "editorial": linhas com uma faixa de cor, sem cartões. */}
+            <View>
               {CAMINHOS.map((c) => (
-                <Cartao key={c.texto} style={estilos.caminho} onPress={() => viajar(c)} accessibilityRole="link">
-                  <View style={[estilos.bolinha, { backgroundColor: c.cor }]}>
-                    <Text style={estilos.emoji}>{c.emoji}</Text>
-                  </View>
+                <Pressable
+                  key={c.texto}
+                  onPress={() => viajar(c)}
+                  accessibilityRole="link"
+                  style={({ pressed }) => [estilos.caminho, pressed && estilos.pressionado]}>
+                  <View style={[estilos.faixa, { backgroundColor: c.cor }]} />
+                  <Text style={estilos.emoji}>{c.emoji}</Text>
                   <Text style={estilos.caminhoTexto}>{c.texto}</Text>
-                  <Ionicons name="chevron-forward" size={18} color={Cores.textoClaro} />
-                </Cartao>
+                  <Ionicons name="arrow-forward" size={18} color={Cores.marinho} />
+                </Pressable>
               ))}
             </View>
+
+            <Pressable
+              onPress={() => router.push('/so-entrei')}
+              accessibilityRole="link"
+              hitSlop={12}
+              style={({ pressed }) => [estilos.soEntrei, pressed && estilos.pressionado]}>
+              <Text style={estilos.soEntreiTexto}>Não sei. Só entrei.</Text>
+            </Pressable>
 
             <VitrineLivros />
           </ScrollView>
@@ -227,13 +226,6 @@ const estilos = StyleSheet.create({
     fontSize: t(14),
     marginTop: 2,
   },
-  bolinha: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   pergunta: {
     fontFamily: Fontes.extra,
     fontSize: t(28),
@@ -242,23 +234,42 @@ const estilos = StyleSheet.create({
     marginTop: Espaco.md,
     marginBottom: Espaco.lg,
   },
-  caminhos: {
-    gap: Espaco.sm + 4,
-  },
   caminho: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Espaco.md,
     paddingVertical: Espaco.md + 2,
-    borderRadius: Raio.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Cores.borda,
+  },
+  pressionado: {
+    opacity: 0.6,
+  },
+  faixa: {
+    width: 5,
+    alignSelf: 'stretch',
+    borderRadius: Raio.pilula,
   },
   emoji: {
-    fontSize: t(19),
+    fontSize: t(20),
   },
   caminhoTexto: {
     flex: 1,
-    fontFamily: Fontes.media,
-    fontSize: t(16),
+    fontFamily: Fontes.negrito,
+    fontSize: t(18),
+    lineHeight: t(24),
     color: Cores.texto,
+  },
+  soEntrei: {
+    alignSelf: 'center',
+    marginTop: Espaco.lg,
+    marginBottom: Espaco.xl,
+    paddingVertical: Espaco.sm,
+  },
+  soEntreiTexto: {
+    fontFamily: Fontes.media,
+    fontSize: t(15),
+    color: Cores.textoSuave,
+    textDecorationLine: 'underline',
   },
 });

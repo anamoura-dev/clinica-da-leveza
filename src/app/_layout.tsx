@@ -49,6 +49,7 @@ export default function RootLayout() {
           options={{ ...opcoesDaPilha(Cores.terracotaEscura), headerShown: true, title: 'Livros da Ana' }}
         />
         <Stack.Screen name="mundo" />
+        <Stack.Screen name="so-entrei" options={{ ...opcoesDaPilha(Cores.marinho), headerShown: true, title: '' }} />
         <Stack.Screen
           name="privacidade"
           options={{ ...opcoesDaPilha(Cores.marinho), headerShown: true, title: 'Privacidade' }}
