@@ -32,7 +32,7 @@ The app is in Brazilian Portuguese.
 | Area | What it does |
 | --- | --- |
 | **Paulada** | An animated opening line ("PAU · LA · DA!") with a short, direct phrase to pull parents out of autopilot. |
-| **ManuaLeve** | "My child won't…" situations: what may be happening, what to avoid, what to do today and when to look deeper. |
+| **ManuaLeve** | Chapters from Ana Paula's book: the child's voice, an emotional translation for parents, when to seek help and a bedtime question. |
 | **Cafés** | Short videos to learn a little each day. |
 | **Jogos** | Everyday scenarios in levels: pick a reaction and see what it leads to. |
 | **Espaço das Crianças** | A kids' area in 3 steps — how do you feel → story or mission → drawing. Large uppercase text, stars for completed missions, and an adult gate to leave. |

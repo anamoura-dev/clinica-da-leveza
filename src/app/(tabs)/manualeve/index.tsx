@@ -6,47 +6,56 @@ import { useDados } from '@/hooks/use-dados';
 import { Cores, Destaques, Espaco, Fontes, t } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
-type Situacao = {
+type Capitulo = {
   id: string;
-  rotulo: string;
+  numero: number;
+  titulo: string;
+  tema: string | null;
   emoji: string | null;
 };
 
 const cor = Destaques.manualeve;
 
-async function buscarSituacoes(): Promise<Situacao[]> {
+async function buscarCapitulos(): Promise<Capitulo[]> {
   const { data, error } = await supabase
-    .from('manualeve_situacoes')
-    .select('id, rotulo, emoji')
-    .eq('ativa', true)
+    .from('manualeve_capitulos')
+    .select('id, numero, titulo, tema, emoji')
+    .eq('ativo', true)
     .order('ordem', { ascending: true });
   if (error) throw new Error(error.message);
   return data ?? [];
 }
 
 export default function ManuaLeve() {
-  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarSituacoes, 'manualeve');
-  const situacoes = dados ?? [];
+  const { dados, carregando, erro, tentarDeNovo } = useDados(buscarCapitulos, 'manualeve-capitulos');
+  const capitulos = dados ?? [];
 
   if (carregando) return <Carregando />;
   if (erro) return <Erro mensagem={erro} onTentar={tentarDeNovo} />;
 
   return (
-    <Tela titulo="Meu filho não quer..." subtitulo="Escolha a situação e veja por onde começar.">
+    <Tela
+      titulo="ManuaLeve"
+      subtitulo="Antes de corrigir, entenda o que a criança está tentando dizer."
+    >
       <FlatList
-        data={situacoes}
+        data={capitulos}
         keyExtractor={(item) => item.id}
-        numColumns={2}
-        columnWrapperStyle={estilos.linha}
         contentContainerStyle={estilos.lista}
-        ListEmptyComponent={<Vazio mensagem="Nenhuma situação por aqui ainda." />}
+        ListEmptyComponent={<Vazio mensagem="Nenhum capítulo por aqui ainda." />}
         renderItem={({ item }) => (
           <Link href={`/manualeve/${item.id}`} asChild>
             <Cartao style={estilos.cartao}>
               <View style={estilos.emojiFundo}>
                 <Text style={estilos.emoji}>{item.emoji ?? '🌿'}</Text>
               </View>
-              <Text style={estilos.rotulo}>{item.rotulo}</Text>
+              <View style={estilos.textos}>
+                <Text style={estilos.numero}>
+                  Capítulo {item.numero}
+                  {item.tema ? ` · ${item.tema}` : ''}
+                </Text>
+                <Text style={estilos.titulo}>{item.titulo}</Text>
+              </View>
             </Cartao>
           </Link>
         )}
@@ -61,30 +70,35 @@ const estilos = StyleSheet.create({
     paddingBottom: Espaco.xl,
     gap: Espaco.md,
   },
-  linha: {
+  cartao: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: Espaco.md,
   },
-  cartao: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: Espaco.lg,
-    gap: Espaco.sm,
-  },
   emojiFundo: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: cor.clara,
     alignItems: 'center',
     justifyContent: 'center',
   },
   emoji: {
-    fontSize: t(30),
+    fontSize: t(26),
   },
-  rotulo: {
+  textos: {
+    flex: 1,
+    gap: 2,
+  },
+  numero: {
+    fontFamily: Fontes.media,
+    fontSize: t(13),
+    color: cor.escura,
+  },
+  titulo: {
     fontFamily: Fontes.negrito,
-    fontSize: t(15),
+    fontSize: t(16),
+    lineHeight: t(22),
     color: Cores.texto,
-    textAlign: 'center',
   },
 });

@@ -7,81 +7,78 @@ import { Carregando, Erro } from '@/components/ui';
 import { useDados } from '@/hooks/use-dados';
 import { BotaoFavorito } from '@/components/conta/botao-favorito';
 import { LivroRecomendado } from '@/components/livros';
-import { Cores, Espaco, Fontes, Raio, t } from '@/constants/theme';
+import { Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { supabase } from '../../../../lib/supabase';
 
-type Entrada = {
-  o_que_pode_estar_acontecendo: string;
-  o_que_evitar: string;
-  o_que_fazer_hoje: string;
-  quando_investigar_mais: string;
-};
-
-type Situacao = {
-  rotulo: string;
+type Capitulo = {
+  numero: number;
+  titulo: string;
+  tema: string | null;
   emoji: string | null;
+  historia: string;
+  fala: string | null;
+  traducao: string;
+  quando_buscar_ajuda: string | null;
+  pergunta: string | null;
 };
 
-const SECOES: {
-  campo: keyof Entrada;
+const cor = Destaques.manualeve;
+
+/** Separa o texto do banco em parágrafos (linha em branco entre eles). */
+function Paragrafos({ texto, estilo }: { texto: string; estilo: object }) {
+  return (
+    <>
+      {texto
+        .split(/\n\s*\n/)
+        .map((p) => p.trim())
+        .filter(Boolean)
+        .map((p, i) => (
+          <Text key={i} style={estilo}>
+            {p}
+          </Text>
+        ))}
+    </>
+  );
+}
+
+function Secao({
+  titulo,
+  icone,
+  corFundo,
+  corIcone,
+  children,
+}: {
   titulo: string;
   icone: keyof typeof Ionicons.glyphMap;
   corFundo: string;
   corIcone: string;
-}[] = [
-  {
-    campo: 'o_que_pode_estar_acontecendo',
-    titulo: 'O que pode estar acontecendo',
-    icone: 'bulb-outline',
-    corFundo: Cores.azulClaro,
-    corIcone: Cores.azulEscuro,
-  },
-  {
-    campo: 'o_que_evitar',
-    titulo: 'O que evitar',
-    icone: 'hand-left-outline',
-    corFundo: Cores.terracotaClara,
-    corIcone: Cores.terracotaEscura,
-  },
-  {
-    campo: 'o_que_fazer_hoje',
-    titulo: 'O que você pode fazer hoje',
-    icone: 'heart-outline',
-    corFundo: Cores.verdeClaro,
-    corIcone: Cores.verdeEscuro,
-  },
-  {
-    campo: 'quando_investigar_mais',
-    titulo: 'Quando investigar mais',
-    icone: 'search-outline',
-    corFundo: Cores.azulClaro,
-    corIcone: Cores.azulEscuro,
-  },
-];
+  children: React.ReactNode;
+}) {
+  return (
+    <View style={[estilos.secao, { backgroundColor: corFundo }]}>
+      <View style={estilos.secaoCabecalho}>
+        <Ionicons name={icone} size={20} color={corIcone} />
+        <Text style={[estilos.secaoTitulo, { color: corIcone }]}>{titulo}</Text>
+      </View>
+      {children}
+    </View>
+  );
+}
 
-export default function ResultadoManuaLeve() {
+export default function CapituloManuaLeve() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const carregar = useCallback(async () => {
-    const [entradaRes, situacaoRes] = await Promise.all([
-      supabase
-        .from('manualeve_entradas')
-        .select('o_que_pode_estar_acontecendo, o_que_evitar, o_que_fazer_hoje, quando_investigar_mais')
-        .eq('situacao_id', id)
-        .limit(1)
-        .maybeSingle(),
-      supabase.from('manualeve_situacoes').select('rotulo, emoji').eq('id', id).maybeSingle(),
-    ]);
-    if (entradaRes.error) throw new Error(entradaRes.error.message);
-    if (!entradaRes.data) throw new Error('Ainda não há conteúdo para essa situação.');
-    return {
-      entrada: entradaRes.data as Entrada,
-      situacao: (situacaoRes.data ?? null) as Situacao | null,
-    };
+    const { data, error } = await supabase
+      .from('manualeve_capitulos')
+      .select('numero, titulo, tema, emoji, historia, fala, traducao, quando_buscar_ajuda, pergunta')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error('Ainda não há conteúdo para esse capítulo.');
+    return data as Capitulo;
   }, [id]);
 
-  const { dados, carregando, erro, tentarDeNovo } = useDados(carregar, `manualeve:${id}`);
-  const entrada = dados?.entrada ?? null;
-  const situacao = dados?.situacao ?? null;
+  const { dados: capitulo, carregando, erro, tentarDeNovo } = useDados(carregar, `manualeve-capitulo:${id}`);
 
   return (
     <>
@@ -89,39 +86,67 @@ export default function ResultadoManuaLeve() {
         options={{
           title: '',
           headerRight: () => (
-            <BotaoFavorito
-              tipo="manualeve"
-              itemId={id}
-              titulo={situacao ? `Meu filho não quer ${situacao.rotulo}` : undefined}
-            />
+            <BotaoFavorito tipo="manualeve" itemId={id} titulo={capitulo?.titulo} />
           ),
         }}
       />
       {carregando ? (
         <Carregando />
-      ) : erro || !entrada ? (
+      ) : erro || !capitulo ? (
         <Erro mensagem={erro ?? 'Algo deu errado.'} onTentar={tentarDeNovo} />
       ) : (
         <ScrollView contentContainerStyle={estilos.conteudo}>
-          {situacao && (
-            <View style={estilos.topo}>
-              <Text style={estilos.emoji}>{situacao.emoji ?? '🌿'}</Text>
-              <Text style={estilos.contexto}>Meu filho não quer...</Text>
-              <Text style={estilos.titulo}>{situacao.rotulo}</Text>
-            </View>
-          )}
+          <View style={estilos.topo}>
+            <Text style={estilos.emoji}>{capitulo.emoji ?? '🌿'}</Text>
+            <Text style={estilos.contexto}>
+              Capítulo {capitulo.numero}
+              {capitulo.tema ? ` · ${capitulo.tema}` : ''}
+            </Text>
+            <Text style={estilos.titulo}>{capitulo.titulo}</Text>
+          </View>
 
-          {SECOES.map((s) =>
-            entrada[s.campo] ? (
-              <View key={s.campo} style={[estilos.secao, { backgroundColor: s.corFundo }]}>
-                <View style={estilos.secaoCabecalho}>
-                  <Ionicons name={s.icone} size={20} color={s.corIcone} />
-                  <Text style={[estilos.secaoTitulo, { color: s.corIcone }]}>{s.titulo}</Text>
-                </View>
-                <Text style={estilos.texto}>{entrada[s.campo]}</Text>
+          <Secao
+            titulo="A criança falando"
+            icone="chatbubble-ellipses-outline"
+            corFundo={Cores.amareloClaro}
+            corIcone={Cores.amareloEscuro}
+          >
+            <Paragrafos texto={capitulo.historia} estilo={estilos.texto} />
+            {capitulo.fala ? (
+              <View style={estilos.fala}>
+                <Text style={estilos.falaRotulo}>Se eu pudesse te explicar…</Text>
+                <Text style={estilos.falaTexto}>“{capitulo.fala}”</Text>
               </View>
-            ) : null,
-          )}
+            ) : null}
+          </Secao>
+
+          <Secao
+            titulo="Tradução emocional para pais"
+            icone="bulb-outline"
+            corFundo={Cores.azulClaro}
+            corIcone={Cores.azulEscuro}
+          >
+            <Paragrafos texto={capitulo.traducao} estilo={estilos.texto} />
+          </Secao>
+
+          {capitulo.quando_buscar_ajuda ? (
+            <Secao
+              titulo="Quando buscar ajuda"
+              icone="search-outline"
+              corFundo={Cores.terracotaClara}
+              corIcone={Cores.terracotaEscura}
+            >
+              <Paragrafos texto={capitulo.quando_buscar_ajuda} estilo={estilos.texto} />
+            </Secao>
+          ) : null}
+
+          {capitulo.pergunta ? (
+            <View style={estilos.pergunta}>
+              <Text style={estilos.perguntaRotulo}>🌙 Pergunta de cabeceira</Text>
+              <Text style={estilos.perguntaTexto}>{capitulo.pergunta}</Text>
+            </View>
+          ) : null}
+
           <LivroRecomendado semente={id} />
         </ScrollView>
       )}
@@ -146,18 +171,19 @@ const estilos = StyleSheet.create({
   contexto: {
     fontFamily: Fontes.media,
     fontSize: t(14),
-    color: Cores.textoSuave,
+    color: cor.escura,
   },
   titulo: {
     fontFamily: Fontes.extra,
     fontSize: t(24),
+    lineHeight: t(30),
     color: Cores.texto,
     textAlign: 'center',
   },
   secao: {
     borderRadius: Raio.md,
     padding: Espaco.md + 4,
-    gap: Espaco.sm,
+    gap: Espaco.sm + 2,
   },
   secaoCabecalho: {
     flexDirection: 'row',
@@ -173,5 +199,42 @@ const estilos = StyleSheet.create({
     fontSize: t(16),
     lineHeight: t(25),
     color: Cores.texto,
+  },
+  fala: {
+    marginTop: Espaco.sm,
+    backgroundColor: Cores.superficie,
+    borderRadius: Raio.sm,
+    padding: Espaco.md,
+    gap: Espaco.xs,
+  },
+  falaRotulo: {
+    fontFamily: Fontes.media,
+    fontSize: t(13),
+    color: Cores.amareloEscuro,
+  },
+  falaTexto: {
+    fontFamily: Fontes.negrito,
+    fontSize: t(17),
+    lineHeight: t(26),
+    color: Cores.texto,
+  },
+  pergunta: {
+    backgroundColor: Cores.lilasClaro,
+    borderRadius: Raio.md,
+    padding: Espaco.lg,
+    alignItems: 'center',
+    gap: Espaco.sm,
+  },
+  perguntaRotulo: {
+    fontFamily: Fontes.extra,
+    fontSize: t(15),
+    color: Cores.lilasEscuro,
+  },
+  perguntaTexto: {
+    fontFamily: Fontes.negrito,
+    fontSize: t(18),
+    lineHeight: t(27),
+    color: Cores.texto,
+    textAlign: 'center',
   },
 });
