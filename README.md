@@ -55,7 +55,7 @@ src/
   app/                 Screens (Expo Router)
     (tabs)/            Home, Café, ManuaLeve, Jogos, Perfil
     mundo/             Children's area (Espaço das Crianças)
-    agendar.tsx        Appointment booking
+    agendar.tsx        Talk to Ana (WhatsApp)
     livros.tsx         Books page
     privacidade.tsx    Privacy policy
   components/          UI, balloon illustrations, account, kids' area helpers

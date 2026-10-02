@@ -15,9 +15,19 @@ import { Cores } from '@/constants/theme';
 
 /**
  * Balão de ar quente — símbolo da Clínica da Leveza.
- * Desenho próprio do app: envelope com gomos listrados (azul, terracota,
- * verde e amarelo), contorno azul-marinho, cordas e cesto.
+ * Desenho próprio do app: envelope com gomos listrados em tons pastel
+ * (azul, rosa, roxo, verde e amarelo), contorno azul-marinho, cordas e cesto.
+ * As mesmas cores estão no ícone do app (assets/images) — se mudar aqui, gere o ícone de novo.
  */
+export const CoresBalao = {
+  azul: '#B7D2EE',
+  rosa: '#F6C3CF',
+  roxo: '#D4C6F0',
+  verde: '#C8E0A8',
+  amarelo: '#F8E0A2',
+  cesto: '#F5CF92',
+} as const;
+
 export function BalaoAr({ largura = 48 }: { largura?: number }) {
   const w = largura;
   const h = w * 1.32;
@@ -26,10 +36,11 @@ export function BalaoAr({ largura = 48 }: { largura?: number }) {
 
   const envelope = `M${w * 0.5} ${w * 0.04} C${w * 0.93} ${w * 0.04} ${w} ${w * 0.42} ${w * 0.9} ${w * 0.6} C${w * 0.8} ${w * 0.78} ${w * 0.66} ${w * 0.86} ${w * 0.6} ${w * 0.93} L${w * 0.4} ${w * 0.93} C${w * 0.34} ${w * 0.86} ${w * 0.2} ${w * 0.78} ${w * 0.1} ${w * 0.6} C0 ${w * 0.42} ${w * 0.07} ${w * 0.04} ${w * 0.5} ${w * 0.04} Z`;
   const gomos: [number, string][] = [
-    [0.5, Cores.azul],
-    [0.37, Cores.terracota],
-    [0.25, Cores.verde],
-    [0.12, Cores.amarelo],
+    [0.5, CoresBalao.azul],
+    [0.38, CoresBalao.rosa],
+    [0.28, CoresBalao.roxo],
+    [0.18, CoresBalao.verde],
+    [0.085, CoresBalao.amarelo],
   ];
 
   return (
@@ -40,7 +51,7 @@ export function BalaoAr({ largura = 48 }: { largura?: number }) {
         </ClipPath>
       </Defs>
       <G clipPath={`url(#${idRecorte})`}>
-        <Rect width={w} height={w} fill={Cores.azul} />
+        <Rect width={w} height={w} fill={CoresBalao.azul} />
         {gomos.map(([rx, cor]) => (
           <Ellipse
             key={cor}
@@ -61,7 +72,7 @@ export function BalaoAr({ largura = 48 }: { largura?: number }) {
         width={w * 0.22}
         height={w * 0.05}
         rx={w * 0.02}
-        fill={Cores.terracota}
+        fill={CoresBalao.rosa}
         stroke={Cores.marinho}
         strokeWidth={traco * 0.7}
       />
@@ -73,7 +84,7 @@ export function BalaoAr({ largura = 48 }: { largura?: number }) {
         width={w * 0.32}
         height={w * 0.19}
         rx={w * 0.03}
-        fill={Cores.cesto}
+        fill={CoresBalao.cesto}
         stroke={Cores.marinho}
         strokeWidth={traco * 0.8}
       />
@@ -95,7 +106,7 @@ export function BalaoAr({ largura = 48 }: { largura?: number }) {
         width={w * 0.38}
         height={w * 0.05}
         rx={w * 0.02}
-        fill={Cores.cesto}
+        fill={CoresBalao.cesto}
         stroke={Cores.marinho}
         strokeWidth={traco * 0.8}
       />

@@ -13,7 +13,7 @@ function preencher(texto: string) {
     .replaceAll('{NOME}', Clinica.nome)
     .replaceAll('{RESPONSAVEL}', Clinica.responsavel)
     .replaceAll('{CNPJ}', Clinica.cnpj)
-    .replaceAll('{EMAIL}', ou(Clinica.email, 'pelo WhatsApp da tela “Quero agendar uma consulta”'))
+    .replaceAll('{EMAIL}', ou(Clinica.email, 'pelo WhatsApp da tela “Quero conversar com a Ana”'))
     .replaceAll('{DATA}', Clinica.politicaAtualizadaEm);
 }
 

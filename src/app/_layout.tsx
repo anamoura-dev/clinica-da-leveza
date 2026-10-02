@@ -42,7 +42,7 @@ export default function RootLayout() {
         />
         <Stack.Screen
           name="agendar"
-          options={{ ...opcoesDaPilha(Cores.lilasEscuro), headerShown: true, title: 'Agendar consulta' }}
+          options={{ ...opcoesDaPilha(Cores.lilasEscuro), headerShown: true, title: 'Conversar com a Ana' }}
         />
         <Stack.Screen
           name="livros"

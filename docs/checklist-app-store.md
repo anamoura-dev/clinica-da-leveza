@@ -50,4 +50,4 @@ Marque [x] conforme for fazendo. ✅ = já feito no app.
 - [ ] "Privacidade do app": nome, e-mail, foto (conta), dados informados pelo usuário (apelido/ano das crianças), conteúdo do usuário (favoritos/progresso); nada usado para rastreamento
 - [ ] Prints da loja (iPhone 6,9" ou 6,7") — fiéis ao app
 - [ ] Link de suporte (uma página com contato: página no site da Ana Paula ou Linktree do Instagram) e link da política
-- [ ] Notas para o revisor: login é opcional; agendamento abre o WhatsApp da profissional (consulta presencial/online, paga fora do app); trava de adulto no Espaço das Crianças é uma conta de multiplicação
+- [ ] Notas para o revisor: login é opcional; "Conversar com a Ana" só abre o WhatsApp da profissional (nada é vendido nem pago no app); trava de adulto no Espaço das Crianças é uma conta de multiplicação

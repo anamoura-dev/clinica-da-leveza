@@ -12,7 +12,7 @@ Quase tudo no app funciona sem criar conta. Sem conta, não guardamos nenhum dad
 
 ## Agendamento de consultas
 
-Na tela “Quero agendar uma consulta” você pode pedir um agendamento. Os dados que você preenche (nome, celular, e-mail, CPF e preferências de horário) não são guardados pelo app nem pelos nossos servidores: eles só montam uma mensagem que você mesma(o) envia pelo seu WhatsApp para a profissional. A partir daí, o atendimento, o cadastro para a nota fiscal e o pagamento do sinal seguem fora do app, diretamente com a Ana Paula.
+Na tela “Quero conversar com a Ana” há um botão que abre o seu WhatsApp com uma mensagem pronta para a profissional. O app não pede nem guarda nenhum dado seu nessa tela: a conversa, o agendamento e qualquer pagamento acontecem fora do app, diretamente com a Ana Paula.
 
 ## Dados que guardamos quando você cria uma conta
 
