@@ -1,55 +1,57 @@
 /**
- * Identidade visual da Leveza — "Balão da Leveza".
- * A paleta vem das listras do balão de ar quente (símbolo da clínica):
- * azul céu, terracota, verde e amarelo, com contornos em azul-marinho
- * e fundo creme (como o tecido do bordado "aprendendo a ser leve").
+ * Identidade visual da Clínica da Leveza (paleta do app, 04/10/2026).
+ * Azul identidade #24527F · Laranja #F2A06B · Lima #D0DE7D · Pink #D86BB7
+ * · Marfim #FCFDF0 (fundo) · Grafite #252525 (texto).
+ * Os nomes antigos das chaves (terracota, verde, amarelo, lilas) foram mantidos
+ * para não mexer no resto do código: veja ao lado qual cor cada um virou.
+ * O balão de ar quente tem as cores dele em src/components/balao-ar.tsx.
  */
 
 export const Cores = {
-  fundo: '#FAF6EE',
+  fundo: '#FCFDF0', // marfim
   superficie: '#FFFFFF',
-  borda: '#EAE3D6',
+  borda: '#E7E8D6',
 
-  marinho: '#2F3A6B', // contornos e texto principal
-  texto: '#2F3A6B',
-  textoSuave: '#6B7090',
-  textoClaro: '#9AA0B8',
+  marinho: '#24527F', // azul identidade: títulos e contornos
+  texto: '#252525', // grafite
+  textoSuave: '#5F6368',
+  textoClaro: '#9EA19A',
 
-  azul: '#7FA8D2',
-  azulEscuro: '#3F6E9E',
-  azulClaro: '#E3EEF8',
+  azul: '#8FB3D9', // azul claro (tom do azul identidade)
+  azulEscuro: '#24527F',
+  azulClaro: '#E3ECF6',
 
-  terracota: '#C9664E',
-  terracotaEscura: '#A24A34',
-  terracotaClara: '#F7E0D8',
+  terracota: '#F2A06B', // laranja identidade
+  terracotaEscura: '#B8622C',
+  terracotaClara: '#FCE6D6',
 
-  verde: '#8FBA5C',
-  verdeEscuro: '#4F7F2E',
-  verdeClaro: '#E6F0DA',
+  verde: '#D0DE7D', // lima
+  verdeEscuro: '#5A6A12',
+  verdeClaro: '#F1F5D5',
 
-  amarelo: '#EEC46A',
-  amareloEscuro: '#8A6A1F',
-  amareloClaro: '#FBF0D2',
+  amarelo: '#D0DE7D', // lima (a paleta nova não tem amarelo)
+  amareloEscuro: '#5A6A12',
+  amareloClaro: '#F4F7DD',
 
-  lilas: '#B6AEDD',
-  lilasEscuro: '#6A5FAE',
-  lilasClaro: '#EEEBF8',
+  lilas: '#D86BB7', // pink acento
+  lilasEscuro: '#A8418A',
+  lilasClaro: '#F8E1F1',
 
   cesto: '#F0B24E',
-  ceuTopo: '#A9CBEA',
-  ceuBase: '#D8E8F4',
+  ceuTopo: '#C3D6EA',
+  ceuBase: '#EAF1F7',
 
   erro: '#C0564B',
 } as const;
 
-/** Cada seção do app tem a cor de uma listra do balão. */
+/** Cor de cada seção do app. */
 export const Destaques = {
-  hoje: { cor: Cores.azul, escura: Cores.azulEscuro, clara: Cores.azulClaro },
-  manualeve: { cor: Cores.verde, escura: Cores.verdeEscuro, clara: Cores.verdeClaro },
+  hoje: { cor: Cores.marinho, escura: '#1B3F63', clara: Cores.azulClaro },
+  manualeve: { cor: Cores.azul, escura: Cores.azulEscuro, clara: Cores.azulClaro },
   cafe: { cor: Cores.terracota, escura: Cores.terracotaEscura, clara: Cores.terracotaClara },
-  fases: { cor: Cores.azul, escura: Cores.azulEscuro, clara: Cores.azulClaro },
-  lupa: { cor: Cores.lilas, escura: Cores.lilasEscuro, clara: Cores.lilasClaro },
-  mundo: { cor: Cores.amarelo, escura: Cores.amareloEscuro, clara: Cores.amareloClaro },
+  fases: { cor: Cores.verde, escura: Cores.verdeEscuro, clara: Cores.verdeClaro },
+  lupa: { cor: Cores.marinho, escura: '#1B3F63', clara: Cores.azulClaro },
+  mundo: { cor: Cores.lilas, escura: Cores.lilasEscuro, clara: Cores.lilasClaro },
 } as const;
 
 export type Destaque = (typeof Destaques)[keyof typeof Destaques];

@@ -56,7 +56,7 @@ export default function FazerMissao() {
               accessibilityState={{ checked: feito }}>
               <View style={[estilos.caixa, feito && estilos.caixaFeita]}>
                 {feito ? (
-                  <Ionicons name="checkmark" size={24} color="#FFFFFF" />
+                  <Ionicons name="checkmark" size={24} color={Cores.marinho} />
                 ) : (
                   <Text style={estilos.numero}>{i + 1}</Text>
                 )}

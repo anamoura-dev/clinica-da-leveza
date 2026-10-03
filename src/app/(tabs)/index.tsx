@@ -16,6 +16,7 @@ import { useReducedMotion } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BalaoAr, BalaoFlutuante } from '@/components/balao-ar';
+import { BoasVindas } from '@/components/boas-vindas';
 import { VitrineLivros } from '@/components/livros';
 import { barraAbasEscondida, estiloBarraAbas } from '@/components/navegacao';
 import { PauladaAnimada } from '@/components/paulada-animada';
@@ -23,7 +24,7 @@ import { buscarPauladas, sortear } from '@/components/pauladas';
 import { TransicaoBalao } from '@/components/transicao-balao';
 import { Rotulo } from '@/components/ui';
 import { LUPA_ATIVA } from '@/constants/recursos';
-import { Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
+import { Contorno, Cores, Destaques, Espaco, Fontes, Raio, t } from '@/constants/theme';
 import { useDados } from '@/hooks/use-dados';
 
 // Cada caminho tem a cor de uma listra do balão (a mesma da seção).
@@ -40,7 +41,17 @@ const CAMINHOS: Caminho[] = [
   { emoji: '🎈', texto: 'Quero entrar no mundo das crianças', href: '/mundo', cor: Destaques.mundo.cor, nome: 'o Espaço das Crianças' },
 ];
 
+// As boas-vindas aparecem uma vez por abertura do app (voltar para a Home não mostra de novo).
+let boasVindasVistas = false;
+
+/** Texto escuro em cores claras e branco em cores escuras (ex.: azul identidade). */
+function textoSobre(hex: string) {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  return 0.299 * r + 0.587 * g + 0.114 * b > 0.5 ? Cores.texto : '#FFFFFF';
+}
+
 export default function Home() {
+  const [boasVindas, setBoasVindas] = useState(!boasVindasVistas);
   const { width } = useWindowDimensions();
   const navigation = useNavigation();
   const paginas = useRef<ScrollView>(null);
@@ -85,6 +96,20 @@ export default function Home() {
   function irPara(n: number) {
     paginas.current?.scrollTo({ x: n * width, animated: true });
     setPagina(n);
+  }
+
+  if (boasVindas) {
+    return (
+      <>
+        <StatusBar style="dark" />
+        <BoasVindas
+          aoEntrar={() => {
+            boasVindasVistas = true;
+            setBoasVindas(false);
+          }}
+        />
+      </>
+    );
   }
 
   return (
@@ -132,7 +157,7 @@ export default function Home() {
                 <Rotulo cor={Cores.marinho}>Clínica da Leveza</Rotulo>
                 <Text style={estilos.slogan}>
                   <Text style={{ color: Cores.verdeEscuro }}>aprendendo </Text>
-                  <Text style={{ color: Cores.terracota }}>a </Text>
+                  <Text style={{ color: Cores.terracotaEscura }}>a </Text>
                   <Text style={{ color: Cores.amareloEscuro }}>ser </Text>
                   <Text style={{ color: Cores.lilasEscuro }}>leve</Text>
                 </Text>
@@ -144,18 +169,16 @@ export default function Home() {
 
             <Text style={estilos.pergunta}>O que você precisa hoje?</Text>
 
-            {/* Lista "editorial": linhas com uma faixa de cor, sem cartões. */}
-            <View>
+            {/* Botões com borda, pintados com a cor da seção (paleta do app). */}
+            <View style={estilos.caminhos}>
               {CAMINHOS.map((c) => (
                 <Pressable
                   key={c.texto}
                   onPress={() => viajar(c)}
                   accessibilityRole="link"
-                  style={({ pressed }) => [estilos.caminho, pressed && estilos.pressionado]}>
-                  <View style={[estilos.faixa, { backgroundColor: c.cor }]} />
+                  style={({ pressed }) => [estilos.caminho, { backgroundColor: c.cor }, pressed && estilos.pressionado]}>
                   <Text style={estilos.emoji}>{c.emoji}</Text>
-                  <Text style={estilos.caminhoTexto}>{c.texto}</Text>
-                  <Ionicons name="arrow-forward" size={18} color={Cores.marinho} />
+                  <Text style={[estilos.caminhoTexto, { color: textoSobre(c.cor) }]}>{c.texto}</Text>
                 </Pressable>
               ))}
             </View>
@@ -179,11 +202,11 @@ export default function Home() {
 const estilos = StyleSheet.create({
   raiz: {
     flex: 1,
-    backgroundColor: Cores.ceuTopo,
+    backgroundColor: Cores.fundo,
   },
   abertura: {
     flex: 1,
-    backgroundColor: Cores.ceuTopo,
+    backgroundColor: Cores.fundo,
   },
   centro: {
     alignItems: 'center',
@@ -234,21 +257,21 @@ const estilos = StyleSheet.create({
     marginTop: Espaco.md,
     marginBottom: Espaco.lg,
   },
+  caminhos: {
+    gap: Espaco.sm + 4,
+  },
   caminho: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Espaco.md,
-    paddingVertical: Espaco.md + 2,
-    borderBottomWidth: 1,
-    borderBottomColor: Cores.borda,
+    paddingVertical: Espaco.md,
+    paddingHorizontal: Espaco.md,
+    backgroundColor: Cores.superficie,
+    borderRadius: Raio.md,
+    ...Contorno,
   },
   pressionado: {
     opacity: 0.6,
-  },
-  faixa: {
-    width: 5,
-    alignSelf: 'stretch',
-    borderRadius: Raio.pilula,
   },
   emoji: {
     fontSize: t(20),

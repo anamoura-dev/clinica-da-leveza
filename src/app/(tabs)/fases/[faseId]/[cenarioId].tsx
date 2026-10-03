@@ -108,7 +108,7 @@ export default function TelaCenario() {
           {opcao && escolhida !== null && (
             <>
               <View style={estilos.escolha}>
-                <View style={[estilos.letra, { backgroundColor: cor.cor }]}>
+                <View style={[estilos.letra, { backgroundColor: cor.escura }]}>
                   <Text style={[estilos.letraTexto, { color: '#FFFFFF' }]}>{letra(escolhida)}</Text>
                 </View>
                 <Text style={estilos.opcaoTexto}>{opcao.texto}</Text>

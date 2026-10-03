@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
@@ -18,7 +18,6 @@ import Animated, {
 
 import { BalaoAr } from '@/components/balao-ar';
 import { BalaoNuvem } from '@/components/balao-fofo';
-import { Ceu } from '@/components/ceu';
 import { Cores, Fontes, t } from '@/constants/theme';
 
 // Linha do tempo da abertura (ms) — tudo acontece em ~3,5 s
@@ -27,7 +26,7 @@ const GOLPE = 200; // o pau vem na direção de quem está olhando
 const RECUO = 250; // entre as pancadas o pau volta para o outro lado
 // Três pancadas, uma sílaba em cada: PAU · LA · DA!
 const SILABAS = ['PAU', 'LA', 'DA!'];
-const CORES_SILABAS = [Cores.terracota, Cores.azulEscuro, Cores.verde]; // listras do balão
+const CORES_SILABAS = [Cores.terracota, Cores.verde, Cores.lilas]; // laranja, lima e pink (paleta)
 const IMPACTOS = SILABAS.map((_, i) => PREPARO + GOLPE + i * (RECUO + GOLPE)); // 480, 930, 1380
 const ULTIMO_IMPACTO = IMPACTOS[IMPACTOS.length - 1];
 const BOLINHAS = 1850; // bolinhas do pensamento (as sílabas somem aqui)
@@ -36,6 +35,10 @@ const FRASE = 2250; // palavras começam
 const DURACAO_FRASE = 900; // tempo total para todas as palavras entrarem
 const DICA = 3500; // "arraste para o lado"
 const SOBE_BALAO = 1700; // o balão de ar quente sobe até o topo
+
+// O balão da frase muda de cor a cada paulada (paleta do app).
+const CORES_BALAO = [Cores.terracota, Cores.verde, Cores.lilas, Cores.azul];
+let proximaCorBalao = 0;
 
 const MADEIRA = '#C48A55';
 const MADEIRA_ESCURA = '#8B5A2B';
@@ -282,6 +285,7 @@ function Cena({
 }) {
   const { width } = useWindowDimensions();
   const tremida = useSharedValue(0);
+  const [corBalao] = useState(() => CORES_BALAO[proximaCorBalao++ % CORES_BALAO.length]);
 
   const larguraBalao = Math.min(width - 24, 440);
   const alturaBalao = larguraBalao * 0.86;
@@ -322,15 +326,6 @@ function Cena({
 
   return (
     <View style={estilos.tela}>
-      <Ceu
-        ateCreme
-        nuvens={[
-          { x: '6%', y: '12%', largura: 90 },
-          { x: '64%', y: '20%', largura: 110 },
-          { x: '10%', y: '78%', largura: 100 },
-          { x: '70%', y: '70%', largura: 70 },
-        ]}
-      />
       <BalaoSubindo parado={parado} />
       <Animated.View style={[estilos.palco, estiloTremida]}>
         <Animated.View entering={parado ? undefined : FadeIn.delay(BALAO)} style={estilos.rotulo}>
@@ -342,7 +337,7 @@ function Cena({
         <Pressable onPress={onOutra} disabled={!onOutra} accessibilityLabel={texto} accessibilityHint="Toque para outra paulada">
           <Estouro atraso={BALAO} parado={parado}>
             <View style={{ width: larguraBalao, height: alturaBalao }}>
-              <BalaoNuvem largura={larguraBalao} altura={alturaBalao} contorno={Cores.texto} espessura={3} />
+              <BalaoNuvem largura={larguraBalao} altura={alturaBalao} cor={corBalao} contorno={Cores.texto} espessura={3} />
               <View style={[StyleSheet.absoluteFill, estilos.centro, { paddingHorizontal: larguraBalao * 0.17 }]}>
                 <View style={estilos.frase}>
                   {palavras.map((palavra, i) => (
@@ -362,16 +357,16 @@ function Cena({
         {/* Bolinhas do pensamento, descendo até quem está "pensando" */}
         <View style={estilos.bolinhas}>
           <Estouro atraso={BOLINHAS + 160} parado={parado} balanco={4}>
-            <View style={[estilos.bolinha, { width: 40, height: 34 }]} />
+            <View style={[estilos.bolinha, { width: 40, height: 34, backgroundColor: corBalao }]} />
           </Estouro>
           <View style={{ marginLeft: -10, marginTop: 38 }}>
             <Estouro atraso={BOLINHAS + 80} parado={parado} balanco={5}>
-              <View style={[estilos.bolinha, { width: 26, height: 22 }]} />
+              <View style={[estilos.bolinha, { width: 26, height: 22, backgroundColor: corBalao }]} />
             </Estouro>
           </View>
           <View style={{ marginLeft: -6, marginTop: 64 }}>
             <Estouro atraso={BOLINHAS} parado={parado} balanco={6}>
-              <View style={[estilos.bolinha, { width: 15, height: 13 }]} />
+              <View style={[estilos.bolinha, { width: 15, height: 13, backgroundColor: corBalao }]} />
             </Estouro>
           </View>
         </View>
@@ -405,7 +400,7 @@ export function PauladaAnimada({
 const estilos = StyleSheet.create({
   tela: {
     flex: 1,
-    backgroundColor: Cores.ceuTopo,
+    backgroundColor: Cores.fundo,
     overflow: 'hidden',
   },
   palco: {
@@ -513,7 +508,7 @@ const estilos = StyleSheet.create({
   estouroTexto: {
     fontFamily: Fontes.extra,
     fontSize: 48,
-    color: '#FFFFFF',
+    color: Cores.marinho,
     letterSpacing: 1,
   },
   dica: {

@@ -108,7 +108,7 @@ export function Cartao({
 export function Botao({
   titulo,
   onPress,
-  cor = Cores.azul,
+  cor = Cores.marinho,
   variante = 'cheio',
   icone,
 }: {

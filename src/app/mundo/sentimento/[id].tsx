@@ -207,7 +207,7 @@ const estilos = StyleSheet.create({
     ...CaixaAlta,
     fontFamily: Fontes.extra,
     fontSize: tk(12),
-    color: Cores.terracota,
+    color: Cores.terracotaEscura,
     textAlign: 'center',
   },
   falaTexto: {

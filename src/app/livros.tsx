@@ -55,7 +55,7 @@ const estilos = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Espaco.sm,
-    backgroundColor: Cores.terracota,
+    backgroundColor: Cores.terracotaEscura,
     borderRadius: Raio.pilula,
     paddingVertical: 14,
     ...Contorno,
