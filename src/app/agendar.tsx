@@ -42,7 +42,7 @@ export default function ConversarComAna() {
         <Text style={estilos.titulo}>Como a Ana trabalha</Text>
         <View style={estilos.cartao}>
           {paragrafos.map((p, i) => (
-            <Text key={i} style={estilos.texto}>
+            <Text key={i} style={i === 0 ? estilos.destaque : estilos.texto}>
               {p}
             </Text>
           ))}
@@ -74,6 +74,7 @@ const estilos = StyleSheet.create({
   titulo: { fontFamily: Fontes.extra, fontSize: t(20), color: Cores.marinho, marginTop: Espaco.sm },
   cartao: { backgroundColor: COR.clara, borderRadius: Raio.md, padding: Espaco.md + 4, gap: Espaco.sm + 4 },
   texto: { fontFamily: Fontes.regular, fontSize: t(16), lineHeight: t(25), color: Cores.texto },
+  destaque: { fontFamily: Fontes.extra, fontSize: t(19), lineHeight: t(27), color: Cores.marinho },
   botao: {
     flexDirection: 'row',
     alignItems: 'center',
